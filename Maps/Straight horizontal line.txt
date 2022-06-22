@@ -1,0 +1,3 @@
+Straight horizontal line
+0 300
+800 300

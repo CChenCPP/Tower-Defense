@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/Towers">
+        <file>Images/ArcherTower1.png</file>
+        <file>Images/CannonTower1.png</file>
+        <file>Images/StoneTower1.png</file>
+    </qresource>
+    <qresource prefix="/Projectiles">
+        <file>Images/Arrow1.png</file>
+        <file>Images/Cannonball1.png</file>
+        <file>Images/Stone1.png</file>
+    </qresource>
+    <qresource prefix="/Enemies">
+        <file>Images/EnemyBlackCircle.png</file>
+    </qresource>
+    <qresource prefix="/Maps">
+        <file>Maps/Straight horizontal line.txt</file>
+        <file>Maps/Zigzag.txt</file>
+        <file>Maps/Spiral.txt</file>
+    </qresource>
+</RCC>
