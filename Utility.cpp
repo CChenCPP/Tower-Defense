@@ -46,3 +46,8 @@ std::vector<int> Parse::stringToInt(const std::vector<std::string>& v)
     }
     return ints;
 }
+
+QString Parse::toQString(int num)
+{
+    return QString::number(num);
+}

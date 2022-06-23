@@ -41,7 +41,7 @@ QList<QPointF>* Map::path()
 }
 
 // private methods
-QPointF Map::truncateToView(int x, int y)
+QPointF Map::truncateToView(int x, int y) const
 {
     int maxX = game->mainScene->defaultWidth;
     int maxY = game->mainScene->defaultHeight;

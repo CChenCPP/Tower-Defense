@@ -3,40 +3,40 @@
 #include <QGraphicsPixmapItem>
 #include <QTimer>
 #include "Enemy.h"
+#include "Tower.h"
 
-enum class ProjType{
-    Arrow,
-    Cannonball,
-    Stone
-};
+class Enemy;
+class Tower;
 
 class Projectile : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    QTimer updateInterval;
-    Enemy* target;
-
-    Projectile(ProjType type, QGraphicsItem* parent = nullptr);
+    Projectile(QGraphicsItem* parent = nullptr);
 
     void setTarget(Enemy* target);
 
-private:
-    ProjType type;
+protected:
+    Tower* source;
+    QTimer updateInterval;
+    Enemy* target;
     int damage;
     int distancePerInterval;
     int distanceTravelled;
     int maxDistance;
 
     void rotateToTarget();
-    void setImage(ProjType type);
-    void setAttributes(ProjType type);
 
 public slots:
+    void onTargetKilled(Projectile* projectile, Enemy* enemy);
     void targetIsDead();
 
 private slots:
-    void move();
     void hitEnemies();
+    void move();
+    void onEnemyDamaged(int damage);
+
+signals:
+    void killedTarget(Enemy* enemy);
 };
 

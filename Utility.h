@@ -51,4 +51,5 @@ namespace Parse
     std::vector<std::string> split(std::string& s, const std::string delimiter);
     std::vector<std::string> split(std::string& s, char delim = ' ');
     std::vector<int> stringToInt(const std::vector<std::string>& v);
+    QString toQString(int num);
 }

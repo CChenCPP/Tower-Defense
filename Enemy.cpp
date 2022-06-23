@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include <iostream>
-#include "Game.h"
 #include "Utility.h"
+#include "Game.h"
 
 extern Game* game;
 
@@ -9,8 +9,10 @@ Enemy::Enemy(QList<QPointF>* path, int hp, int armor, int distPerInt, QGraphicsI
     QGraphicsPixmapItem(parent),
     hp(hp),
     armor(armor),
+    value(RNG::randomNum(hp,hp*2)),
     path(path),
-    distancePerInterval(distPerInt)
+    distancePerInterval(distPerInt),
+    lastProjectile(nullptr)
 {
     setPixmap(QPixmap(":/Enemies/Images/EnemyBlackCircle.png"));
     setPos((*path)[0]);
@@ -26,11 +28,22 @@ Enemy::~Enemy()
 }
 
 // public methods
-void Enemy::damage(int damage)
+void Enemy::damage(int damage, Projectile* projectile)
 {
+    lastProjectile = projectile;
     int trueDamage = std::max<int>(0, damage - armor);
+    trueDamage = std::min<int>(hp, trueDamage);
+    emit damagedAmount(trueDamage);
     hp -= trueDamage;
-    if (hp <= 0) { delete this; };
+    if (hp <= 0) {
+        game->enemyKilled(this);
+        emit killedBy(lastProjectile, this);
+        delete this; };
+}
+
+int Enemy::getValue()
+{
+    return value;
 }
 
 // private methods
@@ -48,7 +61,7 @@ void Enemy::setMoveInterval()
 
 void Enemy::startPath()
 {
-    pointsIndex = 0;
+    pathIndex = 0;
     dest = (*path)[0];
     rotateToPoint(dest);
 }
@@ -59,12 +72,12 @@ void Enemy::moveForward(){
     QLineF line(pos(), dest);
 
     if (line.length() < distancePerInterval){
-        ++pointsIndex;
-        if (pointsIndex == path->size()) {
-//            --pointsIndex;
+        ++pathIndex;
+        if (pathIndex == path->size()) {
+            game->enemyLeaked();
             delete this;
             return; };
-        dest = (*path)[pointsIndex];
+        dest = (*path)[pathIndex];
         rotateToPoint(QPointF(dest.x(), dest.y()));
     }
 

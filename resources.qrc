@@ -3,11 +3,38 @@
         <file>Images/ArcherTower1.png</file>
         <file>Images/CannonTower1.png</file>
         <file>Images/StoneTower1.png</file>
+        <file>Images/ArcherTower2.png</file>
+        <file>Images/ArcherTower3.png</file>
+        <file>Images/CannonTower2.png</file>
+        <file>Images/CannonTower3.png</file>
+        <file>Images/StoneTower2.png</file>
+        <file>Images/StoneTower3.png</file>
+        <file>Images/StoneTower1HD.png</file>
+        <file>Images/ArcherTower1HD.png</file>
+        <file>Images/ArcherTower2HD.png</file>
+        <file>Images/ArcherTower3HD.png</file>
+        <file>Images/CannonTower1HD.png</file>
+        <file>Images/CannonTower2HD.png</file>
+        <file>Images/CannonTower3HD.png</file>
+        <file>Images/StoneTower2HD.png</file>
+        <file>Images/StoneTower3HD.png</file>
+        <file>Images/BeaconTower1.png</file>
+        <file>Images/BeaconTower1HD.png</file>
+        <file>Images/BeaconTower2.png</file>
+        <file>Images/BeaconTower2HD.png</file>
+        <file>Images/BeaconTower3.png</file>
+        <file>Images/BeaconTower3HD.png</file>
     </qresource>
     <qresource prefix="/Projectiles">
         <file>Images/Arrow1.png</file>
         <file>Images/Cannonball1.png</file>
         <file>Images/Stone1.png</file>
+        <file>Images/Arrow2.png</file>
+        <file>Images/Arrow3.png</file>
+        <file>Images/Cannonball2.png</file>
+        <file>Images/Cannonball3.png</file>
+        <file>Images/Stone2.png</file>
+        <file>Images/Stone3.png</file>
     </qresource>
     <qresource prefix="/Enemies">
         <file>Images/EnemyBlackCircle.png</file>

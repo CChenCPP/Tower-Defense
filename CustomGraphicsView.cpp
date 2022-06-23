@@ -30,7 +30,12 @@ void CustomGraphicsView::setCursor(QString filename)
     }
 
     cursor = new QGraphicsPixmapItem();
-    cursor->setPixmap(QPixmap(filename));
+    QPixmap pixmap(filename);
+    qreal width = pixmap.width();
+    qreal height = pixmap.height();
+    qreal ratio = height / width;
+    QPixmap rescaled = pixmap.scaled(35, 35 * ratio);
+    cursor->setPixmap(rescaled);
     game->mainScene->addItem(cursor);
 }
 
@@ -65,6 +70,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
             }
         }
 
+        game->buyTower(Tower::getDefaultCost(building));
         building->init();
         building->setPos(cursor->pos());
         scene()->addItem(building);
@@ -74,6 +80,17 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         building = nullptr;
     }
     else {
-        QGraphicsView::mousePressEvent(event);
+        QGraphicsRectItem cursor;
+        cursor.setRect(QRect(event->pos().x(),event->pos().y(),5,5));
+        game->mainScene->addItem(&cursor);
+        auto collisions = cursor.collidingItems();
+        for (auto& item : collisions){
+            Tower* tower = dynamic_cast<Tower*>(item);
+            if (tower){
+                emit towerSelected(tower);
+                return;
+            }
+        }
+        emit towerSelected(nullptr);
     }
 }

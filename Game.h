@@ -8,22 +8,35 @@ class Game : public QObject
     Q_OBJECT
 public:
     Game();
+
     CustomGraphicsScene* mainScene;
+
+    void buyTower(int cost);
+    void enemyDestroyed();
+    void enemyLeaked();
+    void enemyKilled(Enemy* enemy);
+    CustomGraphicsView* gameView() const;
+    int getHealth() const;
+    int getMoney() const;
+    int getTotalKillCount() const;
+    void run();
+    void sellTower(Tower* tower);
+
+private:
+    static constexpr int maxEnemies = 25;
+    static constexpr int startingHealth = 100;
     CustomGraphicsView* mainView;
     Map* map;
     QVector<QGraphicsLineItem*> mapLines;
-
-    void enemyDestroyed();
-    void run();
-
-private:
     QTimer* enemySpawnTimer;
     int enemyAmount;
-    static constexpr int maxEnemies = 25;
     QTimer* nextLevelTimer;
     unsigned int level;
+    int totalKillCount;
+    int health;
+    int money;
 
-    void loadMap();
+    void loadMap(QString filepath);
     void startSpawnTimer();
     void startNextLevelTimer();
 

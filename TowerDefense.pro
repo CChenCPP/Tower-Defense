@@ -10,8 +10,11 @@ CONFIG += c++17
 
 SOURCES += \
     ArcherTower.cpp \
+    ArrowProjectile.cpp \
+    BeaconTower.cpp \
     BuildTowerIcon.cpp \
     CannonTower.cpp \
+    CannonballProjectile.cpp \
     CustomGraphicsScene.cpp \
     CustomGraphicsView.cpp \
     Enemy.cpp \
@@ -19,6 +22,7 @@ SOURCES += \
     MainWindow.cpp \
     Map.cpp \
     Projectile.cpp \
+    StoneProjectile.cpp \
     StoneTower.cpp \
     Tower.cpp \
     Utility.cpp \
@@ -26,8 +30,11 @@ SOURCES += \
 
 HEADERS += \
    ArcherTower.h \
+   ArrowProjectile.h \
+   BeaconTower.h \
    BuildTowerIcon.h \
    CannonTower.h \
+   CannonballProjectile.h \
    CustomGraphicsScene.h \
    CustomGraphicsView.h \
    Enemy.h \
@@ -35,6 +42,7 @@ HEADERS += \
    MainWindow.h \
    Map.h \
    Projectile.h \
+   StoneProjectile.h \
    StoneTower.h \
    Tower.h \
    Utility.h

@@ -7,17 +7,15 @@
 
 extern Game* game;
 
-Projectile::Projectile(ProjType type, QGraphicsItem* parent) :
+Projectile::Projectile(QGraphicsItem *parent) :
     QGraphicsPixmapItem(parent),
+    source(nullptr),
     target(nullptr),
-    type(type),
     distanceTravelled(0)
 {
-    setImage(type);
-    setAttributes(type);
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::move);
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::hitEnemies);
-    updateInterval.start(50);
+    updateInterval.start(10);
 }
 
 void Projectile::setTarget(Enemy* target)
@@ -26,65 +24,44 @@ void Projectile::setTarget(Enemy* target)
 }
 
 // private methods
-
 void Projectile::rotateToTarget()
 {
-    if (type == ProjType::Arrow) { return; };
     if (target){
         QLineF line(pos(), target->pos());
         setRotation(-1 * line.angle());
     }
 }
 
-void Projectile::setImage(ProjType type)
-{
-    switch(type)
-    {
-        case ProjType::Arrow:
-            setPixmap(QPixmap(":/Projectiles/Images/Arrow1.png"));
-            break;
-
-        case ProjType::Cannonball:
-            setPixmap(QPixmap(":/Projectiles/Images/Cannonball1.png"));
-            break;
-
-        case ProjType::Stone:
-            setPixmap(QPixmap(":/Projectiles/Images/Stone1.png"));
-            break;
-    }
-}
-
-void Projectile::setAttributes(ProjType type)
-{
-    switch(type)
-    {
-        case ProjType::Arrow:
-            damage = 5;
-            distancePerInterval = 100;
-            maxDistance = 1500;
-            break;
-
-        case ProjType::Cannonball:
-            damage = 25;
-            distancePerInterval = 15;
-            maxDistance = 400;
-            break;
-
-        case ProjType::Stone:
-            damage = 10;
-            distancePerInterval = 35;
-            maxDistance = 750;
-            break;
-    }
-}
-
 // public slots
+
+void Projectile::onTargetKilled(Projectile* projectile, Enemy* enemy)
+{
+    if (projectile == this){
+        emit killedTarget(enemy);
+    }
+}
+
 void Projectile::targetIsDead()
 {
     target = nullptr;
 }
 
 // private slots
+void Projectile::hitEnemies(){
+    QList<QGraphicsItem*> collidingItems = this->collidingItems();
+    for (auto& item : collidingItems){
+        Enemy* enemy = dynamic_cast<Enemy*>(item);
+        if (enemy){
+            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
+            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
+            std::cout << this->damage * source->getDmgMultiplier() << std::endl;
+            enemy->damage(this->damage * source->getDmgMultiplier(), this);
+            delete this;
+            return;
+        }
+    }
+}
+
 void Projectile::move()
 {
     rotateToTarget();
@@ -96,14 +73,7 @@ void Projectile::move()
     if (distanceTravelled >= maxDistance) { delete this; };
 }
 
-void Projectile::hitEnemies(){
-    QList<QGraphicsItem*> collidingItems = this->collidingItems();
-    for (auto& item : collidingItems){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
-            enemy->damage(this->damage);
-            delete this;
-            return;
-        }
-    }
+void Projectile::onEnemyDamaged(int damage)
+{
+    source->incrementDamageDone(damage);
 }

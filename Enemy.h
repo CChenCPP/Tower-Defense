@@ -2,6 +2,9 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
+#include "Projectile.h"
+
+class Projectile;
 
 class Enemy : public QObject, public QGraphicsPixmapItem
 {
@@ -11,17 +14,20 @@ public:
     ~Enemy();
 
     static constexpr int defaultHp = 100;
-    QList<QPointF>* path;
 
-    void damage(int damage);
+    void damage(int damage, Projectile* projectile);
+    int getValue();
 
 private:
+    QList<QPointF>* path;
     int hp;
     int armor;
+    int value;
     QPointF dest;
-    int pointsIndex;
+    int pathIndex;
     QTimer moveInterval;
     int distancePerInterval;
+    Projectile* lastProjectile;
 
     void rotateToPoint(QPointF point);
     void setMoveInterval();
@@ -31,6 +37,8 @@ private slots:
     void moveForward();
 
 signals:
+    void damagedAmount(int damage);
     void destructing();
+    void killedBy(Projectile* projectile, Enemy* enemy);
 };
 

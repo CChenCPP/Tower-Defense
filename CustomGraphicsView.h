@@ -7,15 +7,20 @@ class CustomGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    Tower* building;
-    QGraphicsPixmapItem* cursor;
-    void setCursor(QString filename);
-
     CustomGraphicsView(QWidget* parent = nullptr);
     CustomGraphicsView(CustomGraphicsScene* scene, QWidget* parent = nullptr);
 
+    Tower* building;
+
+    void setCursor(QString filename);
+
 private:
+    QGraphicsPixmapItem* cursor;
+
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+
+signals:
+    void towerSelected(Tower* tower);
 };
 

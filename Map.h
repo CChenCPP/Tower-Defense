@@ -14,7 +14,7 @@ public:
     QList<QPointF>* path();
 
 private:
-    QPointF truncateToView(int x, int y);
     QList<QPointF> points;
+    QPointF truncateToView(int x, int y) const;
 };
 

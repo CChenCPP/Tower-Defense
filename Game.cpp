@@ -12,10 +12,39 @@ Game::Game() :
     mainView(new CustomGraphicsView(mainScene)),
     enemySpawnTimer(new QTimer()),
     enemyAmount(0),
-    map(new Map(":/Maps/Maps/Spiral.txt")),
+    map(nullptr),
     nextLevelTimer(new QTimer()),
-    level(0)
+    level(0),
+    totalKillCount(0),
+    health(startingHealth),
+    money(1000)
 {
+    loadMap(":/Maps/Maps/Spiral.txt");
+}
+
+void Game::buyTower(int cost)
+{
+    money -= cost;
+}
+
+CustomGraphicsView* Game::gameView() const
+{
+    return mainView;
+}
+
+int Game::getHealth() const
+{
+    return health;
+}
+
+int Game::getMoney() const
+{
+    return money;
+}
+
+int Game::getTotalKillCount() const
+{
+    return totalKillCount;
 }
 
 void Game::enemyDestroyed()
@@ -23,15 +52,33 @@ void Game::enemyDestroyed()
     --enemyAmount;
 }
 
+void Game::enemyLeaked()
+{
+    --health;
+}
+
+void Game::enemyKilled(Enemy* enemy)
+{
+    ++totalKillCount;
+    money += enemy->getValue();
+}
+
 void Game::run()
 {
-    loadMap();
     startSpawnTimer();
     startNextLevelTimer();
 }
 
-void Game::loadMap()
+void Game::sellTower(Tower* tower)
 {
+    money += tower->getSellValue();
+    delete tower;
+}
+
+// private methods
+void Game::loadMap(QString filePath)
+{
+    map = new Map(filePath);
     auto temp = map->path();
     for (size_t i = 0; i < temp->size() - 1; ++i){
         QLineF line((*temp)[i],(*temp)[i+1]);
