@@ -14,12 +14,12 @@ Game::Game() :
     enemyAmount(0),
     map(nullptr),
     nextLevelTimer(new QTimer()),
-    level(0),
+    level(1),
     totalKillCount(0),
     health(startingHealth),
     money(1000)
 {
-    loadMap(":/Maps/Maps/Spiral.txt");
+    loadMap(":/Maps/Maps/Square spiral.txt");
 }
 
 void Game::buyTower(int cost)
@@ -73,6 +73,7 @@ void Game::sellTower(Tower* tower)
 {
     money += tower->getSellValue();
     delete tower;
+    tower = nullptr;
 }
 
 // private methods
@@ -102,15 +103,18 @@ void Game::startSpawnTimer()
 
 void Game::startNextLevelTimer()
 {
-    QObject::connect(nextLevelTimer,&QTimer::timeout,[&](){++level;});
-    nextLevelTimer->start(5000);
+    QObject::connect(nextLevelTimer,&QTimer::timeout,[&](){
+        ++level;
+        std::cout << "Level: " << level << std::endl;
+    });
+    nextLevelTimer->start(20000);
 }
 
 // slots
 void Game::spawnEnemy()
 {
     if (enemyAmount >= maxEnemies) { return; };
-    int enemyHp = Enemy::defaultHp * log(level + 2);
+    int enemyHp = pow(Enemy::defaultHp * level, 0.9);
     Enemy* enemy = new Enemy(map->path(), enemyHp);
     mainScene->addItem(enemy);
     ++enemyAmount;

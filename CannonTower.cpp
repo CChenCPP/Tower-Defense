@@ -2,14 +2,15 @@
 #include "Projectile.h"
 #include "Game.h"
 #include "CannonballProjectile.h"
+#include "Explosion.h"
 #include <iostream>
 
 extern Game* game;
 
 CannonTower::CannonTower() : Tower()
 {
-    attackRange = 150;
-    attackInterval = 1000;
+    attackRange = CannonTower::defaultAttackRange;
+    attackInterval = CannonTower::defaultAttackInterval;
     setPixmap(QPixmap(":/Towers/Images/CannonTower1.png"));
     sellValue = pow(CannonTower::defaultCost, Tower::valueDecay);
 }
@@ -50,20 +51,50 @@ void CannonTower::attackTarget(Enemy* target)
     }
 }
 
+void CannonTower::setProjectileAttributes(Projectile* projectile)
+{
+    switch(tier){
+        case(1):
+            projectile->setAttribute(ProjAttr::Explosive);
+            return;
+        case(2):
+            projectile->setAttribute(ProjAttr::Explosive).setAttribute(ProjAttr::Piercing);
+            return;
+        case(3):
+            projectile->setAttribute(ProjAttr::Explosive).setAttribute(ProjAttr::Piercing);
+            return;
+    }
+}
+
 void CannonTower::tier1Attack(Enemy* target)
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
+    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
+    setProjectileAttributes(cannonball);
     initProjectile(this, cannonball, target);
 }
 
 void CannonTower::tier2Attack(Enemy* target)
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
+    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
+    setProjectileAttributes(cannonball);
     initProjectile(this, cannonball, target);
 }
 
 void CannonTower::tier3Attack(Enemy* target)
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
+    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
+    setProjectileAttributes(cannonball);
     initProjectile(this, cannonball, target);
+}
+
+// private slots
+void CannonTower::explode(Projectile* projectile)
+{
+    Explosion* explosion = new Explosion(projectile);
+
+    delete projectile;
+    projectile = nullptr;
 }

@@ -1,4 +1,5 @@
 #include "StoneProjectile.h"
+#include "Utility.h"
 #include <iostream>
 
 StoneProjectile::StoneProjectile(int tier, Tower* source) :
@@ -7,7 +8,7 @@ StoneProjectile::StoneProjectile(int tier, Tower* source) :
 {
     this->source = source;
     setImage(tier);
-    setAttributes(tier);
+    setProperties(tier);
 }
 
 void StoneProjectile::setImage(int tier)
@@ -28,25 +29,25 @@ void StoneProjectile::setImage(int tier)
     }
 }
 
-void StoneProjectile::setAttributes(int tier)
+void StoneProjectile::setProperties(int tier)
 {
     switch(tier)
     {
         case 1:
-            damage = 10;
-            distancePerInterval = 10;
+            damage = 48;
+            distancePerInterval = 8;
             maxDistance = 800;
             break;
 
         case 2:
-            damage = 50;
-            distancePerInterval = 10;
+            damage = 180;
+            distancePerInterval = 8;
             maxDistance = 1200;
             break;
 
         case 3:
-            damage = 500;
-            distancePerInterval = 10;
+            damage = 720;
+            distancePerInterval = 8;
             maxDistance = 3000;
             break;
     }

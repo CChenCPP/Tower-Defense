@@ -7,7 +7,7 @@ ArrowProjectile::ArrowProjectile(int tier, Tower* source) :
 {
     this->source = source;
     setImage(tier);
-    setAttributes(tier);
+    setProperties(tier);
 }
 
 void ArrowProjectile::setImage(int tier)
@@ -28,25 +28,25 @@ void ArrowProjectile::setImage(int tier)
     }
 }
 
-void ArrowProjectile::setAttributes(int tier)
+void ArrowProjectile::setProperties(int tier)
 {
     switch(tier)
     {
         case 1:
             damage = 5;
-            distancePerInterval = 25;
+            distancePerInterval = 15;
             maxDistance = 800;
             break;
 
         case 2:
-            damage = 25;
-            distancePerInterval = 25;
+            damage = 30;
+            distancePerInterval = 15;
             maxDistance = 1200;
             break;
 
         case 3:
-            damage = 250;
-            distancePerInterval = 25;
+            damage = 300;
+            distancePerInterval = 15;
             maxDistance = 3000;
             break;
     }

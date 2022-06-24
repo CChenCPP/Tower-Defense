@@ -23,7 +23,7 @@ public:
     void sellTower(Tower* tower);
 
 private:
-    static constexpr int maxEnemies = 25;
+    static constexpr int maxEnemies = 100;
     static constexpr int startingHealth = 100;
     CustomGraphicsView* mainView;
     Map* map;

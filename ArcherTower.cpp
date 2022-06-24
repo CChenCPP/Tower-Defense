@@ -1,6 +1,7 @@
 #include "ArcherTower.h"
 #include "ArrowProjectile.h"
 #include "Game.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -8,8 +9,8 @@ extern Game* game;
 ArcherTower::ArcherTower() :
     Tower()
 {
-    attackRange = 300;
-    attackInterval = 2500;
+    attackRange = ArcherTower::defaultAttackRange;
+    attackInterval = ArcherTower::defaultAttackInterval;
     setPixmap(QPixmap(":/Towers/Images/ArcherTower1.png"));
     sellValue = std::pow(ArcherTower::defaultCost, Tower::valueDecay);
 }
@@ -50,30 +51,52 @@ void ArcherTower::attackTarget(Enemy* target)
     }
 }
 
+void ArcherTower::setProjectileAttributes(Projectile* projectile)
+{
+    switch(tier){
+        case(1):
+            projectile->setAttribute(ProjAttr::Maiming);
+            return;
+        case(2):
+            projectile->setAttribute(ProjAttr::Piercing);
+            return;
+        case(3):
+            projectile->setAttribute(ProjAttr::Piercing).setAttribute(ProjAttr::Poison);
+            return;
+    }
+}
+
 void ArcherTower::tier1Attack(Enemy* target)
 {
     ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+    setProjectileAttributes(arrow);
     initProjectile(this, arrow, target);
 }
 
 void ArcherTower::tier2Attack(Enemy* target)
 {
+    for (int i = 0; i < 2; ++i){
+        ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+        setProjectileAttributes(arrow);
+        initProjectile(this, arrow, target);
+        arrow->setRotation(arrow->rotation() + RNG::randomNum(-30,30));
+    }
+
     ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+    setProjectileAttributes(arrow);
     initProjectile(this, arrow, target);
 }
 
 void ArcherTower::tier3Attack(Enemy* target)
 {
-    ArrowProjectile* arrow1 = new ArrowProjectile(tier, this);
-    initProjectile(this, arrow1, target);
-    arrow1->setTarget(nullptr);
-    arrow1->setRotation(arrow1->rotation() - 10);
+    for (int i = 0; i < 4; ++i){
+        ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+        setProjectileAttributes(arrow);
+        initProjectile(this, arrow, target);
+        arrow->setRotation(arrow->rotation() + RNG::randomNum(-45,45));
+    }
 
-    ArrowProjectile* arrow2 = new ArrowProjectile(tier, this);
-    initProjectile(this, arrow2, target);
-
-    ArrowProjectile* arrow3 = new ArrowProjectile(tier, this);
-    initProjectile(this, arrow3, target);
-    arrow3->setTarget(nullptr);
-    arrow3->setRotation(arrow3->rotation() - 10);
+    ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+    setProjectileAttributes(arrow);
+    initProjectile(this, arrow, target);
 }

@@ -1,14 +1,16 @@
 #include "StoneTower.h"
 #include "StoneProjectile.h"
 #include "Game.h"
+#include "Utility.h"
+#include "StoneFragment.h"
 #include <iostream>
 
 extern Game* game;
 
 StoneTower::StoneTower() : Tower()
 {
-    attackRange = 300;
-    attackInterval = 750;
+    attackRange = StoneTower::defaultAttackRange;
+    attackInterval = StoneTower::defaultAttackInterval;
     setPixmap(QPixmap(":/Towers/Images/StoneTower1.png"));
     sellValue = pow(StoneTower::defaultCost, Tower::valueDecay);
 }
@@ -50,20 +52,52 @@ void StoneTower::attackTarget(Enemy* target)
     }
 }
 
+void StoneTower::setProjectileAttributes(Projectile* projectile)
+{
+    switch(tier){
+        case(1):
+            projectile->setAttribute(ProjAttr::Fragmenting);
+            return;
+        case(2):
+            projectile->setAttribute(ProjAttr::Fragmenting);
+            return;
+        case(3):
+            projectile->setAttribute(ProjAttr::Fragmenting);
+            return;
+    }
+}
+
 void StoneTower::tier1Attack(Enemy* target)
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
+    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
+    setProjectileAttributes(stone);
     initProjectile(this, stone, target);
 }
 
 void StoneTower::tier2Attack(Enemy* target)
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
+    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
+    setProjectileAttributes(stone);
     initProjectile(this, stone, target);
 }
 
 void StoneTower::tier3Attack(Enemy* target)
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
+    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
+    setProjectileAttributes(stone);
     initProjectile(this, stone, target);
+}
+
+//private slots
+void StoneTower::fragment(Projectile* projectile)
+{
+    for (int i = 0; i < tier * 3; ++i){
+        StoneFragment* fragment = new StoneFragment(projectile);
+    }
+
+    delete projectile;
+    projectile = nullptr;
 }

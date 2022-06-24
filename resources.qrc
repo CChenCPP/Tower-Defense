@@ -29,19 +29,35 @@
         <file>Images/Arrow1.png</file>
         <file>Images/Cannonball1.png</file>
         <file>Images/Stone1.png</file>
-        <file>Images/Arrow2.png</file>
-        <file>Images/Arrow3.png</file>
         <file>Images/Cannonball2.png</file>
         <file>Images/Cannonball3.png</file>
         <file>Images/Stone2.png</file>
         <file>Images/Stone3.png</file>
+        <file>Images/Arrow2.png</file>
+        <file>Images/Arrow3.png</file>
     </qresource>
     <qresource prefix="/Enemies">
         <file>Images/EnemyBlackCircle.png</file>
+        <file>Images/EnemyBlackSquare.png</file>
     </qresource>
     <qresource prefix="/Maps">
         <file>Maps/Straight horizontal line.txt</file>
         <file>Maps/Zigzag.txt</file>
         <file>Maps/Spiral.txt</file>
+        <file>Maps/Square spiral.txt</file>
+    </qresource>
+    <qresource prefix="/Special">
+        <file>Images/CannonballExplosion1a.png</file>
+        <file>Images/CannonballExplosion1a.gif</file>
+        <file>Images/CannonballExplosion2a.png</file>
+        <file>Images/CannonballExplosion3a.png</file>
+        <file>Images/StoneFragment1.png</file>
+        <file>Images/StoneFragment2.png</file>
+        <file>Images/StoneFragment3.png</file>
+        <file>Images/StoneFragment4.png</file>
+        <file>Images/StoneFragment5.png</file>
+        <file>Images/StoneFragment6.png</file>
+        <file>Images/StoneFragment7.png</file>
+        <file>Images/StoneFragment8.png</file>
     </qresource>
 </RCC>

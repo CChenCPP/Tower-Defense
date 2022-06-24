@@ -26,15 +26,20 @@ private:
     QGraphicsEllipseItem* selectedTowerOutline;
     QTimer* totalKillCountUpdater;
     QTimer* totalDamageDoneUpdater;
+    QTimer* sellValueUpdater;
     QTimer* killCountUpdater;
     QTimer* healthUpdater;
     QTimer* moneyUpdater;
     Ui::MainWindow* UI;
 
+    void clearPriorityButtons() const;
+    void determineTowerPriority() const;
+    void disablePriorityButtons() const;
+    void enablePriorityButtons() const;
     void drawSelectedTowerToScene();
     void drawTowerOutline();
     void resetSelection();
-    void setupBuildTowerIcons();
+    void setupBuildTowerIcons() const;
 
 private slots:
     // custom slots
@@ -46,4 +51,9 @@ private slots:
     void on_buildStoneTowerButton_released();
     void on_sellTowerButton_clicked();
     void on_upgradeTierButton_clicked();
+    void on_nearestPriorityRadioButton_clicked();
+    void on_highestHpPriorityRadioButton_clicked();
+    void on_lowestHpPriorityRadioButton_clicked();
+    void on_entrancePriorityRadioButton_clicked();
+    void on_exitPriorityRadioButton_clicked();
 };

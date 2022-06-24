@@ -1,5 +1,6 @@
 #include "CustomGraphicsScene.h"
 #include "Utility.h"
+#include <QTimer>
 
 CustomGraphicsScene::CustomGraphicsScene(QObject* parent) : QGraphicsScene(parent)
 {

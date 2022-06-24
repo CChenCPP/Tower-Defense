@@ -17,7 +17,7 @@
    <widget class="QGraphicsView" name="gameFrame">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>320</x>
       <y>10</y>
       <width>800</width>
       <height>800</height>
@@ -30,7 +30,7 @@
      </sizepolicy>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -94,11 +94,11 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1060</x>
-      <y>30</y>
+      <x>1140</x>
+      <y>20</y>
       <width>161</width>
       <height>80</height>
      </rect>
@@ -148,18 +148,18 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>280</y>
-      <width>181</width>
-      <height>285</height>
+      <x>0</x>
+      <y>354</y>
+      <width>281</width>
+      <height>281</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,1,1">
        <item>
         <widget class="QGraphicsView" name="towerSelectionView">
          <property name="sizePolicy">
@@ -283,10 +283,89 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QVBoxLayout" name="priorityButtons" stretch="1,1,1,1,1,1">
+         <item>
+          <widget class="QLabel" name="priorityLabel">
+           <property name="text">
+            <string>Priority</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="nearestPriorityRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Nearest</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="highestHpPriorityRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Highest hp</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="lowestHpPriorityRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Lowest hp</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="entrancePriorityRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Entrance</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="exitPriorityRadioButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Exit</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">
         <number>3</number>
        </property>
@@ -296,7 +375,7 @@
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Upgrade tier</string>
+          <string>Upgrade tower</string>
          </property>
         </widget>
        </item>

@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
       selectedTowerOutline(nullptr),
       totalKillCountUpdater(new QTimer()),
       totalDamageDoneUpdater(new QTimer()),
+      sellValueUpdater(new QTimer()),
       killCountUpdater(new QTimer()),
       healthUpdater(new QTimer()),
       moneyUpdater(new QTimer())
@@ -30,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     game->gameView()->setParent(UI->gameFrame);
 //    UI->gameFrame->setGeometry(200,0,game->mainScene->defaultWidth,game->mainScene->defaultHeight);
     setupBuildTowerIcons();
+    disablePriorityButtons();
     connect(totalKillCountUpdater,&QTimer::timeout,[&](){ UI->enemiesKilledLineEdit->setText(Parse::toQString(game->getTotalKillCount()));}); totalKillCountUpdater->start(500);
     connect(healthUpdater,&QTimer::timeout,[&](){ UI->healthLineEdit->setText(Parse::toQString(game->getHealth()));}); healthUpdater->start(500);
     connect(moneyUpdater,&QTimer::timeout,[&](){ UI->moneyLineEdit->setText(Parse::toQString(game->getMoney()));}); moneyUpdater->start(500);
@@ -37,32 +39,69 @@ MainWindow::MainWindow(QWidget *parent)
     selectedTowerView->setParent(UI->towerSelectionView);
 }
 
-void MainWindow::setupBuildTowerIcons()
-{
-    QIcon archerTowerIcon(QPixmap(":/Towers/Images/ArcherTower1.png"));
-    auto archerTowerButton = UI->buildArcherTowerButton;
-    archerTowerButton->setIcon(archerTowerIcon);
-    archerTowerButton->setIconSize(QSize(200,200));
-
-    QIcon cannonTowerIcon(QPixmap(":/Towers/Images/CannonTower1.png"));
-    auto cannonTowerButton = UI->buildCannonTowerButton;
-    cannonTowerButton->setIcon(cannonTowerIcon);
-    cannonTowerButton->setIconSize(QSize(200,200));
-
-    QIcon stoneTowerIcon(QPixmap(":/Towers/Images/StoneTower1.png"));
-    auto stoneTowerButton = UI->buildStoneTowerButton;
-    stoneTowerButton->setIcon(stoneTowerIcon);
-    stoneTowerButton->setIconSize(QSize(200,200));
-
-    QIcon beaconTowerIcon(QPixmap(":/Towers/Images/BeaconTower1.png"));
-    auto beaconTowerButton = UI->buildBeaconTowerButton;
-    beaconTowerButton->setIcon(beaconTowerIcon);
-    beaconTowerButton->setIconSize(QSize(200,200));
-}
-
 MainWindow::~MainWindow()
 {
     delete UI;
+}
+
+// private methods
+void MainWindow::clearPriorityButtons() const
+{
+    UI->nearestPriorityRadioButton->setAutoExclusive(false);
+    UI->highestHpPriorityRadioButton->setAutoExclusive(false);
+    UI->lowestHpPriorityRadioButton->setAutoExclusive(false);
+    UI->entrancePriorityRadioButton->setAutoExclusive(false);
+    UI->exitPriorityRadioButton->setAutoExclusive(false);
+    UI->nearestPriorityRadioButton->setChecked(false);
+    UI->highestHpPriorityRadioButton->setChecked(false);
+    UI->lowestHpPriorityRadioButton->setChecked(false);
+    UI->entrancePriorityRadioButton->setChecked(false);
+    UI->exitPriorityRadioButton->setChecked(false);
+    UI->nearestPriorityRadioButton->setAutoExclusive(true);
+    UI->highestHpPriorityRadioButton->setAutoExclusive(true);
+    UI->lowestHpPriorityRadioButton->setAutoExclusive(true);
+    UI->entrancePriorityRadioButton->setAutoExclusive(true);
+    UI->exitPriorityRadioButton->setAutoExclusive(true);
+}
+
+void MainWindow::determineTowerPriority() const
+{
+    switch (selectedTower->getTargetPriority())
+    {
+        case TargetPriority::Nearest:
+            UI->nearestPriorityRadioButton->toggle();
+            return;
+        case TargetPriority::HighestHp:
+            UI->highestHpPriorityRadioButton->toggle();
+            return;
+        case TargetPriority::LowestHp:
+            UI->lowestHpPriorityRadioButton->toggle();
+            return;
+        case TargetPriority::Entrance:
+            UI->entrancePriorityRadioButton->toggle();
+            return;
+        case TargetPriority::Exit:
+            UI->exitPriorityRadioButton->toggle();
+            return;
+    }
+}
+
+void MainWindow::disablePriorityButtons() const
+{
+    UI->nearestPriorityRadioButton->setDisabled(true);
+    UI->highestHpPriorityRadioButton->setDisabled(true);
+    UI->lowestHpPriorityRadioButton->setDisabled(true);
+    UI->entrancePriorityRadioButton->setDisabled(true);
+    UI->exitPriorityRadioButton->setDisabled(true);
+}
+
+void MainWindow::enablePriorityButtons() const
+{
+    UI->nearestPriorityRadioButton->setEnabled(true);
+    UI->highestHpPriorityRadioButton->setEnabled(true);
+    UI->lowestHpPriorityRadioButton->setEnabled(true);
+    UI->entrancePriorityRadioButton->setEnabled(true);
+    UI->exitPriorityRadioButton->setEnabled(true);
 }
 
 void MainWindow::drawSelectedTowerToScene()
@@ -111,6 +150,7 @@ void MainWindow::drawTowerOutline()
 void MainWindow::resetSelection()
 {
     totalDamageDoneUpdater->disconnect();
+    sellValueUpdater->disconnect();
     killCountUpdater->disconnect();
 
     UI->typeLineEdit->setText("");
@@ -122,6 +162,9 @@ void MainWindow::resetSelection()
     UI->upgradeTierButton->setText("Upgrade tower");
     UI->sellTowerButton->setDisabled(true);
     UI->sellTowerButton->setText("Sell tower");
+    disablePriorityButtons();
+    clearPriorityButtons();
+    if (selectedTower) { selectedTower->showAttackArea(false); };
     selectedTower = nullptr;
     if (selectedTowerOutline){
         delete selectedTowerOutline;
@@ -133,6 +176,29 @@ void MainWindow::resetSelection()
     }
 }
 
+void MainWindow::setupBuildTowerIcons() const
+{
+    QIcon archerTowerIcon(QPixmap(":/Towers/Images/ArcherTower1.png"));
+    auto archerTowerButton = UI->buildArcherTowerButton;
+    archerTowerButton->setIcon(archerTowerIcon);
+    archerTowerButton->setIconSize(QSize(200,200));
+
+    QIcon cannonTowerIcon(QPixmap(":/Towers/Images/CannonTower1.png"));
+    auto cannonTowerButton = UI->buildCannonTowerButton;
+    cannonTowerButton->setIcon(cannonTowerIcon);
+    cannonTowerButton->setIconSize(QSize(200,200));
+
+    QIcon stoneTowerIcon(QPixmap(":/Towers/Images/StoneTower1.png"));
+    auto stoneTowerButton = UI->buildStoneTowerButton;
+    stoneTowerButton->setIcon(stoneTowerIcon);
+    stoneTowerButton->setIconSize(QSize(200,200));
+
+    QIcon beaconTowerIcon(QPixmap(":/Towers/Images/BeaconTower1.png"));
+    auto beaconTowerButton = UI->buildBeaconTowerButton;
+    beaconTowerButton->setIcon(beaconTowerIcon);
+    beaconTowerButton->setIconSize(QSize(200,200));
+}
+
 // slots
 void MainWindow::onTowerSelected(Tower* tower)
 {
@@ -140,6 +206,7 @@ void MainWindow::onTowerSelected(Tower* tower)
     if (!tower) { return; };
 
     selectedTower = tower;
+    selectedTower->showAttackArea(true);
     upgradeCost = Tower::getUpgradeCost(selectedTower);
     UI->typeLineEdit->setText(Tower::getType(tower));
     UI->tierLineEdit->setText(Parse::toQString(tower->getTier()));
@@ -149,11 +216,18 @@ void MainWindow::onTowerSelected(Tower* tower)
     UI->upgradeTierButton->setEnabled((tower->getTier() >= Tower::maxTier) ? false : true);
     UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
     UI->sellTowerButton->setEnabled(true);
+    enablePriorityButtons();
+    determineTowerPriority();
 
     connect(totalDamageDoneUpdater,QTimer::timeout,[&](){
         UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
     });
     totalDamageDoneUpdater->start(250);
+
+    connect(sellValueUpdater,QTimer::timeout,[&](){
+        UI->sellTowerButton->setText("Sell tower $" + Parse::toQString(selectedTower->getSellValue()));
+    });
+    sellValueUpdater->start(250);
 
     connect(killCountUpdater,QTimer::timeout,[&](){
         UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
@@ -166,6 +240,7 @@ void MainWindow::onTowerSelected(Tower* tower)
 
 void MainWindow::on_buildArcherTowerButton_released()
 {
+    resetSelection();
     if (!game->gameView()->building && game->getMoney() > ArcherTower::defaultCost){
         game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Archer));
         game->gameView()->building = new ArcherTower();
@@ -174,6 +249,7 @@ void MainWindow::on_buildArcherTowerButton_released()
 
 void MainWindow::on_buildBeaconTowerButton_clicked()
 {
+    resetSelection();
     if (!game->gameView()->building && game->getMoney() > BeaconTower::defaultCost){
         game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Beacon));
         game->gameView()->building = new BeaconTower();
@@ -182,6 +258,7 @@ void MainWindow::on_buildBeaconTowerButton_clicked()
 
 void MainWindow::on_buildCannonTowerButton_released()
 {
+    resetSelection();
     if (!game->gameView()->building && game->getMoney() > CannonTower::defaultCost){
         game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Cannon));
         game->gameView()->building = new CannonTower();
@@ -190,6 +267,7 @@ void MainWindow::on_buildCannonTowerButton_released()
 
 void MainWindow::on_buildStoneTowerButton_released()
 {
+    resetSelection();
     if (!game->gameView()->building && game->getMoney() > StoneTower::defaultCost){
         game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Stone));
         game->gameView()->building = new StoneTower();
@@ -199,6 +277,7 @@ void MainWindow::on_buildStoneTowerButton_released()
 void MainWindow::on_sellTowerButton_clicked()
 {
     game->sellTower(selectedTower);
+    selectedTower = nullptr;
     resetSelection();
 }
 
@@ -218,5 +297,35 @@ void MainWindow::on_upgradeTierButton_clicked()
     UI->tierLineEdit->setText(Parse::toQString(selectedTower->getTier()));
     UI->upgradeTierButton->setEnabled((selectedTower->getTier() >= Tower::maxTier) ? false : true);
     UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
+}
+
+
+void MainWindow::on_nearestPriorityRadioButton_clicked()
+{
+    selectedTower->setPriority(TargetPriority::Nearest);
+}
+
+
+void MainWindow::on_highestHpPriorityRadioButton_clicked()
+{
+    selectedTower->setPriority(TargetPriority::HighestHp);
+}
+
+
+void MainWindow::on_lowestHpPriorityRadioButton_clicked()
+{
+    selectedTower->setPriority(TargetPriority::LowestHp);
+}
+
+
+void MainWindow::on_entrancePriorityRadioButton_clicked()
+{
+    selectedTower->setPriority(TargetPriority::Entrance);
+}
+
+
+void MainWindow::on_exitPriorityRadioButton_clicked()
+{
+    selectedTower->setPriority(TargetPriority::Exit);
 }
 

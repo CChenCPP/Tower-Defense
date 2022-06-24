@@ -18,10 +18,12 @@ SOURCES += \
     CustomGraphicsScene.cpp \
     CustomGraphicsView.cpp \
     Enemy.cpp \
+    Explosion.cpp \
     Game.cpp \
     MainWindow.cpp \
     Map.cpp \
     Projectile.cpp \
+    StoneFragment.cpp \
     StoneProjectile.cpp \
     StoneTower.cpp \
     Tower.cpp \
@@ -38,10 +40,12 @@ HEADERS += \
    CustomGraphicsScene.h \
    CustomGraphicsView.h \
    Enemy.h \
+   Explosion.h \
    Game.h \
    MainWindow.h \
    Map.h \
    Projectile.h \
+   StoneFragment.h \
    StoneProjectile.h \
    StoneTower.h \
    Tower.h \

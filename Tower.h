@@ -8,6 +8,14 @@
 
 class Enemy;
 class Projectile;
+enum class TargetPriority
+{
+    Nearest,
+    LowestHp,
+    HighestHp,
+    Entrance,
+    Exit
+};
 
 class Tower : public QObject, public QGraphicsPixmapItem
 {
@@ -26,22 +34,28 @@ public:
     static QString getImageUrl(Tower* tower, bool HD = false);
     int getKillCount() const;
     int getSellValue() const;
+    TargetPriority getTargetPriority() const;
     int getTier() const;
     static QString getType(Tower* tower);
     static int getUpgradeCost(Tower* tower);
     void incrementDamageDone(int damage);
-    void init();
+    virtual void init();
     void setAttackIntervalMultiplier(float multiplier);
     void setDmgMultiplier(float mult);
+    void setPriority(TargetPriority targetPriority);
+    void setRange(int range);
+    void showAttackArea(bool show = true);
     void upgradeTier();
 
 protected:
+    static constexpr double radToDegRatio = 3.141592653589793238463 / 180.0;
     static constexpr float valueDecay = 0.90;
     int centerX;
     int centerY;
     int tier;
     float dmgMultiplier;
     int totalDamageDone;
+    TargetPriority priority;
     int attackRange;
     QGraphicsPolygonItem* attackArea;
     QPointF attackDestination;
@@ -59,9 +73,18 @@ protected:
     virtual void setAttackInterval();
     void setCenterOffset();
 
+private:
+    void targetNearest(QList<QGraphicsItem*> collisions);
+    void targetHighestHp(QList<QGraphicsItem*> collisions);
+    void targetLowestHp(QList<QGraphicsItem*> collisions);
+    void targetEntrance(QList<QGraphicsItem*> collisions);
+    void targetExit(QList<QGraphicsItem*> collisions);
+
+public slots:
+    void onTargetKilled(Enemy* enemy);
+
 private slots:
     void determineTarget();
-    void onTargetKilled(Enemy* enemy);
 
 signals:
     void destructing(Tower* tower);

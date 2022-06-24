@@ -1,5 +1,8 @@
 #include "CannonballProjectile.h"
+#include "Game.h"
 #include <iostream>
+
+extern Game* game;
 
 CannonballProjectile::CannonballProjectile(int tier, Tower* source) :
     Projectile(),
@@ -7,9 +10,10 @@ CannonballProjectile::CannonballProjectile(int tier, Tower* source) :
 {
     this->source = source;
     setImage(tier);
-    setAttributes(tier);
+    setProperties(tier);
 }
 
+// private methods
 void CannonballProjectile::setImage(int tier)
 {
     switch(tier)
@@ -28,25 +32,25 @@ void CannonballProjectile::setImage(int tier)
     }
 }
 
-void CannonballProjectile::setAttributes(int tier)
+void CannonballProjectile::setProperties(int tier)
 {
     switch(tier)
     {
         case 1:
-            damage = 25;
-            distancePerInterval = 5;
+            damage = 10;
+            distancePerInterval = 3;
             maxDistance = 200;
             break;
 
         case 2:
-            damage = 100;
-            distancePerInterval = 5;
+            damage = 25;
+            distancePerInterval = 3;
             maxDistance = 300;
             break;
 
         case 3:
-            damage = 1000;
-            distancePerInterval = 5;
+            damage = 125;
+            distancePerInterval = 3;
             maxDistance = 500;
             break;
     }

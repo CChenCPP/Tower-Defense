@@ -10,6 +10,10 @@ private:
     int tier;
 
     void setImage(int tier);
-    void setAttributes(int tier);
+    void setProperties(int tier);
+
+private slots:
+    void explode(int tier);
+
 };
 
