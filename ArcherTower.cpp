@@ -39,64 +39,44 @@ int ArcherTower::getUpgradeCost(Tower* tower)
 }
 
 // private methods
-void ArcherTower::attackTarget(Enemy* target)
+void ArcherTower::attackTarget()
 {
     switch(tier){
         case(1):
-            tier1Attack(target); return;
+            tier1Attack(); return;
         case(2):
-            tier2Attack(target); return;
+            tier2Attack(); return;
         case(3):
-            tier3Attack(target); return;
+            tier3Attack(); return;
     }
 }
 
-void ArcherTower::setProjectileAttributes(Projectile* projectile)
-{
-    switch(tier){
-        case(1):
-            projectile->setAttribute(ProjAttr::Maiming);
-            return;
-        case(2):
-            projectile->setAttribute(ProjAttr::Piercing);
-            return;
-        case(3):
-            projectile->setAttribute(ProjAttr::Piercing).setAttribute(ProjAttr::Poison);
-            return;
-    }
-}
-
-void ArcherTower::tier1Attack(Enemy* target)
+void ArcherTower::tier1Attack()
 {
     ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-    setProjectileAttributes(arrow);
-    initProjectile(this, arrow, target);
+    linkToTarget(arrow, target);
 }
 
-void ArcherTower::tier2Attack(Enemy* target)
+void ArcherTower::tier2Attack()
 {
     for (int i = 0; i < 2; ++i){
         ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-        setProjectileAttributes(arrow);
-        initProjectile(this, arrow, target);
+        linkToTarget(arrow, target);
         arrow->setRotation(arrow->rotation() + RNG::randomNum(-30,30));
     }
 
     ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-    setProjectileAttributes(arrow);
-    initProjectile(this, arrow, target);
+    linkToTarget(arrow, target);
 }
 
-void ArcherTower::tier3Attack(Enemy* target)
+void ArcherTower::tier3Attack()
 {
     for (int i = 0; i < 4; ++i){
         ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-        setProjectileAttributes(arrow);
-        initProjectile(this, arrow, target);
+        linkToTarget(arrow, target);
         arrow->setRotation(arrow->rotation() + RNG::randomNum(-45,45));
     }
 
     ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-    setProjectileAttributes(arrow);
-    initProjectile(this, arrow, target);
+    linkToTarget(arrow, target);
 }

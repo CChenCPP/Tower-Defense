@@ -7,9 +7,8 @@ public:
     StoneProjectile(int tier, Tower* source);
 
 private:
-    int tier;
-
-    void setImage(int tier);
-    void setProperties(int tier);
+    void setAttributes();
+    void setImage();
+    void setProperties();
 };
 

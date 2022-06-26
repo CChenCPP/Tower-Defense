@@ -46,9 +46,13 @@ private slots:
     void onTowerSelected(Tower* tower);
     // UI slots
     void on_buildArcherTowerButton_released();
+    void on_buildBallistaTowerButton_released();
     void on_buildBeaconTowerButton_clicked();
     void on_buildCannonTowerButton_released();
+    void on_buildIceTowerButton_released();
     void on_buildStoneTowerButton_released();
+    void on_buildTeleportTowerButton_clicked();
+    void on_buildWizardTowerButton_clicked();
     void on_sellTowerButton_clicked();
     void on_upgradeTierButton_clicked();
     void on_nearestPriorityRadioButton_clicked();

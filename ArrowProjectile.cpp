@@ -6,11 +6,27 @@ ArrowProjectile::ArrowProjectile(int tier, Tower* source) :
     tier(tier)
 {
     this->source = source;
-    setImage(tier);
-    setProperties(tier);
+    setAttributes();
+    setImage();
+    setProperties();
 }
 
-void ArrowProjectile::setImage(int tier)
+void ArrowProjectile::setAttributes()
+{
+    switch(tier){
+        case(1):
+            Projectile::setAttributes(ProjAttr::Maiming);
+            return;
+        case(2):
+            Projectile::setAttributes(ProjAttr::Maiming, ProjAttr::Piercing);
+            return;
+        case(3):
+            Projectile::setAttributes(ProjAttr::Maiming, ProjAttr::Piercing, ProjAttr::Poison);
+            return;
+    }
+}
+
+void ArrowProjectile::setImage()
 {
     switch(tier)
     {
@@ -28,7 +44,7 @@ void ArrowProjectile::setImage(int tier)
     }
 }
 
-void ArrowProjectile::setProperties(int tier)
+void ArrowProjectile::setProperties()
 {
     switch(tier)
     {
@@ -36,18 +52,21 @@ void ArrowProjectile::setProperties(int tier)
             damage = 5;
             distancePerInterval = 15;
             maxDistance = 800;
+            maimChance = 10;
             break;
 
         case 2:
             damage = 30;
             distancePerInterval = 15;
             maxDistance = 1200;
+            maimChance = 20;
             break;
 
         case 3:
             damage = 300;
             distancePerInterval = 15;
             maxDistance = 3000;
+            maimChance = 30;
             break;
     }
 }

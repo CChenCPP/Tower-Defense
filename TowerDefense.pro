@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     ArcherTower.cpp \
     ArrowProjectile.cpp \
+    BallistaTower.cpp \
     BeaconTower.cpp \
     BuildTowerIcon.cpp \
     CannonTower.cpp \
@@ -20,19 +21,28 @@ SOURCES += \
     Enemy.cpp \
     Explosion.cpp \
     Game.cpp \
+    IceProjectile.cpp \
+    IceShard.cpp \
+    IceTower.cpp \
+    JavelinProjectile.cpp \
     MainWindow.cpp \
     Map.cpp \
+    NovaProjectile.cpp \
     Projectile.cpp \
     StoneFragment.cpp \
     StoneProjectile.cpp \
     StoneTower.cpp \
+    TeleportProjectile.cpp \
+    TeleportTower.cpp \
     Tower.cpp \
     Utility.cpp \
+    WizardTower.cpp \
     main.cpp
 
 HEADERS += \
    ArcherTower.h \
    ArrowProjectile.h \
+   BallistaTower.h \
    BeaconTower.h \
    BuildTowerIcon.h \
    CannonTower.h \
@@ -42,14 +52,22 @@ HEADERS += \
    Enemy.h \
    Explosion.h \
    Game.h \
+   IceProjectile.h \
+   IceShard.h \
+   IceTower.h \
+   JavelinProjectile.h \
    MainWindow.h \
    Map.h \
+   NovaProjectile.h \
    Projectile.h \
    StoneFragment.h \
    StoneProjectile.h \
    StoneTower.h \
+   TeleportProjectile.h \
+   TeleportTower.h \
    Tower.h \
-   Utility.h
+   Utility.h \
+   WizardTower.h
 
 FORMS += \
    MainWindow.ui

@@ -1,5 +1,5 @@
 #include "BeaconTower.h"
-#include "ArrowProjectile.h"
+#include "WizardTower.h"
 #include "Game.h"
 #include <iostream>
 
@@ -53,7 +53,7 @@ int BeaconTower::getUpgradeCost(Tower* tower)
     }
 }
 
-void BeaconTower::attackTarget(Enemy* enemy)
+void BeaconTower::attackTarget()
 {
     switch(tier){
         case(1):
@@ -84,7 +84,7 @@ void BeaconTower::tier1Attack()
     QList<QGraphicsItem*> collisions = attackArea->collidingItems();
 
     for (auto& item : collisions){
-        if (dynamic_cast<BeaconTower*>(item)) { continue; };
+        if (dynamic_cast<BeaconTower*>(item) || dynamic_cast<WizardTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
         if (tower && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing);

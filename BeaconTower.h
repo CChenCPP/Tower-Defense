@@ -27,7 +27,7 @@ private:
     std::unordered_set<Tower*> buffedDamageNeighbors;
     QTimer checkNeighborsTimer;
 
-    void attackTarget(Enemy* enemy = nullptr);
+    void attackTarget();
     void setupTimers();
     void tier1Attack();
     void tier2Attack();

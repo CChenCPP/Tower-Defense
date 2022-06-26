@@ -10,7 +10,7 @@ class Enemy : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    Enemy(QList<QPointF>* path, int hp = 100, int armor = 1, double distPerInt = Enemy::defaultDistPerInt, QGraphicsItem* parent = nullptr);
+    explicit Enemy(QList<QPointF>* path, int hp = 100, int armor = 1, double distPerInt = Enemy::defaultDistPerInt, QGraphicsItem* parent = nullptr);
     ~Enemy();
 
     static constexpr int defaultHp = 100;
@@ -19,9 +19,10 @@ public:
     int getCurrentHp() const;
     double getDistanceTravelled() const;
     int getValue() const;
+    bool isHitByNova() const;
 
 private:
-    static constexpr double defaultDistPerInt = 0.5;
+    static constexpr double defaultDistPerInt = 2;
 
     QList<QPointF>* path;
     int hp;
@@ -33,17 +34,24 @@ private:
     double distancePerInterval;
     double distanceTravelled;
     Projectile* lastProjectile;
-    bool poisoned;
-    QTimer poisonTimer;
+    bool hitByNova;
+    bool hypothermia;
+    QTimer hypothermiaTimer;
     bool maimed;
     QTimer maimTimer;
+    bool poisoned;
+    QTimer poisonTimer;
 
     void checkDeath();
+    void ethereal(Projectile* projectile);
+    bool headshot(Projectile* projectile);
+    void hypothermic(Projectile* projectile);
     void maim(Projectile* projectile);
     void poison(Projectile* projectile);
     void rotateToPoint(QPointF point);
     void setMoveInterval();
     void startPath();
+    void warp(Projectile* projectile);
 
 private slots:
     void moveForward();

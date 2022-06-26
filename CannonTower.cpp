@@ -39,62 +39,34 @@ int CannonTower::getUpgradeCost(Tower* tower)
 }
 
 // private methods
-void CannonTower::attackTarget(Enemy* target)
+void CannonTower::attackTarget()
 {
     switch(tier){
         case(1):
-            tier1Attack(target); return;
+            tier1Attack(); return;
         case(2):
-            tier2Attack(target); return;
+            tier2Attack(); return;
         case(3):
-            tier3Attack(target); return;
+            tier3Attack(); return;
     }
 }
 
-void CannonTower::setProjectileAttributes(Projectile* projectile)
-{
-    switch(tier){
-        case(1):
-            projectile->setAttribute(ProjAttr::Explosive);
-            return;
-        case(2):
-            projectile->setAttribute(ProjAttr::Explosive).setAttribute(ProjAttr::Piercing);
-            return;
-        case(3):
-            projectile->setAttribute(ProjAttr::Explosive).setAttribute(ProjAttr::Piercing);
-            return;
-    }
-}
-
-void CannonTower::tier1Attack(Enemy* target)
+void CannonTower::tier1Attack()
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
-    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
-    setProjectileAttributes(cannonball);
-    initProjectile(this, cannonball, target);
+    linkToTarget(cannonball, target);
 }
 
-void CannonTower::tier2Attack(Enemy* target)
+void CannonTower::tier2Attack()
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
-    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
-    setProjectileAttributes(cannonball);
-    initProjectile(this, cannonball, target);
+    linkToTarget(cannonball, target);
 }
 
-void CannonTower::tier3Attack(Enemy* target)
+void CannonTower::tier3Attack()
 {
     CannonballProjectile* cannonball = new CannonballProjectile(tier, this);
-    connect(cannonball,&Projectile::explode,this,&CannonTower::explode);
-    setProjectileAttributes(cannonball);
-    initProjectile(this, cannonball, target);
+    linkToTarget(cannonball, target);
 }
 
 // private slots
-void CannonTower::explode(Projectile* projectile)
-{
-    Explosion* explosion = new Explosion(projectile);
-
-    delete projectile;
-    projectile = nullptr;
-}

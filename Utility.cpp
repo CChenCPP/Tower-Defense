@@ -1,4 +1,5 @@
 #include "Utility.h"
+#include <QVector>
 #include <sstream>
 
 int Parse::ctoi(char c)
@@ -50,4 +51,24 @@ std::vector<int> Parse::stringToInt(const std::vector<std::string>& v)
 QString Parse::toQString(int num)
 {
     return QString::number(num);
+}
+
+qreal Geometry::distance2D(QPointF src, QPointF dst)
+{
+    int dx = src.x() - dst.x();
+    int dy = src.y() - dst.y();
+    return sqrt(pow(dx,2) + pow(dy,2));
+}
+
+QVector<QPointF> Geometry::generateCircle(int edges, int radius)
+{
+    QVector<QPointF> points;
+    int radians = 0;
+    for (int i = 0; i < edges; ++i, radians = i * (360 / edges)){
+        points << QPointF(cos(radians * Geometry::radToDegRatio), sin(radians * Geometry::radToDegRatio));
+    }
+    for (size_t i = 0; i < points.size(); ++i){
+        points[i] *= radius;
+    }
+    return points;
 }

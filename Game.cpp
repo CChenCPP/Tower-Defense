@@ -20,6 +20,8 @@ Game::Game() :
     money(1000)
 {
     loadMap(":/Maps/Maps/Square spiral.txt");
+
+    money = 10000000;
 }
 
 void Game::buyTower(int cost)
@@ -65,8 +67,8 @@ void Game::enemyKilled(Enemy* enemy)
 
 void Game::run()
 {
-    startSpawnTimer();
     startNextLevelTimer();
+    startSpawnTimer();
 }
 
 void Game::sellTower(Tower* tower)
@@ -98,7 +100,7 @@ void Game::loadMap(QString filePath)
 void Game::startSpawnTimer()
 {
     QObject::connect(enemySpawnTimer,&QTimer::timeout,this,&Game::spawnEnemy);
-    enemySpawnTimer->start(500);
+    enemySpawnTimer->start(800);
 }
 
 void Game::startNextLevelTimer()

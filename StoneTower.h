@@ -16,13 +16,10 @@ public:
     static int getUpgradeCost(Tower* tower);
 
 private:
-    void attackTarget(Enemy* target);
-    void setProjectileAttributes(Projectile* projectile);
-    void tier1Attack(Enemy* target);
-    void tier2Attack(Enemy* target);
-    void tier3Attack(Enemy* target);
+    void attackTarget();
+    void tier1Attack();
+    void tier2Attack();
+    void tier3Attack();
 
-private slots:
-    void fragment(Projectile* projectile);
 };
 

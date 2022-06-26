@@ -3,15 +3,31 @@
 #include <iostream>
 
 StoneProjectile::StoneProjectile(int tier, Tower* source) :
-    Projectile(),
-    tier(tier)
+    Projectile()
 {
+    this->tier = tier;
     this->source = source;
-    setImage(tier);
-    setProperties(tier);
+    setAttributes();
+    setImage();
+    setProperties();
 }
 
-void StoneProjectile::setImage(int tier)
+void StoneProjectile::setAttributes()
+{
+    switch(tier){
+        case(1):
+            Projectile::setAttributes(ProjAttr::Fragmenting);
+            return;
+        case(2):
+            Projectile::setAttributes(ProjAttr::Fragmenting);
+            return;
+        case(3):
+            Projectile::setAttributes(ProjAttr::Fragmenting);
+            return;
+    }
+}
+
+void StoneProjectile::setImage()
 {
     switch(tier)
     {
@@ -29,7 +45,7 @@ void StoneProjectile::setImage(int tier)
     }
 }
 
-void StoneProjectile::setProperties(int tier)
+void StoneProjectile::setProperties()
 {
     switch(tier)
     {

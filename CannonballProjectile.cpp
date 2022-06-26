@@ -9,12 +9,28 @@ CannonballProjectile::CannonballProjectile(int tier, Tower* source) :
     tier(tier)
 {
     this->source = source;
-    setImage(tier);
-    setProperties(tier);
+    setAttributes();
+    setImage();
+    setProperties();
+}
+
+void CannonballProjectile::setAttributes()
+{
+    switch(tier){
+        case(1):
+            Projectile::setAttributes(ProjAttr::Explosive);
+            return;
+        case(2):
+            Projectile::setAttributes(ProjAttr::Explosive, ProjAttr::Piercing);
+            return;
+        case(3):
+            Projectile::setAttributes(ProjAttr::Explosive, ProjAttr::Piercing);
+            return;
+    }
 }
 
 // private methods
-void CannonballProjectile::setImage(int tier)
+void CannonballProjectile::setImage()
 {
     switch(tier)
     {
@@ -32,7 +48,7 @@ void CannonballProjectile::setImage(int tier)
     }
 }
 
-void CannonballProjectile::setProperties(int tier)
+void CannonballProjectile::setProperties()
 {
     switch(tier)
     {

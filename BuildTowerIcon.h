@@ -3,9 +3,13 @@
 
 enum class TowerType{
     Archer,
+    Ballista,
     Beacon,
     Cannon,
-    Stone
+    Ice,
+    Stone,
+    Teleport,
+    Wizard
 };
 
 class BuildTowerIcon : public QGraphicsPixmapItem

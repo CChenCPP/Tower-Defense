@@ -3,9 +3,13 @@
 #include "Game.h"
 #include "BuildTowerIcon.h"
 #include "ArcherTower.h"
+#include "BallistaTower.h"
 #include "BeaconTower.h"
 #include "CannonTower.h"
+#include "IceTower.h"
 #include "StoneTower.h"
+#include "TeleportTower.h"
+#include "WizardTower.h"
 #include "Utility.h"
 #include <QGraphicsEllipseItem>
 #include <iostream>
@@ -37,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(moneyUpdater,&QTimer::timeout,[&](){ UI->moneyLineEdit->setText(Parse::toQString(game->getMoney()));}); moneyUpdater->start(500);
     connect(game->gameView(),&CustomGraphicsView::towerSelected,this,&MainWindow::onTowerSelected);
     selectedTowerView->setParent(UI->towerSelectionView);
+
 }
 
 MainWindow::~MainWindow()
@@ -183,20 +188,40 @@ void MainWindow::setupBuildTowerIcons() const
     archerTowerButton->setIcon(archerTowerIcon);
     archerTowerButton->setIconSize(QSize(200,200));
 
+    QIcon beaconTowerIcon(QPixmap(":/Towers/Images/BeaconTower1.png"));
+    auto beaconTowerButton = UI->buildBeaconTowerButton;
+    beaconTowerButton->setIcon(beaconTowerIcon);
+    beaconTowerButton->setIconSize(QSize(200,200));
+
+    QIcon ballistaTowerIcon(QPixmap(":/Towers/Images/BallistaTower1.png"));
+    auto ballistaTowerButton = UI->buildBallistaTowerButton;
+    ballistaTowerButton->setIcon(ballistaTowerIcon);
+    ballistaTowerButton->setIconSize(QSize(200,200));
+
     QIcon cannonTowerIcon(QPixmap(":/Towers/Images/CannonTower1.png"));
     auto cannonTowerButton = UI->buildCannonTowerButton;
     cannonTowerButton->setIcon(cannonTowerIcon);
     cannonTowerButton->setIconSize(QSize(200,200));
+
+    QIcon iceTowerIcon(QPixmap(":/Towers/Images/IceTower1.png"));
+    auto iceTowerButton = UI->buildIceTowerButton;
+    iceTowerButton->setIcon(iceTowerIcon);
+    iceTowerButton->setIconSize(QSize(200,200));
 
     QIcon stoneTowerIcon(QPixmap(":/Towers/Images/StoneTower1.png"));
     auto stoneTowerButton = UI->buildStoneTowerButton;
     stoneTowerButton->setIcon(stoneTowerIcon);
     stoneTowerButton->setIconSize(QSize(200,200));
 
-    QIcon beaconTowerIcon(QPixmap(":/Towers/Images/BeaconTower1.png"));
-    auto beaconTowerButton = UI->buildBeaconTowerButton;
-    beaconTowerButton->setIcon(beaconTowerIcon);
-    beaconTowerButton->setIconSize(QSize(200,200));
+    QIcon teleportTowerIcon(QPixmap(":/Towers/Images/TeleportTower1.png"));
+    auto teleportTowerButton = UI->buildTeleportTowerButton;
+    teleportTowerButton->setIcon(teleportTowerIcon);
+    teleportTowerButton->setIconSize(QSize(200,200));
+
+    QIcon wizardTowerIcon(QPixmap(":/Towers/Images/WizardTower1.png"));
+    auto wizardTowerButton = UI->buildWizardTowerButton;
+    wizardTowerButton->setIcon(wizardTowerIcon);
+    wizardTowerButton->setIconSize(QSize(200,200));
 }
 
 // slots
@@ -213,7 +238,7 @@ void MainWindow::onTowerSelected(Tower* tower)
     UI->attackRateLineEdit->setText(Parse::toQString(tower->getAttackInterval()));
     UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
     UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
-    UI->upgradeTierButton->setEnabled((tower->getTier() >= Tower::maxTier) ? false : true);
+    UI->upgradeTierButton->setEnabled((tower->isUpgradable()) ? true : false);
     UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
     UI->sellTowerButton->setEnabled(true);
     enablePriorityButtons();
@@ -227,7 +252,7 @@ void MainWindow::onTowerSelected(Tower* tower)
     connect(sellValueUpdater,QTimer::timeout,[&](){
         UI->sellTowerButton->setText("Sell tower $" + Parse::toQString(selectedTower->getSellValue()));
     });
-    sellValueUpdater->start(250);
+    sellValueUpdater->start(100);
 
     connect(killCountUpdater,QTimer::timeout,[&](){
         UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
@@ -247,6 +272,16 @@ void MainWindow::on_buildArcherTowerButton_released()
     }
 }
 
+void MainWindow::on_buildBallistaTowerButton_released()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() > BallistaTower::defaultCost){
+        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Ballista));
+        game->gameView()->building = new BallistaTower();
+    }
+}
+
+
 void MainWindow::on_buildBeaconTowerButton_clicked()
 {
     resetSelection();
@@ -265,12 +300,40 @@ void MainWindow::on_buildCannonTowerButton_released()
     }
 }
 
+void MainWindow::on_buildIceTowerButton_released()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() > IceTower::defaultCost){
+        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Ice));
+        game->gameView()->building = new IceTower();
+    }
+}
+
+
 void MainWindow::on_buildStoneTowerButton_released()
 {
     resetSelection();
     if (!game->gameView()->building && game->getMoney() > StoneTower::defaultCost){
         game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Stone));
         game->gameView()->building = new StoneTower();
+    }
+}
+
+void MainWindow::on_buildTeleportTowerButton_clicked()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() > TeleportTower::defaultCost){
+        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Teleport));
+        game->gameView()->building = new TeleportTower();
+    }
+}
+
+void MainWindow::on_buildWizardTowerButton_clicked()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() > WizardTower::defaultCost){
+        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Wizard));
+        game->gameView()->building = new WizardTower();
     }
 }
 
@@ -295,7 +358,7 @@ void MainWindow::on_upgradeTierButton_clicked()
     drawSelectedTowerToScene();
     upgradeCost = Tower::getUpgradeCost(selectedTower);
     UI->tierLineEdit->setText(Parse::toQString(selectedTower->getTier()));
-    UI->upgradeTierButton->setEnabled((selectedTower->getTier() >= Tower::maxTier) ? false : true);
+    UI->upgradeTierButton->setEnabled((selectedTower->isUpgradable() ? true : false));
     UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
 }
 

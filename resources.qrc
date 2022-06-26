@@ -24,6 +24,26 @@
         <file>Images/BeaconTower2HD.png</file>
         <file>Images/BeaconTower3.png</file>
         <file>Images/BeaconTower3HD.png</file>
+        <file>Images/BallistaTower1.png</file>
+        <file>Images/BallistaTower1HD.png</file>
+        <file>Images/BallistaTower2.png</file>
+        <file>Images/BallistaTower2HD.png</file>
+        <file>Images/BallistaTower3.png</file>
+        <file>Images/BallistaTower3HD.png</file>
+        <file>Images/TeleportTower1.png</file>
+        <file>Images/TeleportTower1HD.png</file>
+        <file>Images/IceTower1.png</file>
+        <file>Images/IceTower1HD.png</file>
+        <file>Images/IceTower2.png</file>
+        <file>Images/IceTower2HD.png</file>
+        <file>Images/IceTower3.png</file>
+        <file>Images/IceTower3HD.png</file>
+        <file>Images/WizardTower1.png</file>
+        <file>Images/WizardTower1HD.png</file>
+        <file>Images/WizardTower2.png</file>
+        <file>Images/WizardTower2HD.png</file>
+        <file>Images/WizardTower3.png</file>
+        <file>Images/WizardTower3HD.png</file>
     </qresource>
     <qresource prefix="/Projectiles">
         <file>Images/Arrow1.png</file>
@@ -35,6 +55,13 @@
         <file>Images/Stone3.png</file>
         <file>Images/Arrow2.png</file>
         <file>Images/Arrow3.png</file>
+        <file>Images/Javelin1.png</file>
+        <file>Images/Javelin2.png</file>
+        <file>Images/Javelin3.png</file>
+        <file>Images/IceNova1.png</file>
+        <file>Images/Nova2.png</file>
+        <file>Images/Nova3.png</file>
+        <file>Images/Nova1.png</file>
     </qresource>
     <qresource prefix="/Enemies">
         <file>Images/EnemyBlackCircle.png</file>
@@ -59,5 +86,28 @@
         <file>Images/StoneFragment6.png</file>
         <file>Images/StoneFragment7.png</file>
         <file>Images/StoneFragment8.png</file>
+        <file>Images/Null1.png</file>
+        <file>Images/Null2.png</file>
+        <file>Images/Null3.png</file>
+        <file>Images/Null4.png</file>
+        <file>Images/Null5.png</file>
+        <file>Images/Null6.png</file>
+        <file>Images/Null7.png</file>
+        <file>Images/Null8.png</file>
+        <file>Images/IceShard1.png</file>
+        <file>Images/IceShard2.png</file>
+        <file>Images/IceShard3.png</file>
+        <file>Images/IceShard4.png</file>
+        <file>Images/IceShard5.png</file>
+        <file>Images/IceShard6.png</file>
+        <file>Images/IceShard7.png</file>
+        <file>Images/IceShard8.png</file>
+        <file>Images/IceShard9.png</file>
+        <file>Images/IceShard10.png</file>
+        <file>Images/IceShard11.png</file>
+        <file>Images/IceShard12.png</file>
+        <file>Images/IceShard13.png</file>
+        <file>Images/IceShard14.png</file>
+        <file>Images/IceShard15.png</file>
     </qresource>
 </RCC>

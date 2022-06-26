@@ -3,9 +3,14 @@
 #include <QPointF>
 #include "Game.h"
 #include "ArcherTower.h"
+#include "BallistaTower.h"
 #include "BeaconTower.h"
 #include "CannonTower.h"
+#include "IceTower.h"
 #include "StoneTower.h"
+#include "TeleportTower.h"
+#include "WizardTower.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -13,6 +18,7 @@ extern Game* game;
 Tower::Tower(int attackRange, int attackInterval, QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent),
     tier(1),
+    maxTier(Tower::defaultMaxTier),
     dmgMultiplier(1),
     totalDamageDone(0),
     priority(TargetPriority::Nearest),
@@ -34,7 +40,11 @@ Tower::~Tower()
 void Tower::consecutiveAttack()
 {
     determineTarget();
-    attackTarget(target);
+}
+
+bool Tower::isUpgradable() const
+{
+    return !(tier == maxTier);
 }
 
 int Tower::getAttackInterval() const
@@ -52,11 +62,26 @@ int Tower::getDefaultCost(Tower* tower)
     if (dynamic_cast<ArcherTower*>(tower)){
         return ArcherTower::defaultCost;
     }
+    if (dynamic_cast<BallistaTower*>(tower)){
+        return BallistaTower::defaultCost;
+    }
+    if (dynamic_cast<BeaconTower*>(tower)){
+        return BeaconTower::defaultCost;
+    }
     if (dynamic_cast<CannonTower*>(tower)){
         return CannonTower::defaultCost;
     }
+    if (dynamic_cast<IceTower*>(tower)){
+        return IceTower::defaultCost;
+    }
     if (dynamic_cast<StoneTower*>(tower)){
         return StoneTower::defaultCost;
+    }
+    if (dynamic_cast<TeleportTower*>(tower)){
+        return TeleportTower::defaultCost;
+    }
+    if (dynamic_cast<WizardTower*>(tower)){
+        return WizardTower::defaultCost;
     }
 }
 
@@ -70,14 +95,26 @@ QString Tower::getImageUrl(Tower *tower, bool HD)
     if (dynamic_cast<ArcherTower*>(tower)){
         return ArcherTower::getImageUrl(tower, HD);
     }
+    if (dynamic_cast<BallistaTower*>(tower)){
+        return BallistaTower::getImageUrl(tower, HD);
+    }
     if (dynamic_cast<BeaconTower*>(tower)){
         return BeaconTower::getImageUrl(tower, HD);
     }
     if (dynamic_cast<CannonTower*>(tower)){
         return CannonTower::getImageUrl(tower, HD);
     }
+    if (dynamic_cast<IceTower*>(tower)){
+        return IceTower::getImageUrl(tower, HD);
+    }
     if (dynamic_cast<StoneTower*>(tower)){
         return StoneTower::getImageUrl(tower, HD);
+    }
+    if (dynamic_cast<TeleportTower*>(tower)){
+        return TeleportTower::getImageUrl(tower, HD);
+    }
+    if (dynamic_cast<WizardTower*>(tower)){
+        return WizardTower::getImageUrl(tower, HD);
     }
 }
 
@@ -106,14 +143,26 @@ QString Tower::getType(Tower* tower)
     if (dynamic_cast<ArcherTower*>(tower)){
         return "Archer";
     }
+    if (dynamic_cast<BallistaTower*>(tower)){
+        return "Ballista";
+    }
     if (dynamic_cast<BeaconTower*>(tower)){
         return "Beacon";
     }
     if (dynamic_cast<CannonTower*>(tower)){
         return "Cannon";
     }
+    if (dynamic_cast<IceTower*>(tower)){
+        return "Ice";
+    }
     if (dynamic_cast<StoneTower*>(tower)){
         return "Stone";
+    }
+    if (dynamic_cast<TeleportTower*>(tower)){
+        return "Teleport";
+    }
+    if (dynamic_cast<WizardTower*>(tower)){
+        return "Wizard";
     }
 }
 
@@ -122,14 +171,26 @@ int Tower::getUpgradeCost(Tower* tower)
     if (dynamic_cast<ArcherTower*>(tower)){
         return ArcherTower::getUpgradeCost(tower);
     }
+    if (dynamic_cast<BallistaTower*>(tower)){
+        return BallistaTower::getUpgradeCost(tower);
+    }
     if (dynamic_cast<BeaconTower*>(tower)){
         return BeaconTower::getUpgradeCost(tower);
     }
     if (dynamic_cast<CannonTower*>(tower)){
         return CannonTower::getUpgradeCost(tower);
     }
+    if (dynamic_cast<IceTower*>(tower)){
+        return IceTower::getUpgradeCost(tower);
+    }
     if (dynamic_cast<StoneTower*>(tower)){
         return StoneTower::getUpgradeCost(tower);
+    }
+    if (dynamic_cast<TeleportTower*>(tower)){
+        return TeleportTower::getUpgradeCost(tower);
+    }
+    if (dynamic_cast<WizardTower*>(tower)){
+        return WizardTower::getUpgradeCost(tower);
     }
 }
 
@@ -181,17 +242,8 @@ void Tower::upgradeTier()
 
 void Tower::defineAttackArea()
 {
-    // generate coordinates of circle of radius 1
-    QVector<QPointF> points;
-    int edges = 45; // a higher edge value leads to a more defined circle at the cost of performance during object collision checks
-    int radians = 0;
-    for (int i = 0; i < edges; ++i, radians = i * (360 / edges)){
-        points << QPointF(cos(radians * radToDegRatio), sin(radians * radToDegRatio));
-    }
-    for (size_t i = 0; i < points.size(); ++i){
-        points[i] *= attackRange;
-    }
-    QPolygonF polygon(points);
+    QVector<QPointF> circle = Geometry::generateCircle(45, attackRange);
+    QPolygonF polygon(circle);
     QPointF polygonCenter(0,0);
 
     // scale to tower range
@@ -213,22 +265,19 @@ void Tower::defineAttackArea()
     QLineF line(polygonCenter,towerCenter);
     attackArea = new QGraphicsPolygonItem(polygon, this);
     attackArea->setPos(x() + line.dx(), y() + line.dy());
-    attackArea->setPen(Qt::DotLine);
+    attackArea->setPen(Qt::NoPen);
     QColor transparentRed = Qt::red;
-    transparentRed.setAlphaF(0.15);
+    transparentRed.setAlphaF(0.05);
     attackArea->setBrush(transparentRed);
+
 }
 
-double Tower::distanceTo(QPointF point)
-{
-    return QLineF(pos(), point).length();
-}
-
-void Tower::initProjectile(Tower* tower, Projectile* projectile, Enemy* enemy)
+void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 {
     connect(this,&Tower::destructing,projectile,&Projectile::onTowerDestructing);
     connect(target,&Enemy::destructing,projectile,&Projectile::targetIsDead);
-    connect(projectile,&Projectile::killedTarget,tower,&Tower::onTargetKilled);
+    connect(projectile,&Projectile::killedTarget,this,&Tower::onTargetKilled);
+
     projectile->setPos(x() + centerX, y() + centerY);
     projectile->setTarget(enemy);
 
@@ -252,94 +301,85 @@ void Tower::setCenterOffset()
     centerY = pixmap().height() - pixmap().width() / 2;
 }
 
-void Tower::targetNearest(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetNearest(QList<QGraphicsItem*> collisions)
 {
+    Enemy* target = nullptr;
     double closestDist = std::numeric_limits<double>::max();
     for (auto& item : collisions){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
-            int distToTarget = distanceTo(enemy->pos());
+            int distToTarget = Geometry::distance2D(pos(), enemy->pos());
             if (distToTarget < closestDist){
-//                double theta = enemy->rotation();
-//                double dx = qCos(qDegreesToRadians(theta));
-//                double dy = qSin(qDegreesToRadians(theta));
                 closestDist = distToTarget;
-//                attackDestination = QPointF(enemy->pos().x() + dx*enemy->pixmap().width()/2, enemy->pos().y() + dy*enemy->pixmap().height()/2);
-                auto originPoint = enemy->transformOriginPoint();
-                attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
                 target = enemy;
-                hasTarget = true;
             }
         }
     }
+    return target;
 }
 
-void Tower::targetHighestHp(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetHighestHp(QList<QGraphicsItem*> collisions)
 {
+    Enemy* target = nullptr;
     double highestHp = std::numeric_limits<double>::min();
     for (auto& item : collisions){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
             if (highestHp <= enemy->getCurrentHp()){
                 highestHp = enemy->getCurrentHp();
-                auto originPoint = enemy->transformOriginPoint();
-                attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
                 target = enemy;
-                hasTarget = true;
             }
         }
     }
+    return target;
 }
 
-void Tower::targetLowestHp(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetLowestHp(QList<QGraphicsItem*> collisions)
 {
+    Enemy* target = nullptr;
     double lowestHp = std::numeric_limits<double>::max();
     for (auto& item : collisions){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
             if (lowestHp >= enemy->getCurrentHp()){
                 lowestHp = enemy->getCurrentHp();
-                auto originPoint = enemy->transformOriginPoint();
-                attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
                 target = enemy;
-                hasTarget = true;
             }
         }
     }
+    return target;
 }
 
-void Tower::targetEntrance(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetEntrance(QList<QGraphicsItem*> collisions)
 {
+    Enemy* target = nullptr;
     double distanceTravelled = std::numeric_limits<int>::max();
     for (auto& item : collisions){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
             if (distanceTravelled >= enemy->getDistanceTravelled()){
                 distanceTravelled = enemy->getDistanceTravelled();
-                auto originPoint = enemy->transformOriginPoint();
-                attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
                 target = enemy;
-                hasTarget = true;
             }
         }
     }
+    return target;
 }
 
-void Tower::targetExit(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetExit(QList<QGraphicsItem*> collisions)
 {
+    Enemy* target = nullptr;
     double distanceTravelled = std::numeric_limits<double>::min();
     for (auto& item : collisions){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
             if (distanceTravelled <= enemy->getDistanceTravelled()){
                 distanceTravelled = enemy->getDistanceTravelled();
-                auto originPoint = enemy->transformOriginPoint();
-                attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
                 target = enemy;
-                hasTarget = true;
             }
         }
     }
+    return target;
 }
 
 // public slots
@@ -355,25 +395,33 @@ void Tower::determineTarget()
     hasTarget = false;
     QList<QGraphicsItem*> collisions = attackArea->collidingItems();
 
+    Enemy* enemy = nullptr;
     switch(priority){
         case TargetPriority::Nearest:
-            targetNearest(collisions);
+            enemy = targetNearest(collisions);
             break;
         case TargetPriority::HighestHp:
-           targetHighestHp(collisions);
-           break;
+            enemy = targetHighestHp(collisions);
+            break;
         case TargetPriority::LowestHp:
-           targetLowestHp(collisions);
+            enemy = targetLowestHp(collisions);
             break;
         case TargetPriority::Entrance:
-            targetEntrance(collisions);
+            enemy = targetEntrance(collisions);
            break;
         case TargetPriority::Exit:
-            targetExit(collisions);
+            enemy = targetExit(collisions);
             break;
     }
 
+    if (enemy){
+        auto originPoint = enemy->transformOriginPoint();
+        attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
+        target = enemy;
+        hasTarget = true;
+    }
+
     if (hasTarget) {
-        attackTarget(target);
+        attackTarget();
         target = nullptr; };
 }

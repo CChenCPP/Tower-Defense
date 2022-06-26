@@ -10,19 +10,17 @@ public:
     static constexpr int defaultAttackInterval = 1000;
     static constexpr int defaultCost = 50;
     static constexpr int tier2Cost = 500;
-    static constexpr int tier3Cost = 15000;
+    static constexpr int tier3Cost = 7500;
 
     static QString getImageUrl(Tower* tower, bool HD = false);
     static int getUpgradeCost(Tower* tower);
 
 private:
-    void attackTarget(Enemy* target);
-    void setProjectileAttributes(Projectile* projectile);
-    void tier1Attack(Enemy* target);
-    void tier2Attack(Enemy* target);
-    void tier3Attack(Enemy* target);
+    void attackTarget();
+    void tier1Attack();
+    void tier2Attack();
+    void tier3Attack();
 
 private slots:
-    void explode(Projectile* projectile);
 };
 

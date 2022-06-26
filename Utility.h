@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include <QString>
+#include <QPointF>
 
 typedef unsigned char uint8_t;
 typedef long long int64_t;
@@ -52,4 +53,11 @@ namespace Parse
     std::vector<std::string> split(std::string& s, char delim = ' ');
     std::vector<int> stringToInt(const std::vector<std::string>& v);
     QString toQString(int num);
+}
+
+namespace Geometry
+{
+    static constexpr double radToDegRatio = 3.141592653589793238463 / 180.0;
+    qreal distance2D(QPointF src, QPointF dst);
+    QVector<QPointF> generateCircle(int edges, int radius);
 }

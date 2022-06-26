@@ -8,17 +8,21 @@ extern Game* game;
 StoneFragment::StoneFragment(Projectile* parent) :
     Projectile()
 {
-    distancePerInterval = StoneFragment::defaultDistPerInt;
+    distancePerInterval = RNG::randomNum(1,StoneFragment::defaultDistPerInt);
     maxDistance = StoneFragment::defaultMaxDistance;
+
     source = parent->getSource();
     damage = parent->getDamage() / (parent->getSource()->getTier() * 3);
-    connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
-    connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
+
     setPixmap(StoneFragment::getFragmentPixmap());
     setPos(parent->pos());
     setRotation(RNG::randomNum(0,360));
-    updateInterval.start(10);
+
+    connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
+    connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
+
     game->mainScene->addItem(this);
+    updateInterval.start(10);
 }
 
 StoneFragment::~StoneFragment()

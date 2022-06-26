@@ -19,6 +19,7 @@ CustomGraphicsView::CustomGraphicsView(CustomGraphicsScene* scene, QWidget* pare
     setFixedSize(scene->defaultWidth,scene->defaultHeight);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
 }
 
 void CustomGraphicsView::setCursor(QString filename)

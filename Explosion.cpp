@@ -10,31 +10,33 @@ Explosion::Explosion(Projectile* parent) :
 {
     distancePerInterval = 0;
     maxDistance = 0;
+
     source = parent->getSource();
     target = parent->getTarget();
     damage = parent->getDamage();
-    connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
-    connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
+
     setPixmap(Explosion::getExplosionPixmap(source->getTier()));
     setPos(parent->pos());
     setRotation(parent->rotation());
+
+    connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
+    connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
+
     game->mainScene->addItem(this);
     explode();
 }
 
 Explosion::~Explosion()
 {
-//    std::cout << "Destructing explosion" << std::endl;
 }
 
 void Explosion::explode()
 {
-//    if (target) { this->setPos(target->pos()); };
-
     QList<QGraphicsItem*> collidingItems = this->collidingItems();
     for (auto& item : collidingItems){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
+
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
             enemy->damage(this->damage * source->getDmgMultiplier(), this);

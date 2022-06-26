@@ -1,5 +1,6 @@
 #pragma once
 #include <QGraphicsScene>
+#include "Enemy.h"
 
 class CustomGraphicsScene : public QGraphicsScene
 {
@@ -10,6 +11,7 @@ public:
     static constexpr int defaultWidth = 800;
     static constexpr int defaultHeight = 800;
 
+    QList<Enemy*> enemiesWithinRange(QGraphicsItem* graphicsItem, int radius);
 signals:
 };
 

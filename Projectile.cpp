@@ -1,10 +1,10 @@
 #include "Projectile.h"
-#include <QPixmap>
-#include "Utility.h"
 #include "Game.h"
-#include "Enemy.h"
-#include "CannonballProjectile.h"
-#include "StoneProjectile.h"
+#include "Explosion.h"
+#include "IceShard.h"
+#include "NovaProjectile.h"
+#include "StoneFragment.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -14,7 +14,14 @@ Projectile::Projectile(QGraphicsItem *parent) :
     attributes{},
     source(nullptr),
     target(nullptr),
-    distanceTravelled(0)
+    distanceTravelled(0),
+    headshotChance(Projectile::defaultHeadshotChance),
+    hypothermiaChance(Projectile::defaultHypothermiaChance),
+    hypothermiaDurationMs(Projectile::defaultHypothermiaDurationMs),
+    maimChance(Projectile::defaultMaimChance),
+    maimDurationMs(Projectile::defaultMaimDurationMs),
+    poisonChance(Projectile::defaultPoisonChance),
+    poisonIntervalMs(Projectile::defaultPoisonIntervalMs)
 {
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::move);
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::hitEnemies);
@@ -23,13 +30,53 @@ Projectile::Projectile(QGraphicsItem *parent) :
 
 Projectile::~Projectile()
 {
-
+    game->mainScene->removeItem(this);
 }
 
 // public methods
 int Projectile::getDamage() const
 {
     return damage;
+}
+
+int Projectile::getHeadshotChance() const
+{
+    return headshotChance;
+}
+
+int Projectile::getHypothermiaChance() const
+{
+    return hypothermiaChance;
+}
+
+int Projectile::getHypothermiaDurationMs() const
+{
+    return hypothermiaDurationMs;
+}
+
+int Projectile::getMaimChance() const
+{
+    return maimChance;
+}
+
+int Projectile::getMaimDurationMs() const
+{
+    return maimDurationMs;
+}
+
+int Projectile::getPoisonChance() const
+{
+    return poisonChance;
+}
+
+int Projectile::getPoisonIntervalMs() const
+{
+    return poisonIntervalMs;
+}
+
+int Projectile::getTier() const
+{
+    return tier;
 }
 
 Tower* Projectile::getSource() const
@@ -42,7 +89,7 @@ Enemy* Projectile::getTarget() const
     return target;
 }
 
-bool Projectile::hasAttribute(ProjAttr attr)
+bool Projectile::hasAttribute(ProjAttr attr) const
 {
     return static_cast<bool>(attributes & attr);
 }
@@ -59,7 +106,7 @@ Projectile &Projectile::removeAllAttributes()
     return *this;
 }
 
-Projectile& Projectile::setAttribute(ProjAttr attr)
+Projectile &Projectile::setAttributes(ProjAttr attr)
 {
     attributes = attributes | attr;
     return *this;
@@ -74,12 +121,34 @@ void Projectile::setTarget(Enemy* target)
 void Projectile::rotateToTarget()
 {
     if (target){
-        QLineF line(pos(), target->pos());
+        QLineF line(pos(),
+                    target->pos());
         setRotation(-1 * line.angle());
     }
 }
 
 // private methods
+void Projectile::explode()
+{
+    Explosion* explosion = new Explosion(this);
+    delete this;
+}
+
+void Projectile::fragment()
+{
+    for (int i = 0; i < tier * 3; ++i){
+        StoneFragment* fragment = new StoneFragment(this);
+    }
+    delete this;
+}
+
+void Projectile::shatter()
+{
+    for (int i = 0; i < tier * 7; ++i){
+        IceShard* shard = new IceShard(this);
+    }
+    delete this;
+}
 
 // public slots
 void Projectile::hitEnemies(){
@@ -87,11 +156,16 @@ void Projectile::hitEnemies(){
     for (auto& item : collidingItems){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
-            if (this->hasAttribute(ProjAttr::Explosive)) { emit explode(this); return; };
-            if (this->hasAttribute(ProjAttr::Fragmenting)) { emit fragment(this);return; };
-            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
-            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
+            if (this->hasAttribute(ProjAttr::Ethereal) && enemy != this->target) { continue; };
+            if (this->hasAttribute(ProjAttr::Explosive)) { explode(); return; };
+            if (this->hasAttribute(ProjAttr::Fragmenting)) { fragment();return; };
+            if (this->hasAttribute(ProjAttr::Shattering)) { shatter();return; };
+
+            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled,Qt::UniqueConnection);
+            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged,Qt::UniqueConnection);
+
             enemy->damage(this->damage * source->getDmgMultiplier(), this);
+            if (this->hasAttribute(ProjAttr::Warping) || this->hasAttribute(ProjAttr::Ethereal)) { return; };
             delete this;
             return;
         }
@@ -107,8 +181,9 @@ void Projectile::move()
     setPos(x() + dx, y() + dy);
     distanceTravelled += distancePerInterval;
     if (distanceTravelled >= maxDistance) {
-        if (this->hasAttribute(ProjAttr::Explosive)) { emit explode(this); return; };
-        if (this->hasAttribute(ProjAttr::Fragmenting)) { emit fragment(this);return; };
+        if (this->hasAttribute(ProjAttr::Explosive)) { explode(); return; };
+        if (this->hasAttribute(ProjAttr::Fragmenting)) { fragment();return; };
+        if (this->hasAttribute(ProjAttr::Shattering)) { shatter();return; };
         delete this;
     }
 }
@@ -133,6 +208,9 @@ void Projectile::onTowerDestructing()
 void Projectile::targetIsDead()
 {
     target = nullptr;
+
+    NovaProjectile* nova = dynamic_cast<NovaProjectile*>(this);
+    if (nova) { nova->returnToSource(); };
 }
 
 // private slots

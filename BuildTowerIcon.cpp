@@ -20,11 +20,19 @@ QString BuildTowerIcon::getFilePath(TowerType type)
     {
         case TowerType::Archer:
             return ":/Towers/Images/ArcherTower1HD.png";
+        case TowerType::Ballista:
+            return ":/Towers/Images/BallistaTower1HD.png";
         case TowerType::Beacon:
             return ":/Towers/Images/BeaconTower1HD.png";
         case TowerType::Cannon:
             return ":/Towers/Images/CannonTower1HD.png";
+        case TowerType::Ice:
+            return ":/Towers/Images/IceTower1HD.png";
         case TowerType::Stone:
             return ":/Towers/Images/StoneTower1HD.png";
+        case TowerType::Teleport:
+            return ":/Towers/Images/TeleportTower1HD.png";
+        case TowerType::Wizard:
+            return ":/Towers/Images/WizardTower1HD.png";
     }
 }

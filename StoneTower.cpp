@@ -40,64 +40,32 @@ int StoneTower::getUpgradeCost(Tower* tower)
 
 // private methods
 
-void StoneTower::attackTarget(Enemy* target)
+void StoneTower::attackTarget()
 {
     switch(tier){
         case(1):
-            tier1Attack(target); return;
+            tier1Attack(); return;
         case(2):
-            tier2Attack(target); return;
+            tier2Attack(); return;
         case(3):
-            tier3Attack(target); return;
+            tier3Attack(); return;
     }
 }
 
-void StoneTower::setProjectileAttributes(Projectile* projectile)
-{
-    switch(tier){
-        case(1):
-            projectile->setAttribute(ProjAttr::Fragmenting);
-            return;
-        case(2):
-            projectile->setAttribute(ProjAttr::Fragmenting);
-            return;
-        case(3):
-            projectile->setAttribute(ProjAttr::Fragmenting);
-            return;
-    }
-}
-
-void StoneTower::tier1Attack(Enemy* target)
+void StoneTower::tier1Attack()
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
-    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
-    setProjectileAttributes(stone);
-    initProjectile(this, stone, target);
+    linkToTarget(stone, target);
 }
 
-void StoneTower::tier2Attack(Enemy* target)
+void StoneTower::tier2Attack()
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
-    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
-    setProjectileAttributes(stone);
-    initProjectile(this, stone, target);
+    linkToTarget(stone, target);
 }
 
-void StoneTower::tier3Attack(Enemy* target)
+void StoneTower::tier3Attack()
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
-    connect(stone,&Projectile::fragment,this,&StoneTower::fragment);
-    setProjectileAttributes(stone);
-    initProjectile(this, stone, target);
-}
-
-//private slots
-void StoneTower::fragment(Projectile* projectile)
-{
-    for (int i = 0; i < tier * 3; ++i){
-        StoneFragment* fragment = new StoneFragment(projectile);
-    }
-
-    delete projectile;
-    projectile = nullptr;
+    linkToTarget(stone, target);
 }
