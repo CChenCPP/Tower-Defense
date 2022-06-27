@@ -164,7 +164,7 @@ void Projectile::hitEnemies(){
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled,Qt::UniqueConnection);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged,Qt::UniqueConnection);
 
-            enemy->damage(this->damage * source->getDmgMultiplier(), this);
+            enemy->damage(this->damage * source->getDamageMultiplier(), this);
             if (this->hasAttribute(ProjAttr::Warping) || this->hasAttribute(ProjAttr::Ethereal)) { return; };
             delete this;
             return;

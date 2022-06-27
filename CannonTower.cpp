@@ -9,13 +9,19 @@ extern Game* game;
 
 CannonTower::CannonTower() : Tower()
 {
-    attackRange = CannonTower::defaultAttackRange;
-    attackInterval = CannonTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&CannonTower::upgrade);
+    attackRange = CannonTower::tier1AttackRange;
+    attackInterval = CannonTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/CannonTower1.png"));
-    sellValue = pow(CannonTower::defaultCost, Tower::valueDecay);
+    sellValue = pow(CannonTower::tier1Cost, Tower::valueDecay);
 }
 
 // public methods
+int CannonTower::getDefaultCost()
+{
+    return CannonTower::tier1Cost;
+}
+
 QString CannonTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -70,3 +76,17 @@ void CannonTower::tier3Attack()
 }
 
 // private slots
+void CannonTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(CannonTower::tier2AttackRange);
+            setAttackInterval(CannonTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(CannonTower::tier3AttackRange);
+            setAttackInterval(CannonTower::tier3AttackInterval);
+            return;
+    }
+}
+

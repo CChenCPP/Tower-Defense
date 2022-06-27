@@ -24,10 +24,8 @@ private:
     QGraphicsPixmapItem* selectedTowerImage;
     int upgradeCost;
     QGraphicsEllipseItem* selectedTowerOutline;
+    QTimer* selectedTowerStatsUpdater;
     QTimer* totalKillCountUpdater;
-    QTimer* totalDamageDoneUpdater;
-    QTimer* sellValueUpdater;
-    QTimer* killCountUpdater;
     QTimer* healthUpdater;
     QTimer* moneyUpdater;
     Ui::MainWindow* UI;

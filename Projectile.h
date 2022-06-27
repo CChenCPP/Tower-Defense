@@ -20,7 +20,8 @@ enum class ProjAttr : std::uint64_t {
     Poison = 1 << 8,
     Shattering = 1 << 9,
     Warping = 1 << 10,
-    Ethereal = 1 << 11
+    Ethereal = 1 << 11,
+    Singularity = 1 << 12
 };
 ProjAttr inline operator|(ProjAttr left, ProjAttr right)
 {

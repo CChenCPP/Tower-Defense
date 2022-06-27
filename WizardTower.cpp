@@ -2,6 +2,7 @@
 #include "BeaconTower.h"
 #include "Game.h"
 #include "NovaProjectile.h"
+#include "BlackHole.h"
 #include "Utility.h"
 #include <iostream>
 
@@ -9,19 +10,29 @@ extern Game* game;
 
 WizardTower::WizardTower() :
     Tower(),
-    novaSummoned(false)
+    novaSummoned(false),
+    tether(new QGraphicsPathItem()),
+    tetherTarget(nullptr)
 {
-    attackRange = WizardTower::defaultAttackRange;
-    attackInterval = WizardTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&WizardTower::upgrade);
+    attackRange = WizardTower::tier1AttackRange;
+    attackInterval = WizardTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/WizardTower1.png"));
-    sellValue = std::pow(WizardTower::defaultCost, Tower::valueDecay);
+    sellValue = std::pow(WizardTower::tier1Cost, Tower::valueDecay);
 }
 
 WizardTower::~WizardTower()
 {
+    emit unlinkTether();
+    if (tether) { delete tether; };
 }
 
 // public methods
+int WizardTower::getDefaultCost()
+{
+    return WizardTower::tier1Cost;
+}
+
 QString WizardTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -50,19 +61,80 @@ void WizardTower::attackTarget()
 
     switch(num){
         case(1):
-            tier1Attack();
+            summonNova();
             return;
         case(2):
-            tier2Attack();
+            tetherNeighbor();
             return;
         case(3):
-            tier3Attack();
+            summonBlackHole();
             return;
     }
 }
 
+void WizardTower::linkTower(Tower* tower)
+{
+    connect(this,&WizardTower::unlinkTether,tower,&Tower::tetherPartnerDestructing);
+    connect(tower,&Tower::untether,this,&WizardTower::tetheredTargetDestructing);
+    tetherTarget = tower;
+    tower->setTethered(true);
+}
+
 // private methods
-void WizardTower::tier1Attack()
+void WizardTower::paintTether(Tower* tower)
+{
+    QPainterPath path;
+    path.moveTo(x() + centerX,y() + pixmap().height() / 10);
+    path.quadTo(pos(), QPointF(tower->x() + tower->getCenterXOffset(), tower->y() + tower->getCenterYOffset()));
+    QPainterPathStroker stroke;
+    QPainterPath strokePath = stroke.createStroke(path);
+    tether = new QGraphicsPathItem();
+    tether->setPath(strokePath);
+    tether->setBrush(Qt::darkRed);
+    game->mainScene->addItem(tether);
+    connect(&tetherBlinkInterval,&QTimer::timeout,[&]() { (!tether->isVisible()) ? tether->show() : tether->hide(); });
+    tetherBlinkInterval.start(100);
+}
+
+void WizardTower::tetherNeighbor()
+{
+    if (tetherTarget) {
+        tetherBlinkInterval.disconnect();
+        delete tether;
+        tether = nullptr;
+        tetherTarget->setTethered(false);
+        tetherTarget = nullptr; };
+
+    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
+
+    for (auto& item : collisions){
+        if (dynamic_cast<WizardTower*>(item) || dynamic_cast<BeaconTower*>(item)) { continue; };
+        Tower* tower = dynamic_cast<Tower*>(item);
+        if (tower && RNG::randomNum(1,100) <= WizardTower::tetherChance){
+            if (!tower->isTethered()) {
+                paintTether(tower);
+                linkTower(tower);
+                return;
+            }
+            else {
+                continue;
+            }
+        }
+    }
+
+    summonNova();
+}
+
+void WizardTower::summonBlackHole()
+{
+    if (RNG::randomNum(1,100) <= 90) { tetherNeighbor(); return; };
+    Enemy* randomEnemy = game->randomEnemy();
+    if (randomEnemy){
+        BlackHole* singularity = new BlackHole(randomEnemy->pos());
+    }
+}
+
+void WizardTower::summonNova()
 {
     if (novaSummoned) { return; };
     NovaProjectile* nova = new NovaProjectile(tier, this);
@@ -71,28 +143,32 @@ void WizardTower::tier1Attack()
     connect(nova,&NovaProjectile::returned,this,&WizardTower::novaReturned);
 }
 
-void WizardTower::tier2Attack()
-{
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
-
-    for (auto& item : collisions){
-        if (dynamic_cast<WizardTower*>(item) || dynamic_cast<BeaconTower*>(item)) { continue; };
-        Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && RNG::randomNum(1,100) <= Tower::consecutiveAttackChance){
-            tower->consecutiveAttack();
-        }
-    }
-}
-
-void WizardTower::tier3Attack()
-{
-    if (attackRange == WizardTower::tier3Range) { return; };
-    attackRange = WizardTower::tier3Range;
-    defineAttackArea();
-}
-
 // private slots
 void WizardTower::novaReturned()
 {
     novaSummoned = false;
+}
+
+void WizardTower::tetheredTargetDestructing(Tower* tower)
+{
+    if (tower == tetherTarget) {
+        tetherBlinkInterval.disconnect();
+        delete tether;
+        tether = nullptr;
+        tetherTarget = nullptr;
+    }
+}
+
+void WizardTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(WizardTower::tier2AttackRange);
+            setAttackInterval(WizardTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(WizardTower::tier3AttackRange);
+            setAttackInterval(WizardTower::tier3AttackInterval);
+            return;
+    }
 }

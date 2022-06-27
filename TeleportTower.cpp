@@ -5,11 +5,12 @@
 TeleportTower::TeleportTower() :
     Tower()
 {
+    connect(this,&Tower::upgrade,this,&TeleportTower::upgrade);
     maxTier = 1;
-    attackRange = TeleportTower::defaultAttackRange;
-    attackInterval = TeleportTower::defaultAttackInterval;
+    attackRange = TeleportTower::tier1AttackRange;
+    attackInterval = TeleportTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/TeleportTower1.png"));
-    sellValue = std::pow(TeleportTower::defaultCost, Tower::valueDecay);
+    sellValue = std::pow(TeleportTower::tier1Cost, Tower::valueDecay);
 }
 
 TeleportTower::~TeleportTower()
@@ -20,6 +21,11 @@ TeleportTower::~TeleportTower()
 void TeleportTower::init()
 {
     Tower::init();
+}
+
+int TeleportTower::getDefaultCost()
+{
+    return TeleportTower::tier1Cost;
 }
 
 QString TeleportTower::getImageUrl(Tower* tower, bool HD)
@@ -52,4 +58,10 @@ void TeleportTower::tier1Attack()
 {
     TeleportProjectile* null = new TeleportProjectile(this);
     linkToTarget(null, target);
+}
+
+// private slots
+void TeleportTower::upgrade()
+{
+    return;
 }

@@ -15,6 +15,7 @@ private:
     QGraphicsPixmapItem targetHitAnim;
     QTimer animRotationTimer;
     int tier;
+    int type;
     int searchRadius;
     int maxTargets;
     int targetCount;

@@ -24,10 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
       selectedTower(nullptr),
       selectedTowerImage(nullptr),
       selectedTowerOutline(nullptr),
+      selectedTowerStatsUpdater(new QTimer()),
       totalKillCountUpdater(new QTimer()),
-      totalDamageDoneUpdater(new QTimer()),
-      sellValueUpdater(new QTimer()),
-      killCountUpdater(new QTimer()),
       healthUpdater(new QTimer()),
       moneyUpdater(new QTimer())
 {
@@ -154,12 +152,12 @@ void MainWindow::drawTowerOutline()
 
 void MainWindow::resetSelection()
 {
-    totalDamageDoneUpdater->disconnect();
-    sellValueUpdater->disconnect();
-    killCountUpdater->disconnect();
+    game->hideGrid();
+    selectedTowerStatsUpdater->disconnect();
 
     UI->typeLineEdit->setText("");
     UI->tierLineEdit->setText("");
+    UI->attackRangeLineEdit->setText("");
     UI->attackRateLineEdit->setText("");
     UI->totalDamageDoneLineEdit->setText("");
     UI->killsLineEdit->setText("");
@@ -235,7 +233,8 @@ void MainWindow::onTowerSelected(Tower* tower)
     upgradeCost = Tower::getUpgradeCost(selectedTower);
     UI->typeLineEdit->setText(Tower::getType(tower));
     UI->tierLineEdit->setText(Parse::toQString(tower->getTier()));
-    UI->attackRateLineEdit->setText(Parse::toQString(tower->getAttackInterval()));
+    UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+    UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
     UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
     UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
     UI->upgradeTierButton->setEnabled((tower->isUpgradable()) ? true : false);
@@ -244,20 +243,14 @@ void MainWindow::onTowerSelected(Tower* tower)
     enablePriorityButtons();
     determineTowerPriority();
 
-    connect(totalDamageDoneUpdater,QTimer::timeout,[&](){
+    connect(selectedTowerStatsUpdater,QTimer::timeout,[&](){
+        UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+        UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
         UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
-    });
-    totalDamageDoneUpdater->start(250);
-
-    connect(sellValueUpdater,QTimer::timeout,[&](){
+        UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
         UI->sellTowerButton->setText("Sell tower $" + Parse::toQString(selectedTower->getSellValue()));
     });
-    sellValueUpdater->start(100);
-
-    connect(killCountUpdater,QTimer::timeout,[&](){
-        UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
-    });
-    killCountUpdater->start(250);
+    selectedTowerStatsUpdater->start(250);
 
     drawTowerOutline();
     drawSelectedTowerToScene();
@@ -266,18 +259,20 @@ void MainWindow::onTowerSelected(Tower* tower)
 void MainWindow::on_buildArcherTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > ArcherTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Archer));
+    if (!game->gameView()->building && game->getMoney() > ArcherTower::getDefaultCost()){
         game->gameView()->building = new ArcherTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
 void MainWindow::on_buildBallistaTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > BallistaTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Ballista));
+    if (!game->gameView()->building && game->getMoney() > BallistaTower::getDefaultCost()){
         game->gameView()->building = new BallistaTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
@@ -285,27 +280,30 @@ void MainWindow::on_buildBallistaTowerButton_released()
 void MainWindow::on_buildBeaconTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > BeaconTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Beacon));
+    if (!game->gameView()->building && game->getMoney() > BeaconTower::getDefaultCost()){
         game->gameView()->building = new BeaconTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
 void MainWindow::on_buildCannonTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > CannonTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Cannon));
+    if (!game->gameView()->building && game->getMoney() > CannonTower::getDefaultCost()){
         game->gameView()->building = new CannonTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
 void MainWindow::on_buildIceTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > IceTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Ice));
+    if (!game->gameView()->building && game->getMoney() > IceTower::getDefaultCost()){
         game->gameView()->building = new IceTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
@@ -313,27 +311,30 @@ void MainWindow::on_buildIceTowerButton_released()
 void MainWindow::on_buildStoneTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > StoneTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Stone));
+    if (!game->gameView()->building && game->getMoney() > StoneTower::getDefaultCost()){
         game->gameView()->building = new StoneTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
 void MainWindow::on_buildTeleportTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > TeleportTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Teleport));
+    if (!game->gameView()->building && game->getMoney() > TeleportTower::getDefaultCost()){
         game->gameView()->building = new TeleportTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
 void MainWindow::on_buildWizardTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > WizardTower::defaultCost){
-        game->gameView()->setCursor(BuildTowerIcon::getFilePath(TowerType::Wizard));
+    if (!game->gameView()->building && game->getMoney() > WizardTower::getDefaultCost()){
         game->gameView()->building = new WizardTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
     }
 }
 
@@ -356,8 +357,11 @@ void MainWindow::on_upgradeTierButton_clicked()
     selectedTower->upgradeTier();
     drawTowerOutline();
     drawSelectedTowerToScene();
+    selectedTower->showAttackArea(true);
     upgradeCost = Tower::getUpgradeCost(selectedTower);
     UI->tierLineEdit->setText(Parse::toQString(selectedTower->getTier()));
+    UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+    UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
     UI->upgradeTierButton->setEnabled((selectedTower->isUpgradable() ? true : false));
     UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
 }

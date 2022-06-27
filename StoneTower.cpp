@@ -9,13 +9,19 @@ extern Game* game;
 
 StoneTower::StoneTower() : Tower()
 {
-    attackRange = StoneTower::defaultAttackRange;
-    attackInterval = StoneTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&StoneTower::upgrade);
+    attackRange = StoneTower::tier1AttackRange;
+    attackInterval = StoneTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/StoneTower1.png"));
-    sellValue = pow(StoneTower::defaultCost, Tower::valueDecay);
+    sellValue = pow(StoneTower::tier1Cost, Tower::valueDecay);
 }
 
 // public methods
+int StoneTower::getDefaultCost()
+{
+    return StoneTower::tier1Cost;
+}
+
 QString StoneTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -68,4 +74,18 @@ void StoneTower::tier3Attack()
 {
     StoneProjectile* stone = new StoneProjectile(tier, this);
     linkToTarget(stone, target);
+}
+
+void StoneTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(StoneTower::tier2AttackRange);
+            setAttackInterval(StoneTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(StoneTower::tier3AttackRange);
+            setAttackInterval(StoneTower::tier3AttackInterval);
+            return;
+    }
 }

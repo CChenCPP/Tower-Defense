@@ -1,8 +1,7 @@
 #include "CustomGraphicsView.h"
 #include <Game.h>
-#include <iostream>
-#include "Projectile.h"
 #include <QMouseEvent>
+#include "Utility.h"
 
 extern Game* game;
 
@@ -13,7 +12,7 @@ CustomGraphicsView::CustomGraphicsView(QWidget* parent) : QGraphicsView(parent)
 CustomGraphicsView::CustomGraphicsView(CustomGraphicsScene* scene, QWidget* parent) :
     QGraphicsView(scene, parent),
     building(nullptr),
-    cursor(nullptr)
+    buildingCursor(nullptr)
 {
     setMouseTracking(true);
     setFixedSize(scene->defaultWidth,scene->defaultHeight);
@@ -22,63 +21,65 @@ CustomGraphicsView::CustomGraphicsView(CustomGraphicsScene* scene, QWidget* pare
 
 }
 
-void CustomGraphicsView::setCursor(QString filename)
+void CustomGraphicsView::setCursor(Tower* tower)
 {
-    if (cursor){
-        game->mainScene->removeItem(cursor);
-        delete cursor;
-        cursor = nullptr;
+    if (buildingCursor){
+        game->mainScene->removeItem(buildingCursor);
+        delete buildingCursor;
+        buildingCursor = nullptr;
     }
+    buildingCursor = new BuildingCursor(tower);
+}
 
-    cursor = new QGraphicsPixmapItem();
-    QPixmap pixmap(filename);
-    qreal width = pixmap.width();
-    qreal height = pixmap.height();
-    qreal ratio = height / width;
-    QPixmap rescaled = pixmap.scaled(35, 35 * ratio);
-    cursor->setPixmap(rescaled);
-    game->mainScene->addItem(cursor);
+QPointF CustomGraphicsView::convertToGridPos(BuildingCursor* cursor)
+{
+    QPixmap towerPixmap = cursor->getTower().pixmap();
+    int bottomLeftX = cursor->x();
+    int bottomLeftY = cursor->y();
+    int dx = (bottomLeftX % 50);
+    int dy = 50 - (bottomLeftY % 50);
+    return QPointF(bottomLeftX - dx,bottomLeftY + dy - towerPixmap.height());
 }
 
 // private methods
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent* event)
 {
-    if (cursor){
-        cursor->setPos(event->pos());
+    if (buildingCursor){
+        buildingCursor->updatePos(event->pos());
     }
 }
 
 void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::RightButton) {
-        delete cursor;
+        delete buildingCursor;
         delete building;
-        cursor = nullptr;
+        buildingCursor = nullptr;
         building = nullptr;
+        game->hideGrid();
         return;
     }
 
     if (building){
-        auto collisions = cursor->collidingItems();
-        for (auto& item : collisions){
-            if (dynamic_cast<Tower*>(item)){
-                game->mainScene->removeItem(cursor);
-                delete cursor;
-                delete building;
-                cursor = nullptr;
-                building = nullptr;
-                return;
-            }
+        QPointF buildingPos = convertToGridPos(buildingCursor);
+        QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
+        if (!game->slotOccupied(slotPos)){
+            game->buyTower(Tower::getDefaultCost(building));
+            game->newTowerAt(slotPos);
+            game->hideGrid();
+            connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
+            building->init();
+            building->setGridPos(slotPos);
+            building->setPos(buildingPos);
+            building->setZValue(1 - ((CustomGraphicsScene::defaultHeight - slotPos.y()) / 1000000.0));
+            game->mainScene->addItem(building);
+            delete buildingCursor;
+            buildingCursor = nullptr;
+            building = nullptr;
         }
-
-        game->buyTower(Tower::getDefaultCost(building));
-        building->init();
-        building->setPos(cursor->pos());
-        scene()->addItem(building);
-
-        delete cursor;
-        cursor = nullptr;
-        building = nullptr;
+        else {
+            return;
+        }
     }
     else {
         QGraphicsRectItem cursor;

@@ -1,6 +1,7 @@
 #pragma once
 #include <QGraphicsView>
 #include <CustomGraphicsScene.h>
+#include "BuildingCursor.h"
 #include "Tower.h"
 
 class CustomGraphicsView : public QGraphicsView
@@ -12,11 +13,13 @@ public:
 
     Tower* building;
 
-    void setCursor(QString filename);
+    void setCursor(Tower* tower);
 
 private:
-    QGraphicsPixmapItem* cursor;
+    BuildingCursor* buildingCursor;
+//    QGraphicsPixmapItem* cursor;
 
+    QPointF convertToGridPos(BuildingCursor* cursor);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
 

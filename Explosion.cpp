@@ -39,7 +39,7 @@ void Explosion::explode()
 
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
-            enemy->damage(this->damage * source->getDmgMultiplier(), this);
+            enemy->damage(this->damage * source->getDamageMultiplier(), this);
         }
     }
     updateInterval.disconnect();

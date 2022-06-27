@@ -1,9 +1,10 @@
 #include "ArrowProjectile.h"
 #include <iostream>
 
-ArrowProjectile::ArrowProjectile(int tier, Tower* source) :
+ArrowProjectile::ArrowProjectile(int tier, int type, Tower* source) :
     Projectile(),
-    tier(tier)
+    tier(tier),
+    type(type)
 {
     this->source = source;
     setAttributes();
@@ -46,27 +47,27 @@ void ArrowProjectile::setImage()
 
 void ArrowProjectile::setProperties()
 {
-    switch(tier)
+    switch(type)
     {
         case 1:
-            damage = 5;
+            damage = 75 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 800;
-            maimChance = 10;
+            maxDistance = 2000;
+            maimChance = 30;
             break;
 
         case 2:
-            damage = 30;
+            damage = 30 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 1200;
+            maxDistance = 2000;
             maimChance = 20;
             break;
 
         case 3:
-            damage = 300;
+            damage = 25 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 3000;
-            maimChance = 30;
+            maxDistance = 2000;
+            maimChance = 10;
             break;
     }
 }

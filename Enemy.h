@@ -58,7 +58,7 @@ private slots:
 
 signals:
     void damagedAmount(int damage);
-    void destructing();
+    void destructing(Enemy* enemy);
     void killedBy(Projectile* projectile, Enemy* enemy);
 };
 

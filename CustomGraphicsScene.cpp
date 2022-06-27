@@ -7,7 +7,26 @@ CustomGraphicsScene::CustomGraphicsScene(QObject* parent) : QGraphicsScene(paren
 {
     setSceneRect(0,0,defaultWidth,defaultHeight);
 
-//    QTimer* test = new QTimer();
+    //    QTimer* test = new QTimer();
+}
+
+bool lessThan(QGraphicsItem * left, QGraphicsItem * right)
+{
+    return (left->x() < right->x());
+}
+
+QList<Tower*> CustomGraphicsScene::allTowers()
+{
+    QList<QGraphicsItem*> allItems = items();
+    QList<Tower*> towers;
+    for (QGraphicsItem* item : allItems){
+        Tower* tower = dynamic_cast<Tower*>(item);
+        if (tower)
+        {
+            towers.push_back(tower);
+        }
+    }
+    return towers;
 }
 
 QList<Enemy*> CustomGraphicsScene::enemiesWithinRange(QGraphicsItem* graphicsItem, int radius)

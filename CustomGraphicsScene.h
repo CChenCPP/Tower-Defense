@@ -11,6 +11,7 @@ public:
     static constexpr int defaultWidth = 800;
     static constexpr int defaultHeight = 800;
 
+    QList<Tower*> allTowers();
     QList<Enemy*> enemiesWithinRange(QGraphicsItem* graphicsItem, int radius);
 signals:
 };

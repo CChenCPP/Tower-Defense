@@ -109,5 +109,8 @@
         <file>Images/IceShard13.png</file>
         <file>Images/IceShard14.png</file>
         <file>Images/IceShard15.png</file>
+        <file>Images/BlackHole1.png</file>
+        <file>Images/BlackHole2.png</file>
+        <file>Images/BlackHole3.png</file>
     </qresource>
 </RCC>

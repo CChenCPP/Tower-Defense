@@ -4,10 +4,11 @@
 class ArrowProjectile : public Projectile
 {
 public:
-    ArrowProjectile(int tier, Tower* source);
+    ArrowProjectile(int tier, int type, Tower* source);
 
 private:
     int tier;
+    int type;
 
     void setAttributes();
     void setImage();

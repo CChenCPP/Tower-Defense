@@ -30,7 +30,7 @@ Enemy::Enemy(QList<QPointF>* path, int hp, int armor, double distPerInt, QGraphi
 
 Enemy::~Enemy()
 {
-    emit destructing();
+    emit destructing(this);
     game->mainScene->removeItem(this);
     game->enemyDestroyed();
 }

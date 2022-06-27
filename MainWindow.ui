@@ -206,7 +206,7 @@
       <x>10</x>
       <y>520</y>
       <width>281</width>
-      <height>281</height>
+      <height>299</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -270,6 +270,23 @@
            </property>
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="attackRangeLabel">
+           <property name="text">
+            <string>Attack range</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="attackRangeLineEdit">
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>

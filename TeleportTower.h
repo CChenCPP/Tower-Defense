@@ -8,19 +8,22 @@ public:
     TeleportTower();
     ~TeleportTower();
 
-    static constexpr int defaultAttackRange = 225;
-    static constexpr int defaultAttackInterval = 3000;
-    static constexpr int defaultCost = 300;
-
     void init();
+    static int getDefaultCost();
     static QString getImageUrl(Tower* tower, bool HD = false);
     static int getUpgradeCost(Tower* tower);
 
 private:
+    static constexpr int tier1AttackRange = 225;
+    static constexpr int tier1AttackInterval = 3000;
+    static constexpr int tier1Cost = 300;
 
     void attackTarget();
     void tier1Attack();
     void tier2Attack();
     void tier3Attack();
+
+private slots:
+    void upgrade();
 };
 

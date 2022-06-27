@@ -8,19 +8,23 @@ extern Game* game;
 BeaconTower::BeaconTower() :
     Tower()
 {
-    attackRange = BeaconTower::defaultAttackRange;
-    attackInterval = BeaconTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&BeaconTower::upgrade);
+    attackRange = BeaconTower::tier1AttackRange;
+    attackInterval = BeaconTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/BeaconTower1.png"));
-    sellValue = std::pow(BeaconTower::defaultCost, Tower::valueDecay);
+    sellValue = std::pow(BeaconTower::tier1Cost, Tower::valueDecay);
 }
 
 BeaconTower::~BeaconTower()
 {
+    for (Tower* tower : buffedAttackRangeNeighbors){
+        if (tower) { tower->setAttackRangeMultiplier(tower->getAttackRangeMultiplier() / BeaconTower::attackRangeMultiplierBuff); };
+    }
     for (Tower* tower : buffedAttackRateNeighbors){
-        if (tower) { tower->setAttackIntervalMultiplier(1 / BeaconTower::attackRateMultiplier); };
+        if (tower) { tower->setAttackIntervalMultiplier(tower->getAttackIntervalMultiplier() / BeaconTower::attackIntervalMultiplierBuff); };
     }
     for (Tower* tower : buffedDamageNeighbors){
-        if (tower) { tower->setDmgMultiplier(1 / BeaconTower::damageMultiplier); };
+        if (tower) { tower->setDamageMultiplier(tower->getDamageMultiplier() / BeaconTower::damageMultiplierBuff); };
     }
 }
 
@@ -29,6 +33,11 @@ void BeaconTower::init()
 {
     Tower::init();
     setupTimers();
+}
+
+int BeaconTower::getDefaultCost()
+{
+    return BeaconTower::tier1Cost;
 }
 
 QString BeaconTower::getImageUrl(Tower* tower, bool HD)
@@ -75,7 +84,7 @@ void BeaconTower::setupTimers()
 {
     attackIntervalTimer.disconnect();
     QObject::connect(&checkNeighborsTimer,&QTimer::timeout,[&](){ attackTarget();});
-    checkNeighborsTimer.start(attackInterval);
+    checkNeighborsTimer.start(attackInterval * attackIntervalMultiplier);
 }
 
 // private methods
@@ -84,12 +93,12 @@ void BeaconTower::tier1Attack()
     QList<QGraphicsItem*> collisions = attackArea->collidingItems();
 
     for (auto& item : collisions){
-        if (dynamic_cast<BeaconTower*>(item) || dynamic_cast<WizardTower*>(item)) { continue; };
+        if (dynamic_cast<BeaconTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
-            connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing);
-            tower->setAttackIntervalMultiplier(BeaconTower::attackRateMultiplier);
-            buffedAttackRateNeighbors.insert(tower);
+        if (tower && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end()){
+            tower->setDamageMultiplier(tower->getDamageMultiplier() * BeaconTower::damageMultiplierBuff);
+            buffedDamageNeighbors.insert(tower);
+            connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
         }
     }
 }
@@ -101,24 +110,47 @@ void BeaconTower::tier2Attack()
     for (auto& item : collisions){
         if (dynamic_cast<BeaconTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end()){
-            connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing);
-            tower->setDmgMultiplier(BeaconTower::damageMultiplier);
-            buffedDamageNeighbors.insert(tower);
+        if (tower && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
+            tower->setAttackIntervalMultiplier(tower->getAttackIntervalMultiplier() * BeaconTower::attackIntervalMultiplierBuff);
+            buffedAttackRateNeighbors.insert(tower);
+            connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
         }
     }
 }
 
 void BeaconTower::tier3Attack()
 {
-    if (attackRange == BeaconTower::tier3Range) { return; };
-    attackRange = BeaconTower::tier3Range;
-    defineAttackArea();
+    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
+
+    for (auto& item : collisions){
+        if (dynamic_cast<BeaconTower*>(item)) { continue; };
+        Tower* tower = dynamic_cast<Tower*>(item);
+        if (tower && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end()){
+            tower->setAttackRangeMultiplier(tower->getAttackRangeMultiplier() * BeaconTower::attackRangeMultiplierBuff);
+            buffedAttackRangeNeighbors.insert(tower);
+            connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
+        }
+    }
 }
 
 // private slots
 void BeaconTower::onNeighborDestructing(Tower* tower)
 {
+    buffedAttackRangeNeighbors.erase(tower);
     buffedAttackRateNeighbors.erase(tower);
     buffedDamageNeighbors.erase(tower);
+}
+
+void BeaconTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(BeaconTower::tier2AttackRange);
+            setAttackInterval(BeaconTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(BeaconTower::tier3AttackRange);
+            setAttackInterval(BeaconTower::tier3AttackInterval);
+            return;
+    }
 }

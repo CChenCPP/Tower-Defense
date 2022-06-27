@@ -13,7 +13,9 @@ SOURCES += \
     ArrowProjectile.cpp \
     BallistaTower.cpp \
     BeaconTower.cpp \
+    Blackhole.cpp \
     BuildTowerIcon.cpp \
+    BuildingCursor.cpp \
     CannonTower.cpp \
     CannonballProjectile.cpp \
     CustomGraphicsScene.cpp \
@@ -44,7 +46,10 @@ HEADERS += \
    ArrowProjectile.h \
    BallistaTower.h \
    BeaconTower.h \
+   BlackHole \
+   BlackHole.h \
    BuildTowerIcon.h \
+   BuildingCursor.h \
    CannonTower.h \
    CannonballProjectile.h \
    CustomGraphicsScene.h \

@@ -9,13 +9,19 @@ extern Game* game;
 BallistaTower::BallistaTower() :
     Tower()
 {
-    attackRange = BallistaTower::defaultAttackRange;
-    attackInterval = BallistaTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&BallistaTower::upgrade);
+    attackRange = BallistaTower::tier1AttackRange;
+    attackInterval = BallistaTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/BallistaTower1.png"));
-    sellValue = std::pow(BallistaTower::defaultCost, Tower::valueDecay);
+    sellValue = std::pow(BallistaTower::tier1Cost, Tower::valueDecay);
 }
 
 // public methods
+int BallistaTower::getDefaultCost()
+{
+    return BallistaTower::tier1Cost;
+}
+
 QString BallistaTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -67,4 +73,19 @@ void BallistaTower::tier3Attack()
 {
     JavelinProjectile* javelin = new JavelinProjectile(tier, this);
     linkToTarget(javelin, target);
+}
+
+// private slots
+void BallistaTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(BallistaTower::tier2AttackRange);
+            setAttackInterval(BallistaTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(BallistaTower::tier3AttackRange);
+            setAttackInterval(BallistaTower::tier3AttackInterval);
+            return;
+    }
 }

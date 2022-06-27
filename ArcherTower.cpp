@@ -9,13 +9,20 @@ extern Game* game;
 ArcherTower::ArcherTower() :
     Tower()
 {
-    attackRange = ArcherTower::defaultAttackRange;
-    attackInterval = ArcherTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&ArcherTower::upgrade);
+    attackRange = ArcherTower::tier1AttackRange;
+    attackInterval = ArcherTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/ArcherTower1.png"));
-    sellValue = std::pow(ArcherTower::defaultCost, Tower::valueDecay);
+    sellValue = std::pow(ArcherTower::tier1Cost, Tower::valueDecay);
 }
 
+
 // public methods
+int ArcherTower::getDefaultCost()
+{
+    return ArcherTower::tier1Cost;
+}
+
 QString ArcherTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -41,42 +48,58 @@ int ArcherTower::getUpgradeCost(Tower* tower)
 // private methods
 void ArcherTower::attackTarget()
 {
-    switch(tier){
+    int attackType = RNG::randomNum(1,tier);
+    switch(attackType){
         case(1):
-            tier1Attack(); return;
+            shootArrow(); return;
         case(2):
-            tier2Attack(); return;
+            splitShot(); return;
         case(3):
-            tier3Attack(); return;
+            hurricane(); return;
     }
 }
 
-void ArcherTower::tier1Attack()
+void ArcherTower::hurricane()
 {
-    ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+    for (int i = 0; i < 9; ++i){
+        ArrowProjectile* arrow = new ArrowProjectile(tier, 3, this);
+        linkToTarget(arrow, target);
+        arrow->setRotation(arrow->rotation() + RNG::randomNum(-25,25));
+    }
+
+    ArrowProjectile* arrow = new ArrowProjectile(tier, 3, this);
     linkToTarget(arrow, target);
 }
 
-void ArcherTower::tier2Attack()
+void ArcherTower::shootArrow()
+{
+    ArrowProjectile* arrow = new ArrowProjectile(tier, 1, this);
+    linkToTarget(arrow, target);
+}
+
+void ArcherTower::splitShot()
 {
     for (int i = 0; i < 2; ++i){
-        ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+        ArrowProjectile* arrow = new ArrowProjectile(tier, 2, this);
         linkToTarget(arrow, target);
-        arrow->setRotation(arrow->rotation() + RNG::randomNum(-30,30));
+        arrow->setRotation(arrow->rotation() + RNG::randomNum(-20,20));
     }
 
-    ArrowProjectile* arrow = new ArrowProjectile(tier, this);
+    ArrowProjectile* arrow = new ArrowProjectile(tier, 2, this);
     linkToTarget(arrow, target);
 }
 
-void ArcherTower::tier3Attack()
+// private slots
+void ArcherTower::upgrade()
 {
-    for (int i = 0; i < 4; ++i){
-        ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-        linkToTarget(arrow, target);
-        arrow->setRotation(arrow->rotation() + RNG::randomNum(-45,45));
+    switch (tier){
+        case 2:
+            setAttackRange(ArcherTower::tier2AttackRange);
+            setAttackInterval(ArcherTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(ArcherTower::tier3AttackRange);
+            setAttackInterval(ArcherTower::tier3AttackInterval);
+            return;
     }
-
-    ArrowProjectile* arrow = new ArrowProjectile(tier, this);
-    linkToTarget(arrow, target);
 }

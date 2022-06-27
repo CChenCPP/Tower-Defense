@@ -15,17 +15,20 @@
 
 extern Game* game;
 
-Tower::Tower(int attackRange, int attackInterval, QGraphicsItem* parent) :
+Tower::Tower(QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent),
     tier(1),
     maxTier(Tower::defaultMaxTier),
-    dmgMultiplier(1),
+    attackIntervalMultiplier(1),
+    attackRangeMultiplier(1),
+    damageMultiplier(1),
     totalDamageDone(0),
     priority(TargetPriority::Nearest),
-    attackRange(attackRange),
+    attackRange(1),
     attackArea(nullptr),
-    attackInterval(attackInterval),
+    attackInterval(1000),
     attackDestination(QPoint(0,0)),
+    tethered(false),
     target(nullptr),
     killCount(0)
 {
@@ -33,6 +36,8 @@ Tower::Tower(int attackRange, int attackInterval, QGraphicsItem* parent) :
 
 Tower::~Tower()
 {
+    emit removeFromGrid(gridPosX, gridPosY);
+    emit untether(this);
     emit destructing(this);
 }
 
@@ -40,6 +45,11 @@ Tower::~Tower()
 void Tower::consecutiveAttack()
 {
     determineTarget();
+}
+
+bool Tower::isTethered() const
+{
+    return tethered;
 }
 
 bool Tower::isUpgradable() const
@@ -52,42 +62,67 @@ int Tower::getAttackInterval() const
     return attackInterval;
 }
 
+int Tower::getAttackRange() const
+{
+    return attackRange;
+}
+
+int Tower::getCenterXOffset() const
+{
+    return centerX;
+}
+
+int Tower::getCenterYOffset() const
+{
+    return centerY;
+}
+
 int Tower::getTotalDamageDone() const
 {
     return totalDamageDone;
 }
 
+float Tower::getAttackIntervalMultiplier() const
+{
+    return attackIntervalMultiplier;
+}
+
+float Tower::getAttackRangeMultiplier() const
+{
+    return attackRangeMultiplier;
+}
+
+float Tower::getDamageMultiplier() const
+{
+    return damageMultiplier;
+}
+
 int Tower::getDefaultCost(Tower* tower)
 {
     if (dynamic_cast<ArcherTower*>(tower)){
-        return ArcherTower::defaultCost;
+        return ArcherTower::getDefaultCost();
     }
     if (dynamic_cast<BallistaTower*>(tower)){
-        return BallistaTower::defaultCost;
+        return BallistaTower::getDefaultCost();
     }
     if (dynamic_cast<BeaconTower*>(tower)){
-        return BeaconTower::defaultCost;
+        return BeaconTower::getDefaultCost();
     }
     if (dynamic_cast<CannonTower*>(tower)){
-        return CannonTower::defaultCost;
+        return CannonTower::getDefaultCost();
     }
     if (dynamic_cast<IceTower*>(tower)){
-        return IceTower::defaultCost;
+        return IceTower::getDefaultCost();
     }
     if (dynamic_cast<StoneTower*>(tower)){
-        return StoneTower::defaultCost;
+        return StoneTower::getDefaultCost();
     }
     if (dynamic_cast<TeleportTower*>(tower)){
-        return TeleportTower::defaultCost;
+        return TeleportTower::getDefaultCost();
     }
     if (dynamic_cast<WizardTower*>(tower)){
-        return WizardTower::defaultCost;
+        return WizardTower::getDefaultCost();
     }
-}
-
-float Tower::getDmgMultiplier() const
-{
-    return dmgMultiplier;
 }
 
 QString Tower::getImageUrl(Tower *tower, bool HD)
@@ -209,24 +244,33 @@ void Tower::init()
 
 void Tower::setAttackIntervalMultiplier(float multiplier)
 {
-    attackInterval *= multiplier;
+    attackIntervalMultiplier = multiplier;
     setAttackInterval();
 }
 
-void Tower::setDmgMultiplier(float mult)
+void Tower::setAttackRangeMultiplier(float multiplier)
 {
-    dmgMultiplier *= mult;
-}
-
-void Tower::setPriority(TargetPriority targetPriority)
-{
-    priority = targetPriority;
-}
-
-void Tower::setRange(int range)
-{
-    attackRange = range;
+    attackRangeMultiplier = multiplier;
     defineAttackArea();
+}
+
+void Tower::setDamageMultiplier(float multiplier)
+{
+    damageMultiplier = multiplier;
+}
+
+void Tower::setGridPos(QPointF pos)
+{
+    gridPosX = pos.x();
+    gridPosY = pos.y();
+}
+
+void Tower::setTethered(bool value)
+{
+    if (tethered == value) { return; };
+    tethered = value;
+    if (value) { setAttackIntervalMultiplier(attackIntervalMultiplier / 3); }
+    else { setAttackIntervalMultiplier(attackIntervalMultiplier * 3); };
 }
 
 void Tower::showAttackArea(bool show)
@@ -234,24 +278,37 @@ void Tower::showAttackArea(bool show)
     attackArea->setVisible(show);
 }
 
+void Tower::setPriority(TargetPriority targetPriority)
+{
+    priority = targetPriority;
+}
+
 void Tower::upgradeTier()
 {
     tier = std::min<int>(tier + 1, maxTier);
+    QPixmap oldPixmap = pixmap();
+    emit upgrade();
+    QPixmap newPixmap = getImageUrl(this);
+    int heightDiff = newPixmap.height() - oldPixmap.height();
     setPixmap(QPixmap(getImageUrl(this)));
+    setPos(pos().x(), pos().y() - heightDiff);
 }
 
 void Tower::defineAttackArea()
 {
-    QVector<QPointF> circle = Geometry::generateCircle(45, attackRange);
+    QVector<QPointF> circle = Geometry::generateCircle(45, attackRange * attackRangeMultiplier);
     QPolygonF polygon(circle);
     QPointF polygonCenter(0,0);
 
     // scale to tower range
-    polygonCenter *= attackRange;
+    polygonCenter *= attackRange * attackRangeMultiplier;
     polygonCenter = mapToScene(polygonCenter);
     QPointF towerCenter;
 
+    bool isShowing = false;
+
     if (attackArea) {
+        isShowing = attackArea->isVisible();
         towerCenter.setX(centerX);
         towerCenter.setY(centerY);
         delete attackArea;
@@ -269,7 +326,7 @@ void Tower::defineAttackArea()
     QColor transparentRed = Qt::red;
     transparentRed.setAlphaF(0.05);
     attackArea->setBrush(transparentRed);
-
+    showAttackArea((isShowing) ? true : false);
 }
 
 void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
@@ -292,7 +349,19 @@ void Tower::setAttackInterval()
 {
     attackIntervalTimer.disconnect();
     QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::determineTarget);
-    attackIntervalTimer.start(attackInterval);
+    attackIntervalTimer.start(attackInterval * attackIntervalMultiplier);
+}
+
+void Tower::setAttackInterval(int ms)
+{
+    attackInterval = ms;
+    setAttackInterval();
+}
+
+void Tower::setAttackRange(int range)
+{
+    attackRange = range;
+    defineAttackArea();
 }
 
 void Tower::setCenterOffset()
@@ -387,6 +456,11 @@ void Tower::onTargetKilled(Enemy* enemy)
 {
     ++killCount;
     sellValue += sqrt(enemy->getValue());
+}
+
+void Tower::tetherPartnerDestructing()
+{
+    setTethered(false);
 }
 
 // private slots

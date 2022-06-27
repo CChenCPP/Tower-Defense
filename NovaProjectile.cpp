@@ -8,6 +8,7 @@ extern Game* game;
 NovaProjectile::NovaProjectile(int tier, Tower* source) :
     Projectile(),
     tier(tier),
+    type(0),
     searchRadius(0),
     maxTargets(0),
     targetCount(0)
@@ -28,11 +29,11 @@ NovaProjectile::~NovaProjectile()
 // public methods
 void NovaProjectile::bounceNext()
 {
-    targetHitAnim.setPixmap(QPixmap(":/Special/Images/Null2.png"));
-    targetHitAnim.setTransformOriginPoint(targetHitAnim.pixmap().width()/2,targetHitAnim.pixmap().height()/2);
-    targetHitAnim.setPos(pos());
-    animRotationTimer.start(20);
-    connect(&animRotationTimer,&QTimer::timeout,[&](){targetHitAnim.setRotation(RNG::randomNum(1,360));});
+//    targetHitAnim.setPixmap(QPixmap(":/Special/Images/Null2.png"));
+//    targetHitAnim.setTransformOriginPoint(targetHitAnim.pixmap().width()/2,targetHitAnim.pixmap().height()/2);
+//    targetHitAnim.setPos(pos());
+//    animRotationTimer.start(20);
+//    connect(&animRotationTimer,&QTimer::timeout,[&](){targetHitAnim.setRotation(RNG::randomNum(1,360));});
 
     if (++targetCount >= maxTargets) { returnToSource(); return; };
     auto enemyList = game->mainScene->enemiesWithinRange(this, searchRadius);
@@ -70,33 +71,30 @@ void NovaProjectile::setAttributes()
 // private methods
 void NovaProjectile::setImage()
 {
-    int num = RNG::randomNum(1,tier);
-    tier = num;
-    setPixmap(QPixmap(":/Projectiles/Images/Nova" + Parse::toQString(num) + ".png"));
+    type = RNG::randomNum(1,3);
+    setPixmap(QPixmap(":/Projectiles/Images/Nova" + Parse::toQString(type) + ".png"));
 }
 
 void NovaProjectile::setProperties()
 {
-    switch(tier)
+    switch(type)
     {
         case 1:
-            damage = 100;
+            damage = 3 * pow(tier, 2);
             distancePerInterval = 5;
             maxDistance = 5000;
             searchRadius = 250;
             maxTargets = 20;
             break;
-
         case 2:
-            damage = 250;
+            damage = 15 * pow(tier, 2);
             distancePerInterval = 3;
             maxDistance = 5000;
             searchRadius = 300;
             maxTargets = 8;
             break;
-
         case 3:
-            damage = 1000;
+            damage = 60 * pow(tier, 2);
             distancePerInterval = 2;
             maxDistance = 5000;
             searchRadius = 400;

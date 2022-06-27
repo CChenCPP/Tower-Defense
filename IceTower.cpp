@@ -9,13 +9,19 @@ extern Game* game;
 
 IceTower::IceTower() : Tower()
 {
-    attackRange = IceTower::defaultAttackRange;
-    attackInterval = IceTower::defaultAttackInterval;
+    connect(this,&Tower::upgrade,this,&IceTower::upgrade);
+    attackRange = IceTower::tier1AttackRange;
+    attackInterval = IceTower::tier1AttackInterval;
     setPixmap(QPixmap(":/Towers/Images/IceTower1.png"));
-    sellValue = pow(IceTower::defaultCost, Tower::valueDecay);
+    sellValue = pow(IceTower::tier1Cost, Tower::valueDecay);
 }
 
 // public methods
+int IceTower::getDefaultCost()
+{
+    return IceTower::tier1Cost;
+}
+
 QString IceTower::getImageUrl(Tower* tower, bool HD)
 {
     switch (tower->getTier()){
@@ -69,3 +75,19 @@ void IceTower::tier3Attack()
     IceProjectile* ice = new IceProjectile(tier, this);
     linkToTarget(ice, target);
 }
+
+// private slots
+void IceTower::upgrade()
+{
+    switch (tier){
+        case 2:
+            setAttackRange(IceTower::tier2AttackRange);
+            setAttackInterval(IceTower::tier2AttackInterval);
+            return;
+        case 3:
+            setAttackRange(IceTower::tier3AttackRange);
+            setAttackInterval(IceTower::tier3AttackInterval);
+            return;
+    }
+}
+
