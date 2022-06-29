@@ -43,6 +43,8 @@ void StoneProjectile::setImage()
             setPixmap(QPixmap(":/Projectiles/Images/Stone3.png"));
             break;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), StoneProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void StoneProjectile::setProperties()

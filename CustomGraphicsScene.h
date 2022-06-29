@@ -8,11 +8,22 @@ class CustomGraphicsScene : public QGraphicsScene
 public:
     CustomGraphicsScene(QObject* parent = nullptr);
 
-    static constexpr int defaultWidth = 800;
-    static constexpr int defaultHeight = 800;
+    static constexpr int defaultWidth = 750;
+    static constexpr int defaultHeight = 750;
+    static constexpr int projectileRenderLimit = 120;
 
     QList<Tower*> allTowers();
-    QList<Enemy*> enemiesWithinRange(QGraphicsItem* graphicsItem, int radius);
+    void decrementProjectileCount();
+    QList<Enemy*> enemiesWithinRange(QGraphicsItem* graphicsItem, qreal radius);
+    int getProjectileCount() const;
+    void incrementProjectileCount();
+    QList<QGraphicsItem*> itemsWithinRange(QGraphicsItem* graphicsItem, qreal radius);
+    QList<QGraphicsItem*> itemsWithinRange(const QPointF point, qreal radius);
+    QList<QGraphicsLineItem*> lineItemsWithinRange(const QPointF point, qreal radius);
+    qreal projectileCapacity();
+private:
+    int projectileCount;
+
 signals:
 };
 

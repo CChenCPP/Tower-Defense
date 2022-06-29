@@ -54,7 +54,9 @@ void TeleportProjectile::setAttributes(int tier)
 void TeleportProjectile::setImage(int tier)
 {
     QString number = Parse::toQString(RNG::randomNum(1, 8));
-    setPixmap(QPixmap(":/Special/Images/Null" + number + ".png"));
+    QPixmap pixmap(":/Special/Images/Null" + number + ".png");
+    QPixmap scaled = Geometry::scaleToWidth(pixmap, TeleportProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void TeleportProjectile::setProperties(int tier)

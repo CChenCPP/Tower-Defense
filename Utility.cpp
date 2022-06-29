@@ -72,3 +72,14 @@ QVector<QPointF> Geometry::generateCircle(int edges, int radius)
     }
     return points;
 }
+
+QPointF Geometry::midPoint(const QPointF p1, const QPointF p2)
+{
+    return QPointF(p1.x() + (p2.x() - p1.x()) / 2, p1.y() + (p2.y() - p1.y()) / 2);
+}
+
+QPixmap Geometry::scaleToWidth(QPixmap pixmap, qreal width)
+{
+    QPixmap scaled = pixmap.scaled(width, pixmap.height() / (pixmap.width() / width));
+    return scaled;
+}

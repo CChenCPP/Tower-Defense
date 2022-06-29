@@ -1,4 +1,5 @@
 QT       += core gui
+QT       += opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,6 +24,7 @@ SOURCES += \
     Enemy.cpp \
     Explosion.cpp \
     Game.cpp \
+    GameConstants.cpp \
     IceProjectile.cpp \
     IceShard.cpp \
     IceTower.cpp \
@@ -38,6 +40,7 @@ SOURCES += \
     TeleportTower.cpp \
     Tower.cpp \
     Utility.cpp \
+    Wave.cpp \
     WizardTower.cpp \
     main.cpp
 
@@ -57,6 +60,7 @@ HEADERS += \
    Enemy.h \
    Explosion.h \
    Game.h \
+   GameConstants.h \
    IceProjectile.h \
    IceShard.h \
    IceTower.h \
@@ -72,6 +76,7 @@ HEADERS += \
    TeleportTower.h \
    Tower.h \
    Utility.h \
+   Wave.h \
    WizardTower.h
 
 FORMS += \

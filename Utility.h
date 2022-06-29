@@ -2,6 +2,7 @@
 #include <random>
 #include <QString>
 #include <QPointF>
+#include <QPixmap>
 
 typedef unsigned char uint8_t;
 typedef long long int64_t;
@@ -60,4 +61,6 @@ namespace Geometry
     static constexpr double radToDegRatio = 3.141592653589793238463 / 180.0;
     qreal distance2D(QPointF src, QPointF dst);
     QVector<QPointF> generateCircle(int edges, int radius);
+    QPointF midPoint(const QPointF p1, const QPointF p2);
+    QPixmap scaleToWidth(QPixmap pixmap, qreal width);
 }

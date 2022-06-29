@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "CannonballProjectile.h"
 #include "Explosion.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -12,7 +13,8 @@ CannonTower::CannonTower() : Tower()
     connect(this,&Tower::upgrade,this,&CannonTower::upgrade);
     attackRange = CannonTower::tier1AttackRange;
     attackInterval = CannonTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/CannonTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = pow(CannonTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -47,6 +49,7 @@ int CannonTower::getUpgradeCost(Tower* tower)
 // private methods
 void CannonTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     switch(tier){
         case(1):
             tier1Attack(); return;

@@ -13,6 +13,7 @@ public:
     void warpOne();
 
 private:
+    static constexpr int defaultProjectileSize = 30;
     int tier;
     QTimer animDurationTimer;
     QTimer spinInterval;

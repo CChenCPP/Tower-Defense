@@ -7,12 +7,12 @@
 
 extern Game* game;
 
-Enemy::Enemy(QList<QPointF>* path, int hp, int armor, double distPerInt, QGraphicsItem* parent) :
+Enemy::Enemy(int hp, int armor, double distPerInt, QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent),
+    attributes{},
     hp(hp),
     armor(armor),
     value(pow(hp,0.8)),
-    path(path),
     distancePerInterval(distPerInt),
     distanceTravelled(0),
     lastProjectile(nullptr),
@@ -23,16 +23,12 @@ Enemy::Enemy(QList<QPointF>* path, int hp, int armor, double distPerInt, QGraphi
 {
     setPixmap(QPixmap(":/Enemies/Images/EnemyBlackCircle.png"));
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
-    setPos((*path)[0]);
-    startPath();
-    setMoveInterval();
 }
 
 Enemy::~Enemy()
 {
     emit destructing(this);
     game->mainScene->removeItem(this);
-    game->enemyDestroyed();
 }
 
 // public methods
@@ -68,6 +64,53 @@ int Enemy::getValue() const
     return value;
 }
 
+bool Enemy::hasAttribute(EnemyAttr attr) const
+{
+    return static_cast<bool>(attributes & attr);
+}
+
+void Enemy::pause()
+{
+    moveInterval.stop();
+}
+
+Enemy& Enemy::removeAttribute(EnemyAttr attr)
+{
+    attributes = attributes & ~attr;
+    return *this;
+}
+
+Enemy &Enemy::removeAllAttributes()
+{
+    attributes = {};
+    return *this;
+}
+
+void Enemy::resume()
+{
+    moveInterval.start();
+}
+
+Enemy &Enemy::setAttributes(EnemyAttr attr)
+{
+    attributes = attributes | attr;
+    return *this;
+}
+
+void Enemy::setMoveInterval()
+{
+    connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward);
+    moveInterval.start(40);
+}
+
+void Enemy::setPath(QList<QPointF>* path)
+{
+    this->path = path;
+    setPos((*path)[0]);
+    startPath();
+    setMoveInterval();
+}
+
 // private methods
 void Enemy::checkDeath()
 {
@@ -88,14 +131,14 @@ void Enemy::ethereal(Projectile* projectile)
 
 bool Enemy::headshot(Projectile* projectile)
 {
-    if (!projectile->hasAttribute(ProjAttr::Headshot)) { return false; };
+    if (this->hasAttribute(EnemyAttr::HeadshotResistant) || !projectile->hasAttribute(ProjAttr::Headshot)) { return false; };
     if (RNG::randomNum(1,100) > projectile->getHeadshotChance()) { return false; };
     return true;
 }
 
 void Enemy::hypothermic(Projectile* projectile)
 {
-    if (!projectile->hasAttribute(ProjAttr::Hypothermic)) { return; };
+    if (this->hasAttribute(EnemyAttr::Frost) || !projectile->hasAttribute(ProjAttr::Hypothermic)) { return; };
     if (hypothermia) { return; };
     if (RNG::randomNum(1,100) > projectile->getHypothermiaChance()) { return; };
 
@@ -108,7 +151,7 @@ void Enemy::hypothermic(Projectile* projectile)
 
 void Enemy::maim(Projectile* projectile)
 {
-    if (!projectile->hasAttribute(ProjAttr::Maiming)) { return; };
+    if (this->hasAttribute(EnemyAttr::MaimResistant) || !projectile->hasAttribute(ProjAttr::Maiming)) { return; };
     if (maimed) { return; };
     if (RNG::randomNum(1,100) > projectile->getMaimChance()) { return; };
 
@@ -121,7 +164,7 @@ void Enemy::maim(Projectile* projectile)
 
 void Enemy::poison(Projectile* projectile)
 {
-    if (!projectile->hasAttribute(ProjAttr::Poison)) { return; };
+    if (this->hasAttribute(EnemyAttr::PoisonResistant) || !projectile->hasAttribute(ProjAttr::Poison)) { return; };
     if (poisoned) { return; };
     if (RNG::randomNum(1,100) > projectile->getPoisonChance()) { return; };
 
@@ -139,12 +182,6 @@ void Enemy::rotateToPoint(QPointF point)
     setRotation(-1 * line.angle());
 }
 
-void Enemy::setMoveInterval()
-{
-    connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward);
-    moveInterval.start(40);
-}
-
 void Enemy::startPath()
 {
     pathIndex = 0;
@@ -155,11 +192,12 @@ void Enemy::startPath()
 
 void Enemy::warp(Projectile* projectile)
 {
-    if (!projectile->hasAttribute(ProjAttr::Warping)) { return; };
+    if (this->hasAttribute(EnemyAttr::Chrono) || !projectile->hasAttribute(ProjAttr::Warping)) { return; };
 
     TeleportProjectile* null = reinterpret_cast<TeleportProjectile*>(projectile);
     null->warpOne();
-    pathIndex = RNG::randomNum(0,pathIndex);
+    int newIndex = RNG::randomNum(0, std::min<int>(0, pathIndex));
+    pathIndex = newIndex;
     dest = (*path)[pathIndex];
     setPos(dest);
     rotateToPoint(QPointF(dest.x(), dest.y()));

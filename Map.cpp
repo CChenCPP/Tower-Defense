@@ -22,11 +22,46 @@ Map::Map(QString filePathToMap)
           QString line = stream.readLine();
           std::string stdLine = line.toStdString();
           std::vector<int> coordinates = Parse::stringToInt(Parse::split(stdLine," "));
-          QPointF validPoint = truncateToView(coordinates[0],coordinates[1]);
-          points << validPoint;
-
+          points << QPointF(coordinates[0],coordinates[1]);
+//          QPointF validPoint = truncateToView(coordinates[0],coordinates[1]);
+//          points << validPoint;
        }
     }
+
+    int minX = std::numeric_limits<int>::max();
+    int minY = std::numeric_limits<int>::max();
+    int maxX = std::numeric_limits<int>::min();
+    int maxY = std::numeric_limits<int>::min();
+
+    for (QPointF point : points){
+        int xCor = point.x();
+        int yCor = point.y();
+        minX = (xCor < minX) ? xCor : minX;
+        minY = (yCor < minY) ? yCor : minY;
+        maxX = (xCor > maxX) ? xCor : maxX;
+        maxY = (yCor > maxY) ? yCor : maxY;
+    }
+
+    int widthRange = maxX - minX;
+    int heightRange = maxY - maxY;
+
+    QList<QPointF> scaledPoints;
+
+    for (QPointF point : points){
+        int scaledX = (widthRange == 0) ? point.x() : point.x() * (game->mainScene->defaultWidth) / (maxX - minX);
+        int scaledY = (heightRange == 0) ? point.y() : point.y() * (game->mainScene->defaultHeight) / (maxY - minY);
+        scaledPoints << QPointF(scaledX, scaledY);
+    }
+
+    QList<QPointF> newPoints;
+
+    for (QPointF point : scaledPoints){
+        int finalX = (widthRange == 0) ? point.x() : point.x() - minX * (game->mainScene->defaultWidth) / (widthRange);
+        int finalY = (heightRange == 0) ? point.y() : point.y() - minY * (game->mainScene->defaultHeight) / (heightRange);
+        newPoints << QPointF(finalX, finalY);
+    }
+
+    points = newPoints;
     file.close();
 }
 

@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "IceProjectile.h"
 #include "IceShard.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -12,7 +13,8 @@ IceTower::IceTower() : Tower()
     connect(this,&Tower::upgrade,this,&IceTower::upgrade);
     attackRange = IceTower::tier1AttackRange;
     attackInterval = IceTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/IceTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = pow(IceTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -47,6 +49,7 @@ int IceTower::getUpgradeCost(Tower* tower)
 // private methods
 void IceTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     switch(tier){
         case(1):
             tier1Attack(); return;

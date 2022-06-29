@@ -1,6 +1,6 @@
 #include "IceShard.h"
-#include "Utility.h"
 #include "Game.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -20,7 +20,7 @@ IceShard::IceShard(Projectile* parent) :
 
     setPixmap(IceShard::getShardPixmap());
     setPos(parent->pos());
-    setRotation(RNG::randomNum(0,360));
+    setRotation(parent->rotation() + RNG::randomNum(-130,130));
 
     connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
@@ -37,7 +37,9 @@ IceShard::~IceShard()
 QPixmap IceShard::getShardPixmap()
 {
     QString number = Parse::toQString(RNG::randomNum(1, 8));
-    return QPixmap(":/Special/Images/IceShard" + number + ".png");
+    QPixmap pixmap(":/Special/Images/IceShard" + number + ".png");
+    QPixmap scaled = Geometry::scaleToWidth(pixmap, IceShard::defaultProjectileSize);
+    return scaled;
 }
 
 void IceShard::setAttributes()

@@ -10,30 +10,50 @@
 Game::Game() :
     mainScene(new CustomGraphicsScene()),
     mainView(new CustomGraphicsView(mainScene)),
+    running(false),
+    paused(false),
     enemySpawnTimer(new QTimer()),
-    enemyAmount(0),
-    map(nullptr),
-    grid(CustomGraphicsScene::defaultWidth / 50, QVector<QGraphicsRectItem*>(CustomGraphicsScene::defaultHeight / 50)),
-    takenSlots(CustomGraphicsScene::defaultWidth / 50, QVector<bool>(CustomGraphicsScene::defaultHeight / 50)),
-    nextLevelTimer(new QTimer()),
-    level(1),
+    nextWaveCheckTimer(new QTimer()),
+    grid(CustomGraphicsScene::defaultWidth / Game::tileSize, QVector<QGraphicsRectItem*>(CustomGraphicsScene::defaultHeight / Game::tileSize)),
+    takenSlots(CustomGraphicsScene::defaultWidth / Game::tileSize, QVector<bool>(CustomGraphicsScene::defaultHeight / Game::tileSize)),
+    wave(nullptr),
+    level(0),
     totalKillCount(0),
     health(startingHealth),
     money(1000)
 {
-    loadMap(":/Maps/Maps/Square spiral.txt");
+    loadBackground(":/Backgrounds/Backgrounds/FlatFields1.png");
+//    loadMap(":/Maps/Maps/Zigzag.txt");
+    loadMap(":/Maps/Maps/Straight horizontal line V upward.txt");
+    loadMap(":/Maps/Maps/Straight horizontal line.txt");
+    loadMap(":/Maps/Maps/Straight horizontal line V downward.txt");
     setupGrid();
     money = 10000000;
+    mainScene->setBspTreeDepth(11);
+    mainView->setRenderHint(QPainter::Antialiasing, false);
+    mainView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
+    mainView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 }
 
-void Game::buyTower(int cost)
+void Game::buyTower(int cost, Tower* tower)
 {
     money -= cost;
+    towerList.insert(tower);
 }
 
 CustomGraphicsView* Game::gameView() const
 {
     return mainView;
+}
+
+std::unordered_set<Enemy*>& Game::getEnemyList()
+{
+    return enemyList;
+}
+
+std::unordered_set<Tower*>& Game::getTowerList()
+{
+    return towerList;
 }
 
 int Game::getHealth() const
@@ -51,9 +71,9 @@ int Game::getTotalKillCount() const
     return totalKillCount;
 }
 
-void Game::enemyDestroyed()
+int Game::getWaveNumber() const
 {
-    --enemyAmount;
+    return level;
 }
 
 void Game::enemyLeaked()
@@ -76,15 +96,53 @@ void Game::hideGrid()
     }
 }
 
+bool Game::isRunning() const
+{
+    return running;
+}
+
+bool Game::isPaused() const
+{
+    return paused;
+}
+
+void Game::pause()
+{
+    enemySpawnTimer->stop();
+    for (Tower* tower : towerList){
+        tower->pause();
+    }
+    for (Enemy* enemy : enemyList){
+        enemy->pause();
+    }
+    paused = true;
+}
+
 Enemy* Game::randomEnemy() const
 {
     return (enemyList.size() > 0) ? *std::next(enemyList.begin(), RNG::randomNum(0,enemyList.size() - 1)) : nullptr;
 }
 
+void Game::resume()
+{
+    enemySpawnTimer->start();
+    for (Tower* tower : towerList){
+        tower->resume();
+    }
+    for (Enemy* enemy : enemyList){
+        enemy->resume();
+    }
+    paused = false;
+}
+
 void Game::run()
 {
-    startNextLevelTimer();
-    startSpawnTimer();
+    running = true;
+    connect(nextWaveCheckTimer,&QTimer::timeout,[&]() { if (enemyList.size() == 0 && enemiesToSpawn.size() == 0) nextWave(); });
+    nextWaveCheckTimer->start(500);
+    connect(enemySpawnTimer,&QTimer::timeout,this,&Game::spawnEnemy);
+    enemySpawnTimer->start(Game::enemySpawnIntervalMs);
+    paused ? pause() : resume();
 }
 
 void Game::sellTower(Tower* tower)
@@ -105,10 +163,10 @@ void Game::showGrid()
 
 void Game::newTowerAt(int x, int y)
 {
-    takenSlots[x / 50][(y - 50) / 50] = true;
+    takenSlots[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize] = true;
     QColor transparentRed = Qt::red;
     transparentRed.setAlphaF(0.3);
-    grid[x / 50][(y - 50) / 50]->setBrush(transparentRed);
+    grid[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize]->setBrush(transparentRed);
 }
 
 void Game::newTowerAt(QPointF pos)
@@ -116,9 +174,29 @@ void Game::newTowerAt(QPointF pos)
     newTowerAt(pos.x(), pos.y());
 }
 
+// private methods
+void Game::defineLegalSquares()
+{
+    for (int i = 0; i < grid.size(); ++i){
+        for (int j = 0; j < grid[0].size(); ++j){
+            QGraphicsRectItem* rect = grid[i][j];
+            QList<QGraphicsLineItem*> pathCollisions = mainScene->lineItemsWithinRange(
+                        QPointF(rect->x() + rect->rect().width() / 2,
+                                rect->y() + rect->rect().height() / 2),
+                                rect->rect().width() / 2);
+            if (pathCollisions.size() >= 1) {
+                QColor transparentRed = Qt::red;
+                transparentRed.setAlphaF(0.3);
+                grid[i][j]->setBrush(transparentRed);
+                takenSlots[i][j] = true;
+            }
+        }
+    }
+}
+
 bool Game::slotOccupied(int x, int y)
 {
-    return takenSlots[x / 50][(y - 50) / 50];
+    return takenSlots[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize];
 }
 
 bool Game::slotOccupied(QPointF pos)
@@ -127,22 +205,45 @@ bool Game::slotOccupied(QPointF pos)
 }
 
 // private methods
+void Game::loadBackground(QString filePath)
+{
+    QGraphicsPixmapItem* background = new QGraphicsPixmapItem();
+    QPixmap backgroundPixmap(filePath);
+    QPixmap scaledBg = backgroundPixmap.scaled(CustomGraphicsScene::defaultWidth, CustomGraphicsScene::defaultHeight, Qt::AspectRatioMode::KeepAspectRatioByExpanding);
+    background->setZValue(-1);
+    background->setPixmap(scaledBg);
+    mainScene->addItem(background);
+}
 void Game::loadMap(QString filePath)
 {
-    map = new Map(filePath);
+    Map* map = new Map(filePath);
     auto temp = map->path();
+    maps.push_back(map);
+    QVector<QGraphicsLineItem*> path;
     for (size_t i = 0; i < temp->size() - 1; ++i){
         QLineF line((*temp)[i],(*temp)[i+1]);
         QGraphicsLineItem* lineItem = new QGraphicsLineItem(line);
 
         QPen pen;
-        pen.setWidth(2);
-        pen.setColor(Qt::gray);
+        pen.setWidth(1);
+        pen.setColor(Qt::black);
         pen.setCapStyle(Qt::RoundCap);
         lineItem->setPen(pen);
-        mapLines.push_back(lineItem);
+        path.push_back(lineItem);
         mainScene->addItem(lineItem);
     }
+    paths.push_back(path);
+}
+
+void Game::nextWave()
+{
+    enemySpawnTimer->stop();
+    ++level;
+    emit newWave();
+    if (wave) { delete wave; };
+    wave = new Wave(level);
+    enemiesToSpawn = wave->getEnemyList();
+    QTimer::singleShot(2500, [&](){enemySpawnTimer->start(Game::enemySpawnIntervalMs);});
 }
 
 void Game::setupGrid()
@@ -150,11 +251,11 @@ void Game::setupGrid()
     for (int i = 0; i < grid.size(); ++i){
         for (int j = 0; j < grid[0].size(); ++j){
             QGraphicsRectItem* rectItem = new QGraphicsRectItem();
-            QRectF rect(0, 0, 50, 50);
+            QRectF rect(0, 0, Game::tileSize, Game::tileSize);
             rectItem->setRect(rect);
 //            rectItem->setTransformOriginPoint(25,25);
 //            rectItem->setRotation(45);
-            rectItem->setPos(i * 50, j * 50);
+            rectItem->setPos(i * Game::tileSize, j * Game::tileSize);
 //            if (i % 2 == 1) { rectItem->setPos(rectItem->x(), rectItem->y() + 25); };
             QColor transparentGreen = Qt::green;
             transparentGreen.setAlphaF(0.15);
@@ -163,32 +264,19 @@ void Game::setupGrid()
             mainScene->addItem(rectItem);
         }
     }
+
+    defineLegalSquares();
     hideGrid();
 }
 
-void Game::startSpawnTimer()
-{
-    QObject::connect(enemySpawnTimer,&QTimer::timeout,this,&Game::spawnEnemy);
-    enemySpawnTimer->start(250);
-}
-
-void Game::startNextLevelTimer()
-{
-    QObject::connect(nextLevelTimer,&QTimer::timeout,[&](){
-        ++level;
-        std::cout << "Level: " << level << std::endl;
-        std::cout << "Enemy spawn hp: " << pow(Enemy::defaultHp * level, 0.93) << std::endl;
-    });
-    nextLevelTimer->start(20000);
-}
-
 // public slots
-void Game::removeTower(int posX, int posY)
+void Game::removeTower(int posX, int posY, Tower* tower)
 {
-    takenSlots[posX / 50][(posY - 50) / 50] = false;
+    towerList.erase(tower);
+    takenSlots[posX / Game::tileSize][(posY - Game::tileSize) / Game::tileSize] = false;
     QColor transparentGreen = Qt::green;
     transparentGreen.setAlphaF(0.15);
-    grid[posX / 50][(posY - 50) / 50]->setBrush(transparentGreen);
+    grid[posX / Game::tileSize][(posY - Game::tileSize) / Game::tileSize]->setBrush(transparentGreen);
 }
 
 // private slots
@@ -199,11 +287,11 @@ void Game::removeEnemy(Enemy* enemy)
 
 void Game::spawnEnemy()
 {
-    if (enemyAmount >= maxEnemies) { return; };
-    int enemyHp = pow(Enemy::defaultHp * level, 0.93);
-    Enemy* enemy = new Enemy(map->path(), enemyHp);
+    if (enemiesToSpawn.size() == 0) { return; };
+    Enemy* enemy = enemiesToSpawn.back();
+    enemy->setPath(maps[RNG::randomNum(0, paths.size() - 1)]->path());
+    enemiesToSpawn.pop_back();
     enemyList.insert(enemy);
     connect(enemy,&Enemy::destructing,this,&Game::removeEnemy);
     mainScene->addItem(enemy);
-    ++enemyAmount;
 }

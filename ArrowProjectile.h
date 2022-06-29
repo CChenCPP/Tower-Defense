@@ -7,6 +7,8 @@ public:
     ArrowProjectile(int tier, int type, Tower* source);
 
 private:
+    static constexpr int defaultProjectileSize = 45;
+
     int tier;
     int type;
 

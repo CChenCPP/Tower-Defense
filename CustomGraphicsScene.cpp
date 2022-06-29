@@ -3,7 +3,9 @@
 #include <QTimer>
 #include <iostream>
 
-CustomGraphicsScene::CustomGraphicsScene(QObject* parent) : QGraphicsScene(parent)
+CustomGraphicsScene::CustomGraphicsScene(QObject* parent) :
+    QGraphicsScene(parent),
+    projectileCount(0)
 {
     setSceneRect(0,0,defaultWidth,defaultHeight);
 
@@ -29,7 +31,12 @@ QList<Tower*> CustomGraphicsScene::allTowers()
     return towers;
 }
 
-QList<Enemy*> CustomGraphicsScene::enemiesWithinRange(QGraphicsItem* graphicsItem, int radius)
+void CustomGraphicsScene::decrementProjectileCount()
+{
+    --projectileCount;
+}
+
+QList<Enemy*> CustomGraphicsScene::enemiesWithinRange(QGraphicsItem* graphicsItem, qreal radius)
 {
     QList<QGraphicsItem*> allItems = items();
     QList<Enemy*> filtered;
@@ -40,4 +47,59 @@ QList<Enemy*> CustomGraphicsScene::enemiesWithinRange(QGraphicsItem* graphicsIte
         }
     }
     return filtered;
+}
+
+int CustomGraphicsScene::getProjectileCount() const
+{
+    return projectileCount;
+}
+
+void CustomGraphicsScene::incrementProjectileCount()
+{
+    ++projectileCount;
+}
+
+QList<QGraphicsItem *> CustomGraphicsScene::itemsWithinRange(QGraphicsItem *graphicsItem, qreal radius)
+{
+    QList<QGraphicsItem*> allItems = items();
+    QList<QGraphicsItem*> filtered;
+    for (auto& item : allItems){
+        if (Geometry::distance2D(graphicsItem->pos(), item->pos()) <= radius){
+            filtered.push_back(item);
+        }
+    }
+    return filtered;
+}
+
+QList<QGraphicsItem*> CustomGraphicsScene::itemsWithinRange(const QPointF point, qreal radius)
+{
+    QList<QGraphicsItem*> allItems = items();
+    QList<QGraphicsItem*> filtered;
+    for (auto& item : allItems){
+        if (Geometry::distance2D(point, item->pos()) <= radius){
+            filtered.push_back(item);
+        }
+    }
+    return filtered;
+}
+
+QList<QGraphicsLineItem *> CustomGraphicsScene::lineItemsWithinRange(const QPointF point, qreal radius)
+{
+    QList<QGraphicsItem*> allItems = items();
+    QList<QGraphicsLineItem*> filtered;
+    for (auto& item : allItems){
+        QGraphicsLineItem* line = dynamic_cast<QGraphicsLineItem*>(item);
+        if (line) {
+            QPointF mid = Geometry::midPoint(line->line().p1(),line->line().p2());
+            if (Geometry::distance2D(point, mid) <= radius){
+                filtered.push_back(line);
+            }
+        };
+    }
+    return filtered;
+}
+
+qreal CustomGraphicsScene::projectileCapacity()
+{
+    return getProjectileCount() / static_cast<qreal>(CustomGraphicsScene::projectileRenderLimit);
 }

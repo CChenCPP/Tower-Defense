@@ -20,6 +20,7 @@ private:
 //    QGraphicsPixmapItem* cursor;
 
     QPointF convertToGridPos(BuildingCursor* cursor);
+    void duplicateBuilding();
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
 

@@ -1,5 +1,6 @@
 #include "IceProjectile.h"
 #include "Game.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -27,6 +28,8 @@ void IceProjectile::setAttributes(int tier)
             Projectile::setAttributes(ProjAttr::Shattering);
             return;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), IceProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 // private methods
@@ -46,6 +49,8 @@ void IceProjectile::setImage(int tier)
             setPixmap(QPixmap(":/Projectiles/Images/IceNova1.png"));
             break;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), IceProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void IceProjectile::setProperties(int tier)

@@ -23,6 +23,8 @@ Projectile::Projectile(QGraphicsItem *parent) :
     poisonChance(Projectile::defaultPoisonChance),
     poisonIntervalMs(Projectile::defaultPoisonIntervalMs)
 {
+    game->mainScene->incrementProjectileCount();
+    determineIfRenderable();
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::move);
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::hitEnemies);
     updateInterval.start(10);
@@ -30,6 +32,7 @@ Projectile::Projectile(QGraphicsItem *parent) :
 
 Projectile::~Projectile()
 {
+    game->mainScene->decrementProjectileCount();
     game->mainScene->removeItem(this);
 }
 
@@ -118,6 +121,11 @@ void Projectile::setTarget(Enemy* target)
 }
 
 // public methods
+void Projectile::determineIfRenderable()
+{
+    game->mainScene->projectileCapacity() > 1 ? hide() : show();
+}
+
 void Projectile::rotateToTarget()
 {
     if (target){

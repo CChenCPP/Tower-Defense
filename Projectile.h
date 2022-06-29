@@ -91,6 +91,7 @@ protected:
     int poisonChance;
     int poisonIntervalMs;
 
+    void determineIfRenderable();
     void rotateToTarget();
 
 private:

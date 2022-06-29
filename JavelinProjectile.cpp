@@ -1,4 +1,5 @@
 #include "JavelinProjectile.h"
+#include "Utility.h"
 #include <iostream>
 
 JavelinProjectile::JavelinProjectile(int tier, Tower* source) :
@@ -42,6 +43,8 @@ void JavelinProjectile::setImage(int tier)
             setPixmap(QPixmap(":/Projectiles/Images/Javelin3.png"));
             break;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), JavelinProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void JavelinProjectile::setProperties(int tier)
@@ -50,21 +53,21 @@ void JavelinProjectile::setProperties(int tier)
     {
         case 1:
             damage = 50;
-            distancePerInterval = 25;
+            distancePerInterval = 16;
             maxDistance = 2000;
             maimChance = 5;
             break;
 
         case 2:
             damage = 400;
-            distancePerInterval = 25;
+            distancePerInterval = 16;
             maxDistance = 3000;
             maimChance = 15;
             break;
 
         case 3:
             damage = 2500;
-            distancePerInterval = 25;
+            distancePerInterval = 16;
             maxDistance = 4000;
             maimChance = 30;
             headshotChance = 30;

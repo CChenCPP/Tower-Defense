@@ -1,5 +1,6 @@
 #include "CannonballProjectile.h"
 #include "Game.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -46,6 +47,8 @@ void CannonballProjectile::setImage()
             setPixmap(QPixmap(":/Projectiles/Images/Cannonball3.png"));
             break;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), CannonballProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void CannonballProjectile::setProperties()

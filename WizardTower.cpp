@@ -17,7 +17,8 @@ WizardTower::WizardTower() :
     connect(this,&Tower::upgrade,this,&WizardTower::upgrade);
     attackRange = WizardTower::tier1AttackRange;
     attackInterval = WizardTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/WizardTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = std::pow(WizardTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -136,6 +137,7 @@ void WizardTower::summonBlackHole()
 
 void WizardTower::summonNova()
 {
+    if (!targetWithinRange()) { return; };
     if (novaSummoned) { return; };
     NovaProjectile* nova = new NovaProjectile(tier, this);
     linkToTarget(nova, target);

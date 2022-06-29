@@ -72,6 +72,8 @@
         <file>Maps/Zigzag.txt</file>
         <file>Maps/Spiral.txt</file>
         <file>Maps/Square spiral.txt</file>
+        <file>Maps/Straight horizontal line V downward.txt</file>
+        <file>Maps/Straight horizontal line V upward.txt</file>
     </qresource>
     <qresource prefix="/Special">
         <file>Images/CannonballExplosion1a.png</file>
@@ -112,5 +114,9 @@
         <file>Images/BlackHole1.png</file>
         <file>Images/BlackHole2.png</file>
         <file>Images/BlackHole3.png</file>
+    </qresource>
+    <qresource prefix="/Backgrounds">
+        <file>Backgrounds/FlatFields1.png</file>
+        <file>Backgrounds/BrownDirt1.png</file>
     </qresource>
 </RCC>

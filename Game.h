@@ -1,6 +1,7 @@
 #pragma once
 #include <CustomGraphicsScene.h>
 #include <CustomGraphicsView.h>
+#include "Wave.h"
 #include <Map.h>
 #include <unordered_set>
 
@@ -10,18 +11,29 @@ class Game : public QObject
 public:
     Game();
 
+    static constexpr int tileSize = 75;
+    static constexpr qreal defaultTowerWidth = tileSize * 0.7;
+    static constexpr qreal defaultIconWidth = 55;
+    static constexpr qreal enemySpawnIntervalMs = 750;
+
     CustomGraphicsScene* mainScene;
 
-    void buyTower(int cost);
-    void enemyDestroyed();
+    void buyTower(int cost, Tower* tower);
     void enemyLeaked();
     void enemyKilled(Enemy* enemy);
     CustomGraphicsView* gameView() const;
+    std::unordered_set<Enemy*>& getEnemyList();
+    std::unordered_set<Tower*>& getTowerList();
     int getHealth() const;
     int getMoney() const;
     int getTotalKillCount() const;
+    int getWaveNumber() const;
     void hideGrid();
+    bool isRunning() const;
+    bool isPaused() const;
+    void pause();
     Enemy* randomEnemy() const;
+    void resume();
     void run();
     void sellTower(Tower* tower);
     void showGrid();
@@ -31,32 +43,39 @@ public:
     void newTowerAt(QPointF pos);
 
 private:
-    static constexpr int maxEnemies = 150;
-    static constexpr int startingHealth = 100;
     CustomGraphicsView* mainView;
-    Map* map;
-    QVector<QGraphicsLineItem*> mapLines;
+    bool running;
+    bool paused;
+    static constexpr int startingHealth = 100;
+    QVector<Map*> maps;
+    QVector<QVector<QGraphicsLineItem*>> paths;
     QVector<QVector<QGraphicsRectItem*>> grid;
     QVector<QVector<bool>> takenSlots;
+    std::unordered_set<Tower*> towerList;
     std::unordered_set<Enemy*> enemyList;
+    QVector<Enemy*> enemiesToSpawn;
     QTimer* enemySpawnTimer;
-    int enemyAmount;
-    QTimer* nextLevelTimer;
-    unsigned int level;
+    QTimer* nextWaveCheckTimer;
+    Wave* wave;
+    int level;
     int totalKillCount;
     int health;
     int money;
 
+    void defineLegalSquares();
+    void loadBackground(QString filepath);
     void loadMap(QString filepath);
+    void nextWave();
     void setupGrid();
-    void startSpawnTimer();
-    void startNextLevelTimer();
 
 public slots:
-    void removeTower(int posX, int posY);
+    void removeTower(int posX, int posY, Tower* tower);
 
 private slots:
     void removeEnemy(Enemy* enemy);
     void spawnEnemy();
+
+signals:
+    void newWave();
 };
 

@@ -72,7 +72,9 @@ void NovaProjectile::setAttributes()
 void NovaProjectile::setImage()
 {
     type = RNG::randomNum(1,3);
-    setPixmap(QPixmap(":/Projectiles/Images/Nova" + Parse::toQString(type) + ".png"));
+    QPixmap pixmap(":/Projectiles/Images/Nova" + Parse::toQString(type) + ".png");
+    QPixmap scaled = Geometry::scaleToWidth(pixmap, NovaProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void NovaProjectile::setProperties()

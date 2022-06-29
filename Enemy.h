@@ -6,11 +6,36 @@
 
 class Projectile;
 
+enum class EnemyAttr : std::uint64_t {
+    PoisonResistant = 1 << 0,
+    BurnResistant = 1 << 1,
+    HeadshotResistant = 1 << 2,
+    MaimResistant = 1 << 3,
+    Frost = 1 << 4,
+    Impenetrable = 1 << 5,
+    Chrono = 1 << 6
+};
+EnemyAttr inline operator|(EnemyAttr left, EnemyAttr right)
+{
+    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) | static_cast<std::underlying_type_t<EnemyAttr>>(right));
+}
+EnemyAttr inline operator&(EnemyAttr left, EnemyAttr right)
+{
+    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) & static_cast<std::underlying_type_t<EnemyAttr>>(right));
+}
+EnemyAttr inline operator^(EnemyAttr left, EnemyAttr right)
+{
+    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) ^ static_cast<std::underlying_type_t<EnemyAttr>>(right));
+}
+EnemyAttr inline operator~(EnemyAttr attr){
+    return static_cast<EnemyAttr>(~static_cast<int>(attr));
+}
+
 class Enemy : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    explicit Enemy(QList<QPointF>* path, int hp = 100, int armor = 1, double distPerInt = Enemy::defaultDistPerInt, QGraphicsItem* parent = nullptr);
+    explicit Enemy(int hp = 100, int armor = 1, double distPerInt = Enemy::defaultDistPerInt, QGraphicsItem* parent = nullptr);
     ~Enemy();
 
     static constexpr int defaultHp = 100;
@@ -19,12 +44,20 @@ public:
     int getCurrentHp() const;
     double getDistanceTravelled() const;
     int getValue() const;
-    bool isHitByNova() const;
+    bool hasAttribute(EnemyAttr attr) const;
+    void pause();
+    Enemy& removeAttribute(EnemyAttr attr);
+    Enemy& removeAllAttributes();
+    void resume();
+    Enemy& setAttributes(EnemyAttr attr);
+    template <class EnemyAttr, class... EnemyAttrs> void setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs);
+    void setPath(QList<QPointF>* path);
 
 private:
     static constexpr double defaultDistPerInt = 2;
 
     QList<QPointF>* path;
+    EnemyAttr attributes;
     int hp;
     int armor;
     int value;
@@ -61,4 +94,11 @@ signals:
     void destructing(Enemy* enemy);
     void killedBy(Projectile* projectile, Enemy* enemy);
 };
+
+template <class EnemyAttr, class... EnemyAttrs>
+void Enemy::setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs)
+{
+    attributes = attributes | attr;
+    setAttributes(otherAttrs...);
+}
 

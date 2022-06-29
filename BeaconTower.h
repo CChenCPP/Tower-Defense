@@ -8,7 +8,6 @@ public:
     BeaconTower();
     ~BeaconTower();
 
-    void init();
     static int getDefaultCost();
     static QString getImageUrl(Tower* tower, bool HD = false);
     static int getUpgradeCost(Tower* tower);
@@ -30,10 +29,8 @@ private:
     std::unordered_set<Tower*> buffedAttackRangeNeighbors;
     std::unordered_set<Tower*> buffedAttackRateNeighbors;
     std::unordered_set<Tower*> buffedDamageNeighbors;
-    QTimer checkNeighborsTimer;
 
     void attackTarget();
-    void setupTimers();
     void tier1Attack();
     void tier2Attack();
     void tier3Attack();

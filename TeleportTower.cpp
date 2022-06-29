@@ -1,6 +1,10 @@
 #include "TeleportTower.h"
 #include "TeleportProjectile.h"
+#include "Game.h"
+#include "Utility.h"
 #include <iostream>
+
+extern Game* game;
 
 TeleportTower::TeleportTower() :
     Tower()
@@ -9,7 +13,8 @@ TeleportTower::TeleportTower() :
     maxTier = 1;
     attackRange = TeleportTower::tier1AttackRange;
     attackInterval = TeleportTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/TeleportTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = std::pow(TeleportTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -46,6 +51,7 @@ int TeleportTower::getUpgradeCost(Tower* tower)
 
 void TeleportTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     switch(tier){
         case(1):
             tier1Attack();

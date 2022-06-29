@@ -36,6 +36,7 @@ private:
     void enablePriorityButtons() const;
     void drawSelectedTowerToScene();
     void drawTowerOutline();
+    void keyPressEvent(QKeyEvent* event);
     void resetSelection();
     void setupBuildTowerIcons() const;
 
@@ -58,4 +59,6 @@ private slots:
     void on_lowestHpPriorityRadioButton_clicked();
     void on_entrancePriorityRadioButton_clicked();
     void on_exitPriorityRadioButton_clicked();
+    void on_startGamePushButton_clicked();
+    void on_pauseButton_clicked();
 };

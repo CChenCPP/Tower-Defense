@@ -2,6 +2,7 @@
 #include "ArrowProjectile.h"
 #include "Game.h"
 #include "Utility.h"
+#include "GameConstants.h"
 #include <iostream>
 
 extern Game* game;
@@ -12,7 +13,8 @@ ArcherTower::ArcherTower() :
     connect(this,&Tower::upgrade,this,&ArcherTower::upgrade);
     attackRange = ArcherTower::tier1AttackRange;
     attackInterval = ArcherTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/ArcherTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = std::pow(ArcherTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -48,6 +50,7 @@ int ArcherTower::getUpgradeCost(Tower* tower)
 // private methods
 void ArcherTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     int attackType = RNG::randomNum(1,tier);
     switch(attackType){
         case(1):

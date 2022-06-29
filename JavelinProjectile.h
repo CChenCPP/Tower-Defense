@@ -7,6 +7,7 @@ public:
     JavelinProjectile(int tier, Tower* source);
 
 private:
+    static constexpr int defaultProjectileSize = 52;
     int tier;
 
     void setAttributes(int tier);

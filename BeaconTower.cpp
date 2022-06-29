@@ -1,6 +1,7 @@
 #include "BeaconTower.h"
 #include "WizardTower.h"
 #include "Game.h"
+#include "Utility.h"
 #include <iostream>
 
 extern Game* game;
@@ -11,7 +12,8 @@ BeaconTower::BeaconTower() :
     connect(this,&Tower::upgrade,this,&BeaconTower::upgrade);
     attackRange = BeaconTower::tier1AttackRange;
     attackInterval = BeaconTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/BeaconTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), Game::defaultTowerWidth);;
+    setPixmap(scaled);
     sellValue = std::pow(BeaconTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -29,12 +31,6 @@ BeaconTower::~BeaconTower()
 }
 
 // public methods
-void BeaconTower::init()
-{
-    Tower::init();
-    setupTimers();
-}
-
 int BeaconTower::getDefaultCost()
 {
     return BeaconTower::tier1Cost;
@@ -80,13 +76,6 @@ void BeaconTower::attackTarget()
     }
 }
 
-void BeaconTower::setupTimers()
-{
-    attackIntervalTimer.disconnect();
-    QObject::connect(&checkNeighborsTimer,&QTimer::timeout,[&](){ attackTarget();});
-    checkNeighborsTimer.start(attackInterval * attackIntervalMultiplier);
-}
-
 // private methods
 void BeaconTower::tier1Attack()
 {
@@ -95,7 +84,7 @@ void BeaconTower::tier1Attack()
     for (auto& item : collisions){
         if (dynamic_cast<BeaconTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end()){
+        if (tower && tower->isBuilt() && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end()){
             tower->setDamageMultiplier(tower->getDamageMultiplier() * BeaconTower::damageMultiplierBuff);
             buffedDamageNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
@@ -110,7 +99,7 @@ void BeaconTower::tier2Attack()
     for (auto& item : collisions){
         if (dynamic_cast<BeaconTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
+        if (tower && tower->isBuilt() && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
             tower->setAttackIntervalMultiplier(tower->getAttackIntervalMultiplier() * BeaconTower::attackIntervalMultiplierBuff);
             buffedAttackRateNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
@@ -125,7 +114,7 @@ void BeaconTower::tier3Attack()
     for (auto& item : collisions){
         if (dynamic_cast<BeaconTower*>(item)) { continue; };
         Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end()){
+        if (tower && tower->isBuilt() && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end()){
             tower->setAttackRangeMultiplier(tower->getAttackRangeMultiplier() * BeaconTower::attackRangeMultiplierBuff);
             buffedAttackRangeNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);

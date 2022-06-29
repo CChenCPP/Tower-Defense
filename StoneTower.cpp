@@ -12,7 +12,8 @@ StoneTower::StoneTower() : Tower()
     connect(this,&Tower::upgrade,this,&StoneTower::upgrade);
     attackRange = StoneTower::tier1AttackRange;
     attackInterval = StoneTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/StoneTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = pow(StoneTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -48,6 +49,7 @@ int StoneTower::getUpgradeCost(Tower* tower)
 
 void StoneTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     switch(tier){
         case(1):
             tier1Attack(); return;

@@ -17,6 +17,7 @@ extern Game* game;
 
 Tower::Tower(QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent),
+    built(false),
     tier(1),
     maxTier(Tower::defaultMaxTier),
     attackIntervalMultiplier(1),
@@ -36,7 +37,7 @@ Tower::Tower(QGraphicsItem* parent) :
 
 Tower::~Tower()
 {
-    emit removeFromGrid(gridPosX, gridPosY);
+    emit removeFromGrid(gridPosX, gridPosY, this);
     emit untether(this);
     emit destructing(this);
 }
@@ -45,16 +46,6 @@ Tower::~Tower()
 void Tower::consecutiveAttack()
 {
     determineTarget();
-}
-
-bool Tower::isTethered() const
-{
-    return tethered;
-}
-
-bool Tower::isUpgradable() const
-{
-    return !(tier == maxTier);
 }
 
 int Tower::getAttackInterval() const
@@ -240,6 +231,33 @@ void Tower::init()
     defineAttackArea();
     showAttackArea(false);
     setAttackInterval();
+    built = true;
+    if (game->isPaused()) { pause(); };
+}
+
+bool Tower::isBuilt() const
+{
+    return built;
+}
+
+bool Tower::isTethered() const
+{
+    return tethered;
+}
+
+bool Tower::isUpgradable() const
+{
+    return !(tier == maxTier);
+}
+
+void Tower::pause()
+{
+    attackIntervalTimer.stop();
+}
+
+void Tower::resume()
+{
+    attackIntervalTimer.start();
 }
 
 void Tower::setAttackIntervalMultiplier(float multiplier)
@@ -285,13 +303,18 @@ void Tower::setPriority(TargetPriority targetPriority)
 
 void Tower::upgradeTier()
 {
+//    QPixmap scaledOld = oldPixmap.scaled(55, oldPixmap.height() * (oldPixmap.width() / 55));
+//    QPixmap scaledNew =newPixmap.scaled(55, newPixmap.height() * (newPixmap.width() / 55));
     tier = std::min<int>(tier + 1, maxTier);
     QPixmap oldPixmap = pixmap();
     emit upgrade();
     QPixmap newPixmap = getImageUrl(this);
-    int heightDiff = newPixmap.height() - oldPixmap.height();
-    setPixmap(QPixmap(getImageUrl(this)));
-    setPos(pos().x(), pos().y() - heightDiff);
+    QPixmap scaled = newPixmap.scaled(Game::defaultTowerWidth, newPixmap.height() / (newPixmap.width() / Game::defaultTowerWidth));
+    int heightDiff = scaled.height() - oldPixmap.height();
+    int widthDiff = scaled.width() - oldPixmap.width();
+
+    setPixmap(scaled);
+    setPos(pos().x() - widthDiff / 2, pos().y() - heightDiff);
 }
 
 void Tower::defineAttackArea()
@@ -338,7 +361,8 @@ void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
     projectile->setPos(x() + centerX, y() + centerY);
     projectile->setTarget(enemy);
 
-    QLineF line(QPointF(x() + centerX, y() + centerY), attackDestination);
+    QPointF originPoint = enemy->transformOriginPoint();
+    QLineF line(QPointF(x() + centerX, y() + centerY), QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y()));
     int angle = -1 * line.angle();
     projectile->setRotation(angle);
     if (!projectile->hasAttribute(ProjAttr::Heatseek)) { projectile->setTarget(nullptr); };
@@ -347,9 +371,12 @@ void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 
 void Tower::setAttackInterval()
 {
+    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget);
+    attackRangeSearchTimer.start(Tower::defaultAttackRangeSearchIntervalMs);
     attackIntervalTimer.disconnect();
-    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::determineTarget);
+    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget);
     attackIntervalTimer.start(attackInterval * attackIntervalMultiplier);
+    game->isPaused() ? pause() : resume();
 }
 
 void Tower::setAttackInterval(int ms)
@@ -368,6 +395,12 @@ void Tower::setCenterOffset()
 {
     centerX = pixmap().width() / 2;
     centerY = pixmap().height() - pixmap().width() / 2;
+}
+
+bool Tower::targetWithinRange()
+{
+    if (!target) { return false; };
+    return Geometry::distance2D(QPointF(x() + centerX, y() + centerY), target->pos()) <= attackRange * attackRangeMultiplier;
 }
 
 Enemy* Tower::targetNearest(QList<QGraphicsItem*> collisions)
@@ -489,13 +522,15 @@ void Tower::determineTarget()
     }
 
     if (enemy){
-        auto originPoint = enemy->transformOriginPoint();
+        QPointF originPoint = enemy->transformOriginPoint();
         attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
         target = enemy;
         hasTarget = true;
+        connect(enemy,&Enemy::destructing,this,&Tower::targetDestructing);
     }
+}
 
-    if (hasTarget) {
-        attackTarget();
-        target = nullptr; };
+void Tower::targetDestructing(Enemy* enemy)
+{
+    if (enemy == target) { target = nullptr; };
 }

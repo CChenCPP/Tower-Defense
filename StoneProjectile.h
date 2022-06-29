@@ -7,6 +7,8 @@ public:
     StoneProjectile(int tier, Tower* source);
 
 private:
+    static constexpr int defaultProjectileSize = 22;
+
     void setAttributes();
     void setImage();
     void setProperties();

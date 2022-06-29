@@ -12,6 +12,8 @@ public:
     void returnToSource();
 
 private:
+    static constexpr int defaultProjectileSize = 32;
+
     QGraphicsPixmapItem targetHitAnim;
     QTimer animRotationTimer;
     int tier;

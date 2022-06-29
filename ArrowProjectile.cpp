@@ -1,4 +1,5 @@
 #include "ArrowProjectile.h"
+#include "Utility.h"
 #include <iostream>
 
 ArrowProjectile::ArrowProjectile(int tier, int type, Tower* source) :
@@ -43,6 +44,8 @@ void ArrowProjectile::setImage()
             setPixmap(QPixmap(":/Projectiles/Images/Arrow3.png"));
             break;
     }
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), ArrowProjectile::defaultProjectileSize);
+    setPixmap(scaled);
 }
 
 void ArrowProjectile::setProperties()
@@ -51,21 +54,21 @@ void ArrowProjectile::setProperties()
     {
         case 1:
             damage = 75 * pow(tier, 2);
-            distancePerInterval = 15;
+            distancePerInterval = 13;
             maxDistance = 2000;
             maimChance = 30;
             break;
 
         case 2:
             damage = 30 * pow(tier, 2);
-            distancePerInterval = 15;
+            distancePerInterval = 13;
             maxDistance = 2000;
             maimChance = 20;
             break;
 
         case 3:
             damage = 25 * pow(tier, 2);
-            distancePerInterval = 15;
+            distancePerInterval = 13;
             maxDistance = 2000;
             maimChance = 10;
             break;

@@ -9,6 +9,7 @@ public:
     ~IceShard();
 
 private:
+    static constexpr int defaultProjectileSize = 12;
     static constexpr int defaultDistPerInt = 2;
     static constexpr int defaultMaxDistance = 75;
 

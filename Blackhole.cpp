@@ -29,7 +29,7 @@ void BlackHole::banish()
     for (auto& item : collidingItems()){
         if (targetCount < maxTargets) { return; };
         Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+        if (enemy && !enemy->hasAttribute(EnemyAttr::Chrono)){
             qreal distance = Geometry::distance2D(pos(), enemy->pos());
             if (distance < 10){
                 delete enemy;

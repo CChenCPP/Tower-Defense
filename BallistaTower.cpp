@@ -12,7 +12,8 @@ BallistaTower::BallistaTower() :
     connect(this,&Tower::upgrade,this,&BallistaTower::upgrade);
     attackRange = BallistaTower::tier1AttackRange;
     attackInterval = BallistaTower::tier1AttackInterval;
-    setPixmap(QPixmap(":/Towers/Images/BallistaTower1.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), Game::defaultTowerWidth);
+    setPixmap(scaled);
     sellValue = std::pow(BallistaTower::tier1Cost, Tower::valueDecay);
 }
 
@@ -47,6 +48,7 @@ int BallistaTower::getUpgradeCost(Tower* tower)
 // private methods
 void BallistaTower::attackTarget()
 {
+    if (!targetWithinRange()) { return; };
     switch(tier){
         case(1):
             tier1Attack(); return;

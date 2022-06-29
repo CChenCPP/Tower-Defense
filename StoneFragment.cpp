@@ -16,7 +16,7 @@ StoneFragment::StoneFragment(Projectile* parent) :
 
     setPixmap(StoneFragment::getFragmentPixmap());
     setPos(parent->pos());
-    setRotation(RNG::randomNum(0,360));
+    setRotation(parent->rotation() + RNG::randomNum(-90,90));
 
     connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
@@ -33,5 +33,7 @@ StoneFragment::~StoneFragment()
 QPixmap StoneFragment::getFragmentPixmap()
 {
     QString number = Parse::toQString(RNG::randomNum(1, 8));
-    return QPixmap(":/Special/Images/StoneFragment" + number + ".png");
+    QPixmap pixmap(":/Special/Images/StoneFragment" + number + ".png");
+    QPixmap scaled = Geometry::scaleToWidth(pixmap, StoneFragment::defaultProjectileSize);
+    return scaled;
 }
