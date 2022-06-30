@@ -35,11 +35,12 @@ class Enemy : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 public:
-    explicit Enemy(int hp = 100, int armor = 1, double distPerInt = Enemy::defaultDistPerInt, QGraphicsItem* parent = nullptr);
+    explicit Enemy(int level, QGraphicsItem* parent = nullptr);
     ~Enemy();
 
     static constexpr int defaultHp = 100;
 
+    QPointF center() const;
     void damage(int damage, Projectile* projectile);
     int getCurrentHp() const;
     double getDistanceTravelled() const;
@@ -53,11 +54,12 @@ public:
     template <class EnemyAttr, class... EnemyAttrs> void setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs);
     void setPath(QList<QPointF>* path);
 
-private:
+protected:
     static constexpr double defaultDistPerInt = 2;
 
     QList<QPointF>* path;
     EnemyAttr attributes;
+    int level;
     int hp;
     int armor;
     int value;
@@ -75,6 +77,8 @@ private:
     bool poisoned;
     QTimer poisonTimer;
 
+    void centerToPoint(qreal x, qreal y);
+    void centerToPoint(QPointF point);
     void checkDeath();
     void ethereal(Projectile* projectile);
     bool headshot(Projectile* projectile);

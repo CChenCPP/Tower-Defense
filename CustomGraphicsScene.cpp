@@ -1,6 +1,7 @@
 #include "CustomGraphicsScene.h"
 #include "Utility.h"
 #include <QTimer>
+#include "Game.h"
 #include <iostream>
 
 CustomGraphicsScene::CustomGraphicsScene(QObject* parent) :
@@ -85,14 +86,24 @@ QList<QGraphicsItem*> CustomGraphicsScene::itemsWithinRange(const QPointF point,
 
 QList<QGraphicsLineItem *> CustomGraphicsScene::lineItemsWithinRange(const QPointF point, qreal radius)
 {
+    static int granularity = CustomGraphicsScene::defaultWidth / Game::tileSize * sqrt(2);
+
     QList<QGraphicsItem*> allItems = items();
     QList<QGraphicsLineItem*> filtered;
     for (auto& item : allItems){
         QGraphicsLineItem* line = dynamic_cast<QGraphicsLineItem*>(item);
         if (line) {
-            QPointF mid = Geometry::midPoint(line->line().p1(),line->line().p2());
-            if (Geometry::distance2D(point, mid) <= radius){
-                filtered.push_back(line);
+            qreal dx = line->line().p2().x() - line->line().p1().x();
+            qreal dy = line->line().p2().y() - line->line().p1().y();
+
+            QPointF current(line->line().p1());
+            for (qreal i = 0; i < 1; i += 1.0 / granularity){
+                if (Geometry::distance2D(point, current) <= radius){
+                    filtered.push_back(line);
+                    break;
+                }
+                current.setX(line->line().p1().x() + i * dx);
+                current.setY(line->line().p1().y() + i * dy);
             }
         };
     }

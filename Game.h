@@ -11,8 +11,8 @@ class Game : public QObject
 public:
     Game();
 
-    static constexpr int tileSize = 75;
-    static constexpr qreal defaultTowerWidth = tileSize * 0.7;
+    static constexpr int tileSize = 36;
+    static constexpr qreal defaultTowerWidth = tileSize * 1.3;
     static constexpr qreal defaultIconWidth = 55;
     static constexpr qreal enemySpawnIntervalMs = 750;
 
@@ -28,6 +28,7 @@ public:
     int getMoney() const;
     int getTotalKillCount() const;
     int getWaveNumber() const;
+    void hideGridAll();
     void hideGrid();
     bool isRunning() const;
     bool isPaused() const;

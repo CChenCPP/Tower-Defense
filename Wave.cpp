@@ -1,4 +1,5 @@
 #include "Wave.h"
+#include "ChronoEnemy.h"
 
 Wave::Wave(int level) :
     level(level)
@@ -21,14 +22,22 @@ void Wave::generateEnemyList(int level)
             wave2(); return;
         case 3:
             wave3(); return;
+        case 4:
+            wave4(); return;
+        case 5:
+            wave5(); return;
+        case 6:
+            wave6(); return;
     }
+
+    wave6();
 }
 
 // private methods
 void Wave::wave1()
 {
     for (int i = 0; i < 10; ++i){
-        Enemy* enemy = new Enemy(Enemy::defaultHp * level);
+        ChronoEnemy* enemy = new ChronoEnemy(level);
         enemyList.push_back(enemy);
     }
 }

@@ -19,8 +19,8 @@
      <rect>
       <x>320</x>
       <y>10</y>
-      <width>750</width>
-      <height>750</height>
+      <width>792</width>
+      <height>792</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -479,7 +479,7 @@
    <widget class="QPushButton" name="startGamePushButton">
     <property name="geometry">
      <rect>
-      <x>1080</x>
+      <x>1130</x>
       <y>150</y>
       <width>75</width>
       <height>24</height>

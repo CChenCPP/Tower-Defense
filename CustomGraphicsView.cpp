@@ -40,6 +40,7 @@ void CustomGraphicsView::setCursor(Tower* tower)
     buildingCursor = new BuildingCursor(tower);
 }
 
+// private methods
 QPointF CustomGraphicsView::convertToGridPos(BuildingCursor* cursor)
 {
     QPixmap towerPixmap = cursor->getTower().pixmap();
@@ -78,15 +79,7 @@ void CustomGraphicsView::duplicateBuilding()
     }
 }
 
-// private methods
-void CustomGraphicsView::mouseMoveEvent(QMouseEvent* event)
-{
-    if (buildingCursor){
-        buildingCursor->updatePos(event->pos());
-    }
-}
-
-void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
+bool CustomGraphicsView::isRightMousePress(QMouseEvent* event)
 {
     if (event->button() == Qt::RightButton) {
         delete buildingCursor;
@@ -94,15 +87,30 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         buildingCursor = nullptr;
         building = nullptr;
         game->hideGrid();
-        return;
+        return true;
     }
+    return false;
+}
+
+void CustomGraphicsView::mouseMoveEvent(QMouseEvent* event)
+{
+    std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
+    if (buildingCursor){
+        buildingCursor->updatePos(event->pos());
+    }
+}
+
+void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
+{
+    if (isRightMousePress(event)) { return; };
 
     if (building){
         QPointF buildingPos = convertToGridPos(buildingCursor);
         QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
-        if (!game->slotOccupied(slotPos)){
+        QPointF gridIdentifierPos(slotPos.x() + Game::defaultTowerWidth / 2, slotPos.y());
+        if (!game->slotOccupied(QPointF(slotPos.x() + building->pixmap().width() / 2, slotPos.y()))){
             game->buyTower(Tower::getDefaultCost(building), building);
-            game->newTowerAt(slotPos);
+            game->newTowerAt(gridIdentifierPos);
             connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
             building->init();
             building->setGridPos(slotPos);

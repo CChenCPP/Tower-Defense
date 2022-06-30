@@ -31,6 +31,7 @@ Explosion::Explosion(Projectile* parent) :
 
     setAnimation();
     game->mainScene->addItem(this);
+    hide();
     explode();
 }
 
@@ -45,18 +46,20 @@ void Explosion::setAnimation()
 {
     gif = new QLabel();
     QPixmap pixmap(":/Special/Images/CannonballExplosion1a.gif");
-    QPixmap scaledPixmap = Geometry::scaleToWidth(pixmap, Explosion::defaultProjectileSize * 1.5);
+    QPixmap scaledPixmap = Geometry::scaleToWidth(pixmap, Explosion::defaultProjectileSize * 1.3);
     movie = new QMovie(":/Special/Images/CannonballExplosion1a.gif");
     gif->setMovie(movie);
     movie->setScaledSize(scaledPixmap.size());
     movie->start();
     gifFrameCount =  movie->frameCount();
+    int speed = 100 * gifFrameCount / 33;
+    movie->setSpeed(speed);
     int xOffset = qCos(rotation() * Geometry::radToDegRatio) * this->pixmap().width() / 2;
     int yOffset = qSin(rotation() * Geometry::radToDegRatio) * this->pixmap().height() / 2;
     gif->setGeometry(x() - scaledPixmap.width() / 2 + xOffset,y() - scaledPixmap.height() / 2 + yOffset, scaledPixmap.width(), scaledPixmap.height());
     gif->setAttribute(Qt::WA_TranslucentBackground);
     proxy = game->mainScene->addWidget(gif);
-//    connect(movie,&QMovie::frameChanged,this,&Explosion::onFrameChanged);
+    QTimer::singleShot(gifFrameCount * 30 / speed * 100, this, [this](){ delete this; });
 }
 
 void Explosion::explode()
@@ -72,7 +75,6 @@ void Explosion::explode()
         }
     }
     updateInterval.disconnect();
-//    QTimer::singleShot(gifFrameCount * 30, this, [this](){ delete this;  });
 }
 
 // private methods

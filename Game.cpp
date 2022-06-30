@@ -24,15 +24,18 @@ Game::Game() :
 {
     loadBackground(":/Backgrounds/Backgrounds/FlatFields1.png");
 //    loadMap(":/Maps/Maps/Zigzag.txt");
-    loadMap(":/Maps/Maps/Straight horizontal line V upward.txt");
-    loadMap(":/Maps/Maps/Straight horizontal line.txt");
-    loadMap(":/Maps/Maps/Straight horizontal line V downward.txt");
+//    loadMap(":/Maps/Maps/Straight horizontal line V upward.txt");
+//    loadMap(":/Maps/Maps/Straight horizontal line.txt");
+//    loadMap(":/Maps/Maps/Straight horizontal line V downward.txt");
+//    loadMap(":/Maps/Maps/Spiral.txt");
+//    loadMap(":/Maps/Maps/Square spiral.txt");
+    loadMap(":/Maps/Maps/Maze 2 Path 1.txt");
+    loadMap(":/Maps/Maps/Maze 2 Path 2.txt");
     setupGrid();
     money = 10000000;
     mainScene->setBspTreeDepth(11);
     mainView->setRenderHint(QPainter::Antialiasing, false);
     mainView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
-    mainView->setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
 }
 
 void Game::buyTower(int cost, Tower* tower)
@@ -87,11 +90,27 @@ void Game::enemyKilled(Enemy* enemy)
     money += enemy->getValue();
 }
 
-void Game::hideGrid()
+void Game::hideGridAll()
 {
     for (auto& row : grid){
         for (auto& rect : row){
             rect->setVisible(false);
+        }
+    }
+}
+
+void Game::hideGrid()
+{
+//    for (int i = 1; i < grid.size() - 1; ++i){
+//        for (int j = 1; j < grid[0].size() - 1; ++j){
+//            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+//            grid[i][j]->setVisible(false);
+//        }
+//    }
+    for (int i = 0; i < grid.size(); ++i){
+        for (int j = 0; j < grid[0].size(); ++j){
+            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+            grid[i][j]->setVisible(false);
         }
     }
 }
@@ -154,9 +173,16 @@ void Game::sellTower(Tower* tower)
 
 void Game::showGrid()
 {
-    for (auto& row : grid){
-        for (auto& rect : row){
-            rect->setVisible(true);
+//    for (int i = 1; i < grid.size() - 1; ++i){
+//        for (int j = 1; j < grid[0].size() - 1; ++j){
+//            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+//            grid[i][j]->setVisible(true);
+//        }
+//    }
+    for (int i = 0; i < grid.size(); ++i){
+        for (int j = 0; j < grid[0].size(); ++j){
+            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+            grid[i][j]->setVisible(true);
         }
     }
 }
@@ -183,8 +209,12 @@ void Game::defineLegalSquares()
             QList<QGraphicsLineItem*> pathCollisions = mainScene->lineItemsWithinRange(
                         QPointF(rect->x() + rect->rect().width() / 2,
                                 rect->y() + rect->rect().height() / 2),
-                                rect->rect().width() / 2);
-            if (pathCollisions.size() >= 1) {
+                                rect->rect().width() / 2 * sqrt(2));
+
+
+            if (pathCollisions.size() >= 1
+                    || ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0))
+                    /*|| (i == 0 || i == grid.size() - 1 || j == 0 || j == grid[0].size() - 1)*/) {
                 QColor transparentRed = Qt::red;
                 transparentRed.setAlphaF(0.3);
                 grid[i][j]->setBrush(transparentRed);
@@ -225,8 +255,8 @@ void Game::loadMap(QString filePath)
         QGraphicsLineItem* lineItem = new QGraphicsLineItem(line);
 
         QPen pen;
-        pen.setWidth(1);
-        pen.setColor(Qt::black);
+        pen.setWidth(15);
+        pen.setColor(Qt::white);
         pen.setCapStyle(Qt::RoundCap);
         lineItem->setPen(pen);
         path.push_back(lineItem);
@@ -253,10 +283,10 @@ void Game::setupGrid()
             QGraphicsRectItem* rectItem = new QGraphicsRectItem();
             QRectF rect(0, 0, Game::tileSize, Game::tileSize);
             rectItem->setRect(rect);
-//            rectItem->setTransformOriginPoint(25,25);
-//            rectItem->setRotation(45);
+            rectItem->setTransformOriginPoint(Game::tileSize / 2, Game::tileSize / 2);
+            rectItem->setScale(sqrt(2));
+            rectItem->setRotation(45);
             rectItem->setPos(i * Game::tileSize, j * Game::tileSize);
-//            if (i % 2 == 1) { rectItem->setPos(rectItem->x(), rectItem->y() + 25); };
             QColor transparentGreen = Qt::green;
             transparentGreen.setAlphaF(0.15);
             rectItem->setBrush(transparentGreen);
@@ -266,6 +296,7 @@ void Game::setupGrid()
     }
 
     defineLegalSquares();
+    hideGridAll();
     hideGrid();
 }
 

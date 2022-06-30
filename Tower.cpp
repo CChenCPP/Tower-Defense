@@ -37,7 +37,10 @@ Tower::Tower(QGraphicsItem* parent) :
 
 Tower::~Tower()
 {
-    emit removeFromGrid(gridPosX, gridPosY, this);
+//    std::cout << gridPosX << " " << gridPosY << std::endl;
+//    std::cout << this->pixmap().width() << std::endl;
+//    std::cout << gridPosX + pixmap().width() << std::endl;
+    emit removeFromGrid(gridPosX + (pixmap().width() / 2), gridPosY, this);
     emit untether(this);
     emit destructing(this);
 }
@@ -230,6 +233,7 @@ void Tower::init()
     setCenterOffset();
     defineAttackArea();
     showAttackArea(false);
+    setRangeSearchInterval();
     setAttackInterval();
     built = true;
     if (game->isPaused()) { pause(); };
@@ -347,7 +351,7 @@ void Tower::defineAttackArea()
     attackArea->setPos(x() + line.dx(), y() + line.dy());
     attackArea->setPen(Qt::NoPen);
     QColor transparentRed = Qt::red;
-    transparentRed.setAlphaF(0.05);
+    transparentRed.setAlphaF(0.1);
     attackArea->setBrush(transparentRed);
     showAttackArea((isShowing) ? true : false);
 }
@@ -371,9 +375,8 @@ void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 
 void Tower::setAttackInterval()
 {
-    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget);
-    attackRangeSearchTimer.start(Tower::defaultAttackRangeSearchIntervalMs);
     attackIntervalTimer.disconnect();
+//    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::determineTarget);
     QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget);
     attackIntervalTimer.start(attackInterval * attackIntervalMultiplier);
     game->isPaused() ? pause() : resume();
@@ -397,10 +400,19 @@ void Tower::setCenterOffset()
     centerY = pixmap().height() - pixmap().width() / 2;
 }
 
-bool Tower::targetWithinRange()
+void Tower::setRangeSearchInterval()
+{
+    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget);
+    attackRangeSearchTimer.start(Tower::defaultAttackRangeSearchIntervalMs);
+}
+
+bool Tower::targetWithinRange() const
 {
     if (!target) { return false; };
-    return Geometry::distance2D(QPointF(x() + centerX, y() + centerY), target->pos()) <= attackRange * attackRangeMultiplier;
+    QPointF originPoint = target->transformOriginPoint();
+    QPointF targetCenter(target->x() + originPoint.x(), target->y() + originPoint.y());
+    qreal boundingCircleRadius = std::max<qreal>(target->pixmap().width(), target->pixmap().height()) / 2;
+    return Geometry::distance2D(QPointF(x() + centerX, y() + centerY), targetCenter) <= (attackRange * attackRangeMultiplier + boundingCircleRadius);
 }
 
 Enemy* Tower::targetNearest(QList<QGraphicsItem*> collisions)

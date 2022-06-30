@@ -37,6 +37,6 @@ void BuildingCursor::generateAttackArea(Tower* tower)
     towerAttackArea.setPolygon(polygon);
     towerAttackArea.setPen(Qt::NoPen);
     QColor transparentRed = Qt::red;
-    transparentRed.setAlphaF(0.05);
+    transparentRed.setAlphaF(0.1);
     towerAttackArea.setBrush(transparentRed);
 }

@@ -66,6 +66,7 @@
     <qresource prefix="/Enemies">
         <file>Images/EnemyBlackCircle.png</file>
         <file>Images/EnemyBlackSquare.png</file>
+        <file>Images/EnemyChrono1.png</file>
     </qresource>
     <qresource prefix="/Maps">
         <file>Maps/Straight horizontal line.txt</file>
@@ -74,10 +75,11 @@
         <file>Maps/Square spiral.txt</file>
         <file>Maps/Straight horizontal line V downward.txt</file>
         <file>Maps/Straight horizontal line V upward.txt</file>
+        <file>Maps/Maze1.txt</file>
+        <file>Maps/Maze 2 Path 2.txt</file>
+        <file>Maps/Maze 2 Path 1.txt</file>
     </qresource>
     <qresource prefix="/Special">
-        <file>Images/CannonballExplosion1a.png</file>
-        <file>Images/CannonballExplosion1a.gif</file>
         <file>Images/CannonballExplosion2a.png</file>
         <file>Images/CannonballExplosion3a.png</file>
         <file>Images/StoneFragment1.png</file>
@@ -114,6 +116,8 @@
         <file>Images/BlackHole1.png</file>
         <file>Images/BlackHole2.png</file>
         <file>Images/BlackHole3.png</file>
+        <file>Images/CannonballExplosion1a.png</file>
+        <file>Images/CannonballExplosion1a.gif</file>
     </qresource>
     <qresource prefix="/Backgrounds">
         <file>Backgrounds/FlatFields1.png</file>

@@ -8,8 +8,8 @@ class CustomGraphicsScene : public QGraphicsScene
 public:
     CustomGraphicsScene(QObject* parent = nullptr);
 
-    static constexpr int defaultWidth = 750;
-    static constexpr int defaultHeight = 750;
+    static constexpr int defaultWidth = 792;
+    static constexpr int defaultHeight = 792;
     static constexpr int projectileRenderLimit = 120;
 
     QList<Tower*> allTowers();

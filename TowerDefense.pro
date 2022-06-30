@@ -19,6 +19,7 @@ SOURCES += \
     BuildingCursor.cpp \
     CannonTower.cpp \
     CannonballProjectile.cpp \
+    ChronoEnemy.cpp \
     CustomGraphicsScene.cpp \
     CustomGraphicsView.cpp \
     Enemy.cpp \
@@ -55,6 +56,7 @@ HEADERS += \
    BuildingCursor.h \
    CannonTower.h \
    CannonballProjectile.h \
+   ChronoEnemy.h \
    CustomGraphicsScene.h \
    CustomGraphicsView.h \
    Enemy.h \

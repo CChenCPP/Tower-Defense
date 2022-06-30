@@ -60,7 +60,7 @@ public:
 
 protected:
     static constexpr int consecutiveAttackChance = 30;
-    static constexpr int defaultAttackRangeSearchIntervalMs = 500;
+    static constexpr int defaultAttackRangeSearchIntervalMs = 1000;
     static constexpr float valueDecay = 0.90;
 
     int centerX;
@@ -92,7 +92,8 @@ protected:
     void setAttackInterval(int ms);
     void setAttackRange(int range);
     void setCenterOffset();
-    bool targetWithinRange();
+    void setRangeSearchInterval();
+    bool targetWithinRange() const;
 
 private:
     static constexpr int defaultMaxTier = 3;

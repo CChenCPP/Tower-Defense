@@ -7,13 +7,14 @@
 
 extern Game* game;
 
-Enemy::Enemy(int hp, int armor, double distPerInt, QGraphicsItem* parent) :
+Enemy::Enemy(int level, QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent),
     attributes{},
-    hp(hp),
-    armor(armor),
-    value(pow(hp,0.8)),
-    distancePerInterval(distPerInt),
+    level(level),
+    hp(0),
+    armor(0),
+    value(0),
+    distancePerInterval(Enemy::defaultHp),
     distanceTravelled(0),
     lastProjectile(nullptr),
     hitByNova(false),
@@ -21,7 +22,8 @@ Enemy::Enemy(int hp, int armor, double distPerInt, QGraphicsItem* parent) :
     maimed(false),
     poisoned(false)
 {
-    setPixmap(QPixmap(":/Enemies/Images/EnemyBlackCircle.png"));
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyBlackCircle.png"), 36);
+    setPixmap(scaled);
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
@@ -32,6 +34,11 @@ Enemy::~Enemy()
 }
 
 // public methods
+QPointF Enemy::center() const
+{
+    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
+}
+
 void Enemy::damage(int damage, Projectile* projectile)
 {
     lastProjectile = projectile;
@@ -106,12 +113,24 @@ void Enemy::setMoveInterval()
 void Enemy::setPath(QList<QPointF>* path)
 {
     this->path = path;
-    setPos((*path)[0]);
     startPath();
     setMoveInterval();
 }
 
-// private methods
+void Enemy::centerToPoint(qreal x, qreal y)
+{
+    QPointF cent = center();
+    qreal dx = x - cent.x();
+    qreal dy = y - cent.y();
+    setPos(x - dx, y - dy);
+}
+
+void Enemy::centerToPoint(QPointF point)
+{
+    centerToPoint(point.x(), point.y());
+}
+
+// protected methods
 void Enemy::checkDeath()
 {
     if (hp <= 0) {
@@ -178,7 +197,8 @@ void Enemy::poison(Projectile* projectile)
 
 void Enemy::rotateToPoint(QPointF point)
 {
-    QLineF line(pos(), point);
+    QPointF cent = center();
+    QLineF line(cent, point);
     setRotation(-1 * line.angle());
 }
 
@@ -186,8 +206,12 @@ void Enemy::startPath()
 {
     pathIndex = 0;
     dest = (*path)[0];
+    QLineF line((*path)[0],(*path)[1]);
+    qreal ratioX = qCos(qDegreesToRadians(line.angle()));
+    qreal ratioY = qSin(qDegreesToRadians(line.angle()));
+    setPos(dest.x() - ratioX*pixmap().width(),dest.y() + ratioY*pixmap().height());
+    centerToPoint(pos());
     rotateToPoint(dest);
-//    this->setPos(dest);
 }
 
 void Enemy::warp(Projectile* projectile)
@@ -208,17 +232,17 @@ void Enemy::warp(Projectile* projectile)
 void Enemy::moveForward(){
     if (hypothermia) { return; };
 
-    QLineF line(pos(), dest);
+    QPointF cent = center();
+    QLineF line(cent, dest);
 
-    if (line.length() < distancePerInterval*2){
-        setPos(dest);
+    if (line.length() < distancePerInterval * 2){
         ++pathIndex;
         if (pathIndex == path->size()) {
             game->enemyLeaked();
             delete this;
             return; };
         dest = (*path)[pathIndex];
-        rotateToPoint(QPointF(dest.x(), dest.y()));
+        rotateToPoint(QPointF(dest));
     }
 
     double theta = rotation();

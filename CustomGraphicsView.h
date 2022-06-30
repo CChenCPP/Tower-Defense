@@ -21,6 +21,7 @@ private:
 
     QPointF convertToGridPos(BuildingCursor* cursor);
     void duplicateBuilding();
+    bool isRightMousePress(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
 

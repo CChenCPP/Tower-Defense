@@ -42,26 +42,26 @@ Map::Map(QString filePathToMap)
         maxY = (yCor > maxY) ? yCor : maxY;
     }
 
-    int widthRange = maxX - minX;
-    int heightRange = maxY - maxY;
+//    int widthRange = maxX - minX;
+//    int heightRange = maxY - maxY;
 
-    QList<QPointF> scaledPoints;
+//    QList<QPointF> scaledPoints;
 
-    for (QPointF point : points){
-        int scaledX = (widthRange == 0) ? point.x() : point.x() * (game->mainScene->defaultWidth) / (maxX - minX);
-        int scaledY = (heightRange == 0) ? point.y() : point.y() * (game->mainScene->defaultHeight) / (maxY - minY);
-        scaledPoints << QPointF(scaledX, scaledY);
-    }
+//    for (QPointF point : points){
+//        int scaledX = (heightRange == 0) ? point.x() : point.x() * (game->mainScene->defaultWidth) / (maxX - minX);
+//        int scaledY = (widthRange == 0) ? point.y() : point.y() * (game->mainScene->defaultHeight) / (maxY - minY);
+//        scaledPoints << QPointF(scaledX, scaledY);
+//    }
 
-    QList<QPointF> newPoints;
+//    QList<QPointF> newPoints;
 
-    for (QPointF point : scaledPoints){
-        int finalX = (widthRange == 0) ? point.x() : point.x() - minX * (game->mainScene->defaultWidth) / (widthRange);
-        int finalY = (heightRange == 0) ? point.y() : point.y() - minY * (game->mainScene->defaultHeight) / (heightRange);
-        newPoints << QPointF(finalX, finalY);
-    }
+//    for (QPointF point : scaledPoints){
+//        int finalX = (widthRange == 0) ? point.x() : point.x() - minX * (game->mainScene->defaultWidth) / (widthRange);
+//        int finalY = (heightRange == 0) ? point.y() : point.y() - minY * (game->mainScene->defaultHeight) / (heightRange);
+//        newPoints << QPointF(finalX, finalY);
+//    }
 
-    points = newPoints;
+//    points = scaledPoints;
     file.close();
 }
 
