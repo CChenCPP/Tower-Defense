@@ -9,6 +9,7 @@ extern Game* game;
 
 Explosion::Explosion(Projectile* parent) :
     Projectile(),
+    targets(0),
     gifFrameCount(0),
     currentFrame(0),
     gif(nullptr),
@@ -64,17 +65,17 @@ void Explosion::setAnimation()
 
 void Explosion::explode()
 {
+    updateInterval.disconnect();
     QList<QGraphicsItem*> collidingItems = this->collidingItems();
     for (auto& item : collidingItems){
         Enemy* enemy = dynamic_cast<Enemy*>(item);
         if (enemy){
-
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
-            enemy->damage(this->damage * source->getDamageMultiplier(), this);
+            enemy->damage(this);
+            if (++targets >= maxTargets) { return; };
         }
     }
-    updateInterval.disconnect();
 }
 
 // private methods

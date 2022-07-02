@@ -19,30 +19,44 @@ SOURCES += \
     BuildingCursor.cpp \
     CannonTower.cpp \
     CannonballProjectile.cpp \
-    ChronoEnemy.cpp \
+    CukzotzEnemy.cpp \
+    CustomGraphicsPathItem.cpp \
     CustomGraphicsScene.cpp \
     CustomGraphicsView.cpp \
+    DharuerEnemy.cpp \
     Enemy.cpp \
+    EnioneEnemy.cpp \
     Explosion.cpp \
+    EzlotlEnemy.cpp \
     Game.cpp \
     GameConstants.cpp \
+    HudorEnemy.cpp \
     IceProjectile.cpp \
     IceShard.cpp \
     IceTower.cpp \
     JavelinProjectile.cpp \
+    KhyemisEnemy.cpp \
+    KronusEnemy.cpp \
+    LoldohrEnemy.cpp \
     MainWindow.cpp \
     Map.cpp \
+    MapSelectionWindow.cpp \
     NovaProjectile.cpp \
+    PhihenarEnemy.cpp \
     Projectile.cpp \
+    RihrusEnemy.cpp \
     StoneFragment.cpp \
     StoneProjectile.cpp \
     StoneTower.cpp \
     TeleportProjectile.cpp \
     TeleportTower.cpp \
     Tower.cpp \
+    UdallEnemy.cpp \
+    UesisEnemy.cpp \
     Utility.cpp \
     Wave.cpp \
     WizardTower.cpp \
+    ZanbrisEnemy.cpp \
     main.cpp
 
 HEADERS += \
@@ -56,33 +70,48 @@ HEADERS += \
    BuildingCursor.h \
    CannonTower.h \
    CannonballProjectile.h \
-   ChronoEnemy.h \
+   CukzotzEnemy.h \
+   CustomGraphicsPathItem.h \
    CustomGraphicsScene.h \
    CustomGraphicsView.h \
+   DharuerEnemy.h \
    Enemy.h \
+   EnioneEnemy.h \
    Explosion.h \
+   EzlotlEnemy.h \
    Game.h \
    GameConstants.h \
+   HudorEnemy.h \
    IceProjectile.h \
    IceShard.h \
    IceTower.h \
    JavelinProjectile.h \
+   KhyemisEnemy.h \
+   KronusEnemy.h \
+   LoldohrEnemy.h \
    MainWindow.h \
    Map.h \
+   MapSelectionWindow.h \
    NovaProjectile.h \
+   PhihenarEnemy.h \
    Projectile.h \
+   RihrusEnemy.h \
    StoneFragment.h \
    StoneProjectile.h \
    StoneTower.h \
    TeleportProjectile.h \
    TeleportTower.h \
    Tower.h \
+   UdallEnemy.h \
+   UesisEnemy.h \
    Utility.h \
    Wave.h \
-   WizardTower.h
+   WizardTower.h \
+   ZanbrisEnemy.h
 
 FORMS += \
-   MainWindow.ui
+   MainWindow.ui \
+   MapSelectionWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

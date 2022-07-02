@@ -55,6 +55,7 @@ public:
     static constexpr int defaultPoisonChance = 50;
     static constexpr int defaultPoisonIntervalMs = 10000;
 
+    QPointF center() const;
     int getDamage() const;
     int getHeadshotChance() const;
     int getHypothermiaChance() const;
@@ -67,6 +68,7 @@ public:
     Tower* getSource() const;
     Enemy* getTarget() const;
     bool hasAttribute(ProjAttr attr) const;
+    qreal radius() const;
     Projectile& removeAttribute(ProjAttr attr);
     Projectile& removeAllAttributes();
     Projectile& setAttributes(ProjAttr attr);

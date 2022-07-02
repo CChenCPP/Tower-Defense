@@ -48,9 +48,15 @@ std::vector<int> Parse::stringToInt(const std::vector<std::string>& v)
     return ints;
 }
 
-QString Parse::toQString(int num)
+QString Parse::intToQString(int num)
 {
     return QString::number(num);
+}
+
+QString Parse::qrealToQString(qreal num)
+{
+    return QString::number(num);
+
 }
 
 qreal Geometry::distance2D(QPointF src, QPointF dst)

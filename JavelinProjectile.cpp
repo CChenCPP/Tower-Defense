@@ -52,22 +52,22 @@ void JavelinProjectile::setProperties(int tier)
     switch(tier)
     {
         case 1:
-            damage = 50;
-            distancePerInterval = 16;
+            damage = 125;
+            distancePerInterval = 20;
             maxDistance = 2000;
             maimChance = 5;
             break;
 
         case 2:
             damage = 400;
-            distancePerInterval = 16;
+            distancePerInterval = 20;
             maxDistance = 3000;
             maimChance = 15;
             break;
 
         case 3:
             damage = 2500;
-            distancePerInterval = 16;
+            distancePerInterval = 20;
             maxDistance = 4000;
             maimChance = 30;
             headshotChance = 30;

@@ -36,7 +36,7 @@ IceShard::~IceShard()
 // private methods
 QPixmap IceShard::getShardPixmap()
 {
-    QString number = Parse::toQString(RNG::randomNum(1, 8));
+    QString number = Parse::intToQString(RNG::randomNum(1, 8));
     QPixmap pixmap(":/Special/Images/IceShard" + number + ".png");
     QPixmap scaled = Geometry::scaleToWidth(pixmap, IceShard::defaultProjectileSize);
     return scaled;

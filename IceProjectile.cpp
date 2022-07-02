@@ -59,21 +59,21 @@ void IceProjectile::setProperties(int tier)
     {
         case 1:
             damage = 0;
-            distancePerInterval = 3;
+            distancePerInterval = 7;
             maxDistance = 200;
             hypothermiaChance = 25;
             break;
 
         case 2:
             damage = 0;
-            distancePerInterval = 3;
+            distancePerInterval = 7;
             maxDistance = 300;
             hypothermiaChance = 30;
             break;
 
         case 3:
             damage = 0;
-            distancePerInterval = 3;
+            distancePerInterval = 7;
             maxDistance = 500;
             hypothermiaChance = 35;
             break;

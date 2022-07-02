@@ -1,20 +1,22 @@
 #pragma once
 #include <QList>
-#include <QPointF>
+#include "CustomGraphicsPathItem.h"
 
 
 class Map
 {
 public:
+    Map(QString mapName);
+    ~Map();
+
     std::string name;
 
-    Map(QString filePathToMap);
-
     void appendToPath(QPointF point);
-    QList<QPointF>* path();
+    QVector<CustomGraphicsPathItem*> getPaths() const;
+    QList<QPointF>* randomPath() const;
 
 private:
-    QList<QPointF> points;
+    QVector<CustomGraphicsPathItem*> paths;
     QPointF truncateToView(int x, int y) const;
 };
 

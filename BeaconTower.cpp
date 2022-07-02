@@ -58,33 +58,30 @@ int BeaconTower::getUpgradeCost(Tower* tower)
     }
 }
 
+// private methods
 void BeaconTower::attackTarget()
 {
     switch(tier){
         case(1):
-            tier1Attack();
+            buffDamage();
             return;
         case(2):
-            tier1Attack();
-            tier2Attack();
+            buffDamage();
+            buffAttackInterval();
             return;
         case(3):
-            tier1Attack();
-            tier2Attack();
-            tier3Attack();
+            buffDamage();
+            buffAttackInterval();
+            buffAttackRange();
             return;
     }
 }
 
-// private methods
-void BeaconTower::tier1Attack()
+void BeaconTower::buffDamage()
 {
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
-
-    for (auto& item : collisions){
-        if (dynamic_cast<BeaconTower*>(item)) { continue; };
-        Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && tower->isBuilt() && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end()){
+    for (Tower* tower : game->getTowerList()){
+        bool valid = canBuffDamageMultiplier(tower);
+        if (valid){
             tower->setDamageMultiplier(tower->getDamageMultiplier() * BeaconTower::damageMultiplierBuff);
             buffedDamageNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
@@ -92,14 +89,11 @@ void BeaconTower::tier1Attack()
     }
 }
 
-void BeaconTower::tier2Attack()
+void BeaconTower::buffAttackInterval()
 {
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
-
-    for (auto& item : collisions){
-        if (dynamic_cast<BeaconTower*>(item)) { continue; };
-        Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && tower->isBuilt() && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end()){
+    for (Tower* tower : game->getTowerList()){
+        bool valid = canBuffAttackIntervalMultiplier(tower);
+        if (valid){
             tower->setAttackIntervalMultiplier(tower->getAttackIntervalMultiplier() * BeaconTower::attackIntervalMultiplierBuff);
             buffedAttackRateNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
@@ -107,19 +101,37 @@ void BeaconTower::tier2Attack()
     }
 }
 
-void BeaconTower::tier3Attack()
+void BeaconTower::buffAttackRange()
 {
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
-
-    for (auto& item : collisions){
-        if (dynamic_cast<BeaconTower*>(item)) { continue; };
-        Tower* tower = dynamic_cast<Tower*>(item);
-        if (tower && tower->isBuilt() && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end()){
+    for (Tower* tower : game->getTowerList()){
+        bool valid = canBuffAttackRangeMultiplier(tower);
+        if (valid){
             tower->setAttackRangeMultiplier(tower->getAttackRangeMultiplier() * BeaconTower::attackRangeMultiplierBuff);
             buffedAttackRangeNeighbors.insert(tower);
             connect(tower,&Tower::destructing,this,&BeaconTower::onNeighborDestructing,Qt::UniqueConnection);
         }
     }
+}
+
+bool BeaconTower::canBuffAttackIntervalMultiplier(Tower* tower) const
+{
+    return !(dynamic_cast<BeaconTower*>(tower))
+    && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
+    && (tower && tower->isBuilt() && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end());
+}
+
+bool BeaconTower::canBuffAttackRangeMultiplier(Tower* tower) const
+{
+    return !(dynamic_cast<BeaconTower*>(tower))
+    && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
+    && (tower && tower->isBuilt() && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end());
+}
+
+bool BeaconTower::canBuffDamageMultiplier(Tower* tower) const
+{
+    return !(dynamic_cast<BeaconTower*>(tower))
+    && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
+    && (tower && tower->isBuilt() && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end());
 }
 
 // private slots

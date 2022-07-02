@@ -1,17 +1,35 @@
 #pragma once
 #include "Enemy.h"
+#include <unordered_set>
 
 class Wave
 {
 public:
     Wave(int level);
+    ~Wave();
 
-    QVector<Enemy*> getEnemyList() const;
+    std::unordered_set<Enemy*> getEnemyList() const;
+    int getSpawnIntervalMs() const;
+//    void popBackEnemy();
 
 private:
     int level;
-    QVector<Enemy*> enemyList;
+    int spawnIntervalMs;
+    std::unordered_set<Enemy*> enemiesToSpawn;
 
+    void addCukzotz(int amount);
+    void addDharuer(int amount);
+    void addEnione(int amount);
+    void addEzlotl(int amount);
+    void addHudor(int amount);
+    void addKhyemis(int amount);
+    void addKronus(int amount);
+    void addLoldohr(int amount);
+    void addPhihenar(int amount);
+    void addRihrus(int amount);
+    void addUdall(int amount);
+    void addUesis(int amount);
+    void addZanbris(int amount);
     void generateEnemyList(int level);
     void wave1();
     void wave2();

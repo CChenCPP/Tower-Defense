@@ -32,7 +32,7 @@ StoneFragment::~StoneFragment()
 // private methods
 QPixmap StoneFragment::getFragmentPixmap()
 {
-    QString number = Parse::toQString(RNG::randomNum(1, 8));
+    QString number = Parse::intToQString(RNG::randomNum(1, 8));
     QPixmap pixmap(":/Special/Images/StoneFragment" + number + ".png");
     QPixmap scaled = Geometry::scaleToWidth(pixmap, StoneFragment::defaultProjectileSize);
     return scaled;

@@ -14,7 +14,7 @@ WizardTower::WizardTower() :
     tether(new QGraphicsPathItem()),
     tetherTarget(nullptr)
 {
-    connect(this,&Tower::upgrade,this,&WizardTower::upgrade);
+    connect(this,&Tower::upgrade,this,&WizardTower::upgrade,Qt::UniqueConnection);
     attackRange = WizardTower::tier1AttackRange;
     attackInterval = WizardTower::tier1AttackInterval;
     QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), Game::defaultTowerWidth);
@@ -75,8 +75,8 @@ void WizardTower::attackTarget()
 
 void WizardTower::linkTower(Tower* tower)
 {
-    connect(this,&WizardTower::unlinkTether,tower,&Tower::tetherPartnerDestructing);
-    connect(tower,&Tower::untether,this,&WizardTower::tetheredTargetDestructing);
+    connect(this,&WizardTower::unlinkTether,tower,&Tower::tetherPartnerDestructing,Qt::UniqueConnection);
+    connect(tower,&Tower::untether,this,&WizardTower::tetheredTargetDestructing,Qt::UniqueConnection);
     tetherTarget = tower;
     tower->setTethered(true);
 }
@@ -106,11 +106,11 @@ void WizardTower::tetherNeighbor()
         tetherTarget->setTethered(false);
         tetherTarget = nullptr; };
 
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
+//    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
 
-    for (auto& item : collisions){
-        if (dynamic_cast<WizardTower*>(item) || dynamic_cast<BeaconTower*>(item)) { continue; };
-        Tower* tower = dynamic_cast<Tower*>(item);
+    for (Tower* tower : game->getTowerList()){
+        if (dynamic_cast<WizardTower*>(tower) || dynamic_cast<BeaconTower*>(tower)) { continue; };
+        if (Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2)) { continue; };
         if (tower && RNG::randomNum(1,100) <= WizardTower::tetherChance){
             if (!tower->isTethered()) {
                 paintTether(tower);
@@ -142,7 +142,7 @@ void WizardTower::summonNova()
     NovaProjectile* nova = new NovaProjectile(tier, this);
     linkToTarget(nova, target);
     novaSummoned = true;
-    connect(nova,&NovaProjectile::returned,this,&WizardTower::novaReturned);
+    connect(nova,&NovaProjectile::returned,this,&WizardTower::novaReturned,Qt::UniqueConnection);
 }
 
 // private slots

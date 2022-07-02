@@ -46,6 +46,11 @@ Tower::~Tower()
 }
 
 // public methods
+QPointF Tower::center() const
+{
+    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
+}
+
 void Tower::consecutiveAttack()
 {
     determineTarget();
@@ -256,12 +261,18 @@ bool Tower::isUpgradable() const
 
 void Tower::pause()
 {
-    attackIntervalTimer.stop();
+    attackIntervalTimer.disconnect();
+}
+
+qreal Tower::radius() const
+{
+    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
 }
 
 void Tower::resume()
 {
-    attackIntervalTimer.start();
+    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget, Qt::UniqueConnection);
+    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, Tower::minimumAttackInterval));
 }
 
 void Tower::setAttackIntervalMultiplier(float multiplier)
@@ -358,9 +369,9 @@ void Tower::defineAttackArea()
 
 void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 {
-    connect(this,&Tower::destructing,projectile,&Projectile::onTowerDestructing);
-    connect(target,&Enemy::destructing,projectile,&Projectile::targetIsDead);
-    connect(projectile,&Projectile::killedTarget,this,&Tower::onTargetKilled);
+    connect(this,&Tower::destructing,projectile,&Projectile::onTowerDestructing, Qt::UniqueConnection);
+    connect(target,&Enemy::destructing,projectile,&Projectile::targetIsDead, Qt::UniqueConnection);
+    connect(projectile,&Projectile::killedTarget,this,&Tower::onTargetKilled, Qt::UniqueConnection);
 
     projectile->setPos(x() + centerX, y() + centerY);
     projectile->setTarget(enemy);
@@ -377,8 +388,8 @@ void Tower::setAttackInterval()
 {
     attackIntervalTimer.disconnect();
 //    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::determineTarget);
-    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget);
-    attackIntervalTimer.start(attackInterval * attackIntervalMultiplier);
+    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget, Qt::UniqueConnection);
+    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, Tower::minimumAttackInterval));
     game->isPaused() ? pause() : resume();
 }
 
@@ -402,7 +413,7 @@ void Tower::setCenterOffset()
 
 void Tower::setRangeSearchInterval()
 {
-    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget);
+    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget, Qt::UniqueConnection);
     attackRangeSearchTimer.start(Tower::defaultAttackRangeSearchIntervalMs);
 }
 
@@ -415,13 +426,12 @@ bool Tower::targetWithinRange() const
     return Geometry::distance2D(QPointF(x() + centerX, y() + centerY), targetCenter) <= (attackRange * attackRangeMultiplier + boundingCircleRadius);
 }
 
-Enemy* Tower::targetNearest(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetNearest()
 {
     Enemy* target = nullptr;
     double closestDist = std::numeric_limits<double>::max();
-    for (auto& item : collisions){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
             int distToTarget = Geometry::distance2D(pos(), enemy->pos());
             if (distToTarget < closestDist){
                 closestDist = distToTarget;
@@ -432,13 +442,12 @@ Enemy* Tower::targetNearest(QList<QGraphicsItem*> collisions)
     return target;
 }
 
-Enemy* Tower::targetHighestHp(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetHighestHp()
 {
     Enemy* target = nullptr;
     double highestHp = std::numeric_limits<double>::min();
-    for (auto& item : collisions){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
             if (highestHp <= enemy->getCurrentHp()){
                 highestHp = enemy->getCurrentHp();
                 target = enemy;
@@ -448,13 +457,12 @@ Enemy* Tower::targetHighestHp(QList<QGraphicsItem*> collisions)
     return target;
 }
 
-Enemy* Tower::targetLowestHp(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetLowestHp()
 {
     Enemy* target = nullptr;
     double lowestHp = std::numeric_limits<double>::max();
-    for (auto& item : collisions){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
             if (lowestHp >= enemy->getCurrentHp()){
                 lowestHp = enemy->getCurrentHp();
                 target = enemy;
@@ -464,13 +472,12 @@ Enemy* Tower::targetLowestHp(QList<QGraphicsItem*> collisions)
     return target;
 }
 
-Enemy* Tower::targetEntrance(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetEntrance()
 {
     Enemy* target = nullptr;
     double distanceTravelled = std::numeric_limits<int>::max();
-    for (auto& item : collisions){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
             if (distanceTravelled >= enemy->getDistanceTravelled()){
                 distanceTravelled = enemy->getDistanceTravelled();
                 target = enemy;
@@ -480,13 +487,12 @@ Enemy* Tower::targetEntrance(QList<QGraphicsItem*> collisions)
     return target;
 }
 
-Enemy* Tower::targetExit(QList<QGraphicsItem*> collisions)
+Enemy* Tower::targetExit()
 {
     Enemy* target = nullptr;
     double distanceTravelled = std::numeric_limits<double>::min();
-    for (auto& item : collisions){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
             if (distanceTravelled <= enemy->getDistanceTravelled()){
                 distanceTravelled = enemy->getDistanceTravelled();
                 target = enemy;
@@ -511,25 +517,26 @@ void Tower::tetherPartnerDestructing()
 // private slots
 void Tower::determineTarget()
 {
+    if (game->mainScene->getProjectileCount() > CustomGraphicsScene::projectileRenderLimit) { return; };
     hasTarget = false;
-    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
+//    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
 
     Enemy* enemy = nullptr;
     switch(priority){
         case TargetPriority::Nearest:
-            enemy = targetNearest(collisions);
+            enemy = targetNearest();
             break;
         case TargetPriority::HighestHp:
-            enemy = targetHighestHp(collisions);
+            enemy = targetHighestHp();
             break;
         case TargetPriority::LowestHp:
-            enemy = targetLowestHp(collisions);
+            enemy = targetLowestHp();
             break;
         case TargetPriority::Entrance:
-            enemy = targetEntrance(collisions);
+            enemy = targetEntrance();
            break;
         case TargetPriority::Exit:
-            enemy = targetExit(collisions);
+            enemy = targetExit();
             break;
     }
 
@@ -538,7 +545,7 @@ void Tower::determineTarget()
         attackDestination = QPointF(enemy->pos().x() + originPoint.x(), enemy->pos().y() + originPoint.y());
         target = enemy;
         hasTarget = true;
-        connect(enemy,&Enemy::destructing,this,&Tower::targetDestructing);
+        connect(enemy,&Enemy::destructing,this,&Tower::targetDestructing, Qt::UniqueConnection);
     }
 }
 

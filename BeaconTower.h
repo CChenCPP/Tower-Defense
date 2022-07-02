@@ -18,7 +18,7 @@ private:
     static constexpr int tier1Cost = 100;
     static constexpr int tier2AttackRange = 200;
     static constexpr int tier2AttackInterval = 1000;
-    static constexpr int tier2Cost = 500;
+    static constexpr int tier2Cost = 1500;
     static constexpr int tier3AttackRange = 225;
     static constexpr int tier3AttackInterval = 1000;
     static constexpr int tier3Cost = 7500;
@@ -31,9 +31,13 @@ private:
     std::unordered_set<Tower*> buffedDamageNeighbors;
 
     void attackTarget();
-    void tier1Attack();
-    void tier2Attack();
-    void tier3Attack();
+    void buffAttackInterval();
+    void buffAttackRange();
+    void buffDamage();
+    bool canBuffAttackIntervalMultiplier(Tower* tower) const;
+    bool canBuffAttackRangeMultiplier(Tower* tower) const;
+    bool canBuffDamageMultiplier(Tower* tower) const;
+    bool isValidNeighbor(Tower* tower) const;
 
 private slots:
     void onNeighborDestructing(Tower* tower);

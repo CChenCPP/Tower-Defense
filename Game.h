@@ -14,16 +14,16 @@ public:
     static constexpr int tileSize = 36;
     static constexpr qreal defaultTowerWidth = tileSize * 1.3;
     static constexpr qreal defaultIconWidth = 55;
-    static constexpr qreal enemySpawnIntervalMs = 750;
 
     CustomGraphicsScene* mainScene;
 
-    void buyTower(int cost, Tower* tower);
+    bool buyTower(int cost, Tower* tower);
     void enemyLeaked();
     void enemyKilled(Enemy* enemy);
     CustomGraphicsView* gameView() const;
     std::unordered_set<Enemy*>& getEnemyList();
     std::unordered_set<Tower*>& getTowerList();
+    int getEnemiesToSpawnCount() const;
     int getHealth() const;
     int getMoney() const;
     int getTotalKillCount() const;
@@ -48,13 +48,12 @@ private:
     bool running;
     bool paused;
     static constexpr int startingHealth = 100;
-    QVector<Map*> maps;
-    QVector<QVector<QGraphicsLineItem*>> paths;
+    Map* map;
     QVector<QVector<QGraphicsRectItem*>> grid;
     QVector<QVector<bool>> takenSlots;
     std::unordered_set<Tower*> towerList;
     std::unordered_set<Enemy*> enemyList;
-    QVector<Enemy*> enemiesToSpawn;
+    std::unordered_set<Enemy*> enemiesToSpawn;
     QTimer* enemySpawnTimer;
     QTimer* nextWaveCheckTimer;
     Wave* wave;
@@ -63,13 +62,16 @@ private:
     int health;
     int money;
 
-    void defineLegalSquares();
+    void defineLegalTiles();
+    void disableSlot(int i, int j);
+    void enableSlot(int i, int j);
     void loadBackground(QString filepath);
-    void loadMap(QString filepath);
     void nextWave();
+    void resetAll();
     void setupGrid();
 
 public slots:
+    void loadMap(QString mapName);
     void removeTower(int posX, int posY, Tower* tower);
 
 private slots:
@@ -78,5 +80,6 @@ private slots:
 
 signals:
     void newWave();
+    void resetting();
 };
 

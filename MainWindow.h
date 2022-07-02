@@ -1,9 +1,9 @@
 #pragma once
 #include <QMainWindow>
 #include <QGraphicsPixmapItem>
-#include "Tower.h"
-#include <CustomGraphicsScene.h>
-#include <CustomGraphicsView.h>
+#include "CustomGraphicsScene.h"
+#include "CustomGraphicsView.h"
+#include "MapSelectionWindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -18,6 +18,7 @@ public:
     ~MainWindow();
 
 private:
+    MapSelectionWindow* mapSelectionWindow;
     CustomGraphicsScene* selectedTowerScene;
     CustomGraphicsView* selectedTowerView;
     Tower* selectedTower;
@@ -26,6 +27,9 @@ private:
     QGraphicsEllipseItem* selectedTowerOutline;
     QTimer* selectedTowerStatsUpdater;
     QTimer* totalKillCountUpdater;
+    QTimer* waveNumberUpdater;
+    QTimer* enemiesLeftToSpawnUpdater;
+    QTimer* enemiesRemainingUpdater;
     QTimer* healthUpdater;
     QTimer* moneyUpdater;
     Ui::MainWindow* UI;
@@ -33,6 +37,7 @@ private:
     void clearPriorityButtons() const;
     void determineTowerPriority() const;
     void disablePriorityButtons() const;
+    void enableBuildTowerIconButtons() const;
     void enablePriorityButtons() const;
     void drawSelectedTowerToScene();
     void drawTowerOutline();
@@ -42,6 +47,7 @@ private:
 
 private slots:
     // custom slots
+    void onGameReset();
     void onTowerSelected(Tower* tower);
     // UI slots
     void on_buildArcherTowerButton_released();
@@ -59,6 +65,7 @@ private slots:
     void on_lowestHpPriorityRadioButton_clicked();
     void on_entrancePriorityRadioButton_clicked();
     void on_exitPriorityRadioButton_clicked();
-    void on_startGamePushButton_clicked();
+    void on_startGameButton_clicked();
     void on_pauseButton_clicked();
+    void on_pickMapButton_clicked();
 };

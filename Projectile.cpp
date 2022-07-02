@@ -24,19 +24,23 @@ Projectile::Projectile(QGraphicsItem *parent) :
     poisonIntervalMs(Projectile::defaultPoisonIntervalMs)
 {
     game->mainScene->incrementProjectileCount();
-    determineIfRenderable();
+//    determineIfRenderable();
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::move);
     connect(&updateInterval,&QTimer::timeout,this,&Projectile::hitEnemies);
-    updateInterval.start(10);
+    updateInterval.start(18);
 }
 
 Projectile::~Projectile()
 {
     game->mainScene->decrementProjectileCount();
-    game->mainScene->removeItem(this);
 }
 
 // public methods
+QPointF Projectile::center() const
+{
+    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
+}
+
 int Projectile::getDamage() const
 {
     return damage;
@@ -97,6 +101,12 @@ bool Projectile::hasAttribute(ProjAttr attr) const
     return static_cast<bool>(attributes & attr);
 }
 
+qreal Projectile::radius() const
+{
+    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
+}
+
+
 Projectile& Projectile::removeAttribute(ProjAttr attr)
 {
     attributes = attributes & ~attr;
@@ -144,7 +154,7 @@ void Projectile::explode()
 
 void Projectile::fragment()
 {
-    for (int i = 0; i < tier * 3; ++i){
+    for (int i = 0; i < tier * 2; ++i){
         StoneFragment* fragment = new StoneFragment(this);
     }
     delete this;
@@ -152,7 +162,7 @@ void Projectile::fragment()
 
 void Projectile::shatter()
 {
-    for (int i = 0; i < tier * 7; ++i){
+    for (int i = 0; i < tier * 4; ++i){
         IceShard* shard = new IceShard(this);
     }
     delete this;
@@ -160,10 +170,10 @@ void Projectile::shatter()
 
 // public slots
 void Projectile::hitEnemies(){
-    QList<QGraphicsItem*> collidingItems = this->collidingItems();
-    for (auto& item : collidingItems){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
+//    QList<QGraphicsItem*> collidingItems = this->collidingItems();
+    for (Enemy* enemy : game->getEnemyList()){
+//        Enemy* enemy = dynamic_cast<Enemy*>(item);
+        if (Geometry::distance2D(center(), enemy->center()) <= (radius() + enemy->radius()) / 2){
             if (this->hasAttribute(ProjAttr::Ethereal) && enemy != this->target) { continue; };
             if (this->hasAttribute(ProjAttr::Explosive)) { explode(); return; };
             if (this->hasAttribute(ProjAttr::Fragmenting)) { fragment();return; };
@@ -172,7 +182,7 @@ void Projectile::hitEnemies(){
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled,Qt::UniqueConnection);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged,Qt::UniqueConnection);
 
-            enemy->damage(this->damage * source->getDamageMultiplier(), this);
+            enemy->damage(this);
             if (this->hasAttribute(ProjAttr::Warping) || this->hasAttribute(ProjAttr::Ethereal)) { return; };
             delete this;
             return;

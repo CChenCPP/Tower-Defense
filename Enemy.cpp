@@ -22,15 +22,11 @@ Enemy::Enemy(int level, QGraphicsItem* parent) :
     maimed(false),
     poisoned(false)
 {
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyBlackCircle.png"), 36);
-    setPixmap(scaled);
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
 Enemy::~Enemy()
 {
     emit destructing(this);
-    game->mainScene->removeItem(this);
 }
 
 // public methods
@@ -39,17 +35,17 @@ QPointF Enemy::center() const
     return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
 }
 
-void Enemy::damage(int damage, Projectile* projectile)
+void Enemy::damage(Projectile* projectile)
 {
     lastProjectile = projectile;
     warp(projectile);
     hypothermic(projectile);
     maim(projectile);
     poison(projectile);
-
-    int trueDamage = (projectile->hasAttribute(ProjAttr::Piercing)) ? std::max<int>(0, damage) : std::max<int>(0, damage - armor);
-    trueDamage = std::min<int>(hp, trueDamage);
-    emit damagedAmount((headshot(projectile)) ? hp : trueDamage);
+    bool isHeadshotted = headshot(projectile);
+    int trueDamage = piercing(projectile);
+    trueDamage = (isHeadshotted) ? hp : trueDamage;
+    emit damagedAmount(trueDamage);
     hp -= trueDamage;
     checkDeath();
 
@@ -61,7 +57,7 @@ int Enemy::getCurrentHp() const
     return hp;
 }
 
-double Enemy::getDistanceTravelled() const
+qreal Enemy::getDistanceTravelled() const
 {
     return distanceTravelled;
 }
@@ -78,7 +74,12 @@ bool Enemy::hasAttribute(EnemyAttr attr) const
 
 void Enemy::pause()
 {
-    moveInterval.stop();
+    moveInterval.disconnect();
+}
+
+qreal Enemy::radius() const
+{
+    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
 }
 
 Enemy& Enemy::removeAttribute(EnemyAttr attr)
@@ -95,7 +96,8 @@ Enemy &Enemy::removeAllAttributes()
 
 void Enemy::resume()
 {
-    moveInterval.start();
+    connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward, Qt::UniqueConnection);
+    moveInterval.start(Enemy::defaultMoveIntervalMs);
 }
 
 Enemy &Enemy::setAttributes(EnemyAttr attr)
@@ -106,8 +108,8 @@ Enemy &Enemy::setAttributes(EnemyAttr attr)
 
 void Enemy::setMoveInterval()
 {
-    connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward);
-    moveInterval.start(40);
+    connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward, Qt::UniqueConnection);
+    moveInterval.start(Enemy::defaultMoveIntervalMs);
 }
 
 void Enemy::setPath(QList<QPointF>* path)
@@ -181,6 +183,16 @@ void Enemy::maim(Projectile* projectile)
     maimTimer.start(projectile->getMaimDurationMs());
 }
 
+int Enemy::piercing(Projectile* projectile)
+{
+    if (!this->hasAttribute(EnemyAttr::Impenetrable) && projectile->hasAttribute(ProjAttr::Piercing)) {
+    return std::min<int>(hp, projectile->getDamage() * projectile->getSource()->getDamageMultiplier()); };
+
+    qreal trueDamage = projectile->getDamage() * projectile->getSource()->getDamageMultiplier() / log(armor + Constant::e);
+    trueDamage = std::min<int>(hp, trueDamage);
+    return trueDamage;
+}
+
 void Enemy::poison(Projectile* projectile)
 {
     if (this->hasAttribute(EnemyAttr::PoisonResistant) || !projectile->hasAttribute(ProjAttr::Poison)) { return; };
@@ -197,9 +209,9 @@ void Enemy::poison(Projectile* projectile)
 
 void Enemy::rotateToPoint(QPointF point)
 {
-    QPointF cent = center();
-    QLineF line(cent, point);
-    setRotation(-1 * line.angle());
+//    QPointF cent = center();
+//    QLineF line(cent, point);
+//    setRotation(-1 * line.angle());
 }
 
 void Enemy::startPath()
@@ -220,7 +232,7 @@ void Enemy::warp(Projectile* projectile)
 
     TeleportProjectile* null = reinterpret_cast<TeleportProjectile*>(projectile);
     null->warpOne();
-    int newIndex = RNG::randomNum(0, std::min<int>(0, pathIndex));
+    int newIndex = std::max<int>(0, RNG::randomNum(0, pathIndex - 1));
     pathIndex = newIndex;
     dest = (*path)[pathIndex];
     setPos(dest);
@@ -234,8 +246,9 @@ void Enemy::moveForward(){
 
     QPointF cent = center();
     QLineF line(cent, dest);
+    qreal length = line.length();
 
-    if (line.length() < distancePerInterval * 2){
+    if (length < distancePerInterval){
         ++pathIndex;
         if (pathIndex == path->size()) {
             game->enemyLeaked();
@@ -245,10 +258,17 @@ void Enemy::moveForward(){
         rotateToPoint(QPointF(dest));
     }
 
-    double theta = rotation();
-    double dx = distancePerInterval * qCos(qDegreesToRadians(theta));
-    double dy = distancePerInterval * qSin(qDegreesToRadians(theta));
-    if (maimed) { dx /= 3; dy /= 3; };
-    setPos(x() + dx, y() + dy);
-    distanceTravelled += distancePerInterval;
+    qreal theta = -1 * line.angle();
+    qreal cosRatio = qCos(qDegreesToRadians(theta));
+    qreal sinRatio = qSin(qDegreesToRadians(theta));
+    qreal dx = cosRatio * distancePerInterval;
+    qreal dy = sinRatio * distancePerInterval;
+    qreal dx2 = cosRatio * length;
+    qreal dy2 = sinRatio * length;
+    qreal trueDx = (std::abs(dx) > std::abs(dx2)) ? dx2 : dx;
+    qreal trueDy = (std::abs(dy) > std::abs(dy2)) ? dy2 : dy;
+    if (maimed) { trueDx /= 3; trueDy /= 3; };
+    setPos(x() + trueDx, y() + trueDy);
+    setRotation(rotation() + 5 * (trueDx + trueDy));
+    distanceTravelled += (trueDx + trueDy);
 }

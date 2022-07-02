@@ -12,7 +12,6 @@
 #include "WizardTower.h"
 #include "Utility.h"
 #include <QKeyEvent>
-#include <QGraphicsEllipseItem>
 #include <iostream>
 
 extern Game* game;
@@ -20,6 +19,7 @@ extern Game* game;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
       UI(new Ui::MainWindow),
+      mapSelectionWindow(new MapSelectionWindow()),
       selectedTowerScene(new CustomGraphicsScene()),
       selectedTowerView(new CustomGraphicsView(selectedTowerScene)),
       selectedTower(nullptr),
@@ -27,18 +27,26 @@ MainWindow::MainWindow(QWidget *parent)
       selectedTowerOutline(nullptr),
       selectedTowerStatsUpdater(new QTimer()),
       totalKillCountUpdater(new QTimer()),
+      waveNumberUpdater(new QTimer()),
+      enemiesLeftToSpawnUpdater(new QTimer()),
+      enemiesRemainingUpdater(new QTimer()),
       healthUpdater(new QTimer()),
       moneyUpdater(new QTimer())
 {
     UI->setupUi(this);
+    setWindowTitle("Tower Defense");
     game->gameView()->setParent(UI->gameFrame);
 //    UI->gameFrame->setGeometry(200,0,game->mainScene->defaultWidth,game->mainScene->defaultHeight);
     setupBuildTowerIcons();
     disablePriorityButtons();
-    connect(totalKillCountUpdater,&QTimer::timeout,[&](){ UI->enemiesKilledLineEdit->setText(Parse::toQString(game->getTotalKillCount()));}); totalKillCountUpdater->start(500);
-    connect(healthUpdater,&QTimer::timeout,[&](){ UI->healthLineEdit->setText(Parse::toQString(game->getHealth()));}); healthUpdater->start(500);
-    connect(moneyUpdater,&QTimer::timeout,[&](){ UI->moneyLineEdit->setText(Parse::toQString(game->getMoney()));}); moneyUpdater->start(500);
-    connect(game,&Game::newWave,[&](){ UI->waveLineEdit->setText(Parse::toQString(game->getWaveNumber()));});
+    connect(mapSelectionWindow,&MapSelectionWindow::mapSelected,game,&Game::loadMap);
+    connect(game,&Game::resetting,this,&MainWindow::onGameReset);
+    connect(healthUpdater,&QTimer::timeout,[&](){ UI->healthLineEdit->setText(Parse::intToQString(game->getHealth()));}); healthUpdater->start(500);
+    connect(totalKillCountUpdater,&QTimer::timeout,[&](){ UI->enemiesKilledLineEdit->setText(Parse::intToQString(game->getTotalKillCount()));}); totalKillCountUpdater->start(500);
+    connect(waveNumberUpdater,&QTimer::timeout,[&](){ UI->waveLineEdit->setText(Parse::intToQString(game->getWaveNumber()));}); waveNumberUpdater->start(500);
+    connect(enemiesLeftToSpawnUpdater,&QTimer::timeout,[&](){ UI->enemiesLeftToSpawnLineEdit->setText(Parse::intToQString(game->getEnemiesToSpawnCount()));}); enemiesLeftToSpawnUpdater->start(500);
+    connect(enemiesRemainingUpdater,&QTimer::timeout,[&](){ UI->enemiesRemainingLineEdit->setText(Parse::intToQString(game->getEnemyList().size()));}); enemiesRemainingUpdater->start(500);
+    connect(moneyUpdater,&QTimer::timeout,[&](){ UI->moneyLineEdit->setText(Parse::intToQString(game->getMoney()));}); moneyUpdater->start(500);
     connect(game->gameView(),&CustomGraphicsView::towerSelected,this,&MainWindow::onTowerSelected);
     selectedTowerView->setParent(UI->towerSelectionView);
 
@@ -98,6 +106,18 @@ void MainWindow::disablePriorityButtons() const
     UI->lowestHpPriorityRadioButton->setDisabled(true);
     UI->entrancePriorityRadioButton->setDisabled(true);
     UI->exitPriorityRadioButton->setDisabled(true);
+}
+
+void MainWindow::enableBuildTowerIconButtons() const
+{
+    UI->buildArcherTowerButton->setEnabled(true);
+    UI->buildBallistaTowerButton->setEnabled(true);
+    UI->buildBeaconTowerButton->setEnabled(true);
+    UI->buildCannonTowerButton->setEnabled(true);
+    UI->buildIceTowerButton->setEnabled(true);
+    UI->buildStoneTowerButton->setEnabled(true);
+    UI->buildTeleportTowerButton->setEnabled(true);
+    UI->buildWizardTowerButton->setEnabled(true);
 }
 
 void MainWindow::enablePriorityButtons() const
@@ -174,12 +194,13 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 void MainWindow::resetSelection()
 {
     game->hideGrid();
-    selectedTowerStatsUpdater->disconnect();
+    selectedTowerStatsUpdater->stop();
 
     UI->typeLineEdit->setText("");
     UI->tierLineEdit->setText("");
     UI->attackRangeLineEdit->setText("");
     UI->attackRateLineEdit->setText("");
+    UI->damageMultiplierLineEdit->setText("");
     UI->totalDamageDoneLineEdit->setText("");
     UI->killsLineEdit->setText("");
     UI->upgradeTierButton->setDisabled(true);
@@ -243,6 +264,15 @@ void MainWindow::setupBuildTowerIcons() const
     wizardTowerButton->setIconSize(QSize(200,200));
 }
 
+void MainWindow::onGameReset()
+{
+    enableBuildTowerIconButtons();
+    resetSelection();
+    UI->startGameButton->setEnabled(true);
+    UI->pauseButton->setDisabled(true);
+    UI->pauseStateLineEdit->setText("");
+}
+
 // slots
 void MainWindow::onTowerSelected(Tower* tower)
 {
@@ -253,23 +283,25 @@ void MainWindow::onTowerSelected(Tower* tower)
     selectedTower->showAttackArea(true);
     upgradeCost = Tower::getUpgradeCost(selectedTower);
     UI->typeLineEdit->setText(Tower::getType(tower));
-    UI->tierLineEdit->setText(Parse::toQString(tower->getTier()));
-    UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
-    UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
-    UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
-    UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
+    UI->tierLineEdit->setText(Parse::intToQString(tower->getTier()));
+    UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+    UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
+    UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
+    UI->totalDamageDoneLineEdit->setText(Parse::intToQString(selectedTower->getTotalDamageDone()));
+    UI->killsLineEdit->setText(Parse::intToQString(selectedTower->getKillCount()));
     UI->upgradeTierButton->setEnabled((tower->isUpgradable()) ? true : false);
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::intToQString(upgradeCost) : "Max tier. Cannot upgrade");
     UI->sellTowerButton->setEnabled(true);
     enablePriorityButtons();
     determineTowerPriority();
 
     connect(selectedTowerStatsUpdater,QTimer::timeout,[&](){
-        UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
-        UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
-        UI->totalDamageDoneLineEdit->setText(Parse::toQString(selectedTower->getTotalDamageDone()));
-        UI->killsLineEdit->setText(Parse::toQString(selectedTower->getKillCount()));
-        UI->sellTowerButton->setText("Sell tower $" + Parse::toQString(selectedTower->getSellValue()));
+        UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+        UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
+        UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
+        UI->totalDamageDoneLineEdit->setText(Parse::intToQString(selectedTower->getTotalDamageDone()));
+        UI->killsLineEdit->setText(Parse::intToQString(selectedTower->getKillCount()));
+        UI->sellTowerButton->setText("Sell tower $" + Parse::intToQString(selectedTower->getSellValue()));
     });
     selectedTowerStatsUpdater->start(250);
 
@@ -280,7 +312,7 @@ void MainWindow::onTowerSelected(Tower* tower)
 void MainWindow::on_buildArcherTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > ArcherTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= ArcherTower::getDefaultCost()){
         game->gameView()->building = new ArcherTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -290,7 +322,7 @@ void MainWindow::on_buildArcherTowerButton_released()
 void MainWindow::on_buildBallistaTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > BallistaTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= BallistaTower::getDefaultCost()){
         game->gameView()->building = new BallistaTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -301,7 +333,7 @@ void MainWindow::on_buildBallistaTowerButton_released()
 void MainWindow::on_buildBeaconTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > BeaconTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= BeaconTower::getDefaultCost()){
         game->gameView()->building = new BeaconTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -311,7 +343,7 @@ void MainWindow::on_buildBeaconTowerButton_clicked()
 void MainWindow::on_buildCannonTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > CannonTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= CannonTower::getDefaultCost()){
         game->gameView()->building = new CannonTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -321,7 +353,7 @@ void MainWindow::on_buildCannonTowerButton_released()
 void MainWindow::on_buildIceTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > IceTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= IceTower::getDefaultCost()){
         game->gameView()->building = new IceTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -332,7 +364,7 @@ void MainWindow::on_buildIceTowerButton_released()
 void MainWindow::on_buildStoneTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > StoneTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= StoneTower::getDefaultCost()){
         game->gameView()->building = new StoneTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -342,7 +374,7 @@ void MainWindow::on_buildStoneTowerButton_released()
 void MainWindow::on_buildTeleportTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > TeleportTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= TeleportTower::getDefaultCost()){
         game->gameView()->building = new TeleportTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -352,7 +384,7 @@ void MainWindow::on_buildTeleportTowerButton_clicked()
 void MainWindow::on_buildWizardTowerButton_clicked()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() > WizardTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= WizardTower::getDefaultCost()){
         game->gameView()->building = new WizardTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -370,7 +402,7 @@ void MainWindow::on_upgradeTierButton_clicked()
 {
     if (game->getMoney() < upgradeCost){
         UI->upgradeTierButton->setText("NOT ENOUGH MONEY");
-        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade tower for $" + Parse::toQString(upgradeCost));});
+        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade tower for $" + Parse::intToQString(upgradeCost));});
         return;
     }
 
@@ -380,11 +412,12 @@ void MainWindow::on_upgradeTierButton_clicked()
     drawSelectedTowerToScene();
     selectedTower->showAttackArea(true);
     upgradeCost = Tower::getUpgradeCost(selectedTower);
-    UI->tierLineEdit->setText(Parse::toQString(selectedTower->getTier()));
-    UI->attackRangeLineEdit->setText(Parse::toQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
-    UI->attackRateLineEdit->setText(Parse::toQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
+    UI->tierLineEdit->setText(Parse::intToQString(selectedTower->getTier()));
+    UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
+    UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
+    UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
     UI->upgradeTierButton->setEnabled((selectedTower->isUpgradable() ? true : false));
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::toQString(upgradeCost) : "Max tier. Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::intToQString(upgradeCost) : "Max tier. Cannot upgrade");
 }
 
 
@@ -418,10 +451,10 @@ void MainWindow::on_exitPriorityRadioButton_clicked()
 }
 
 
-void MainWindow::on_startGamePushButton_clicked()
+void MainWindow::on_startGameButton_clicked()
 {
     if (!game->isRunning()) { game->run(); };
-    UI->startGamePushButton->setDisabled(true);
+    UI->startGameButton->setDisabled(true);
     UI->pauseButton->setEnabled(true);
 }
 
@@ -439,3 +472,9 @@ void MainWindow::on_pauseButton_clicked()
     UI->pauseButton->setDisabled(true);
     QTimer::singleShot(500,[&](){ UI->pauseButton->setEnabled(true);});
 }
+
+void MainWindow::on_pickMapButton_clicked()
+{
+    mapSelectionWindow->exec();
+}
+

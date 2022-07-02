@@ -53,14 +53,20 @@ namespace Parse
     std::vector<std::string> split(std::string& s, const std::string delimiter);
     std::vector<std::string> split(std::string& s, char delim = ' ');
     std::vector<int> stringToInt(const std::vector<std::string>& v);
-    QString toQString(int num);
+    QString intToQString(int num);
+    QString qrealToQString(qreal num);
 }
 
 namespace Geometry
 {
-    static constexpr double radToDegRatio = 3.141592653589793238463 / 180.0;
+    static constexpr qreal radToDegRatio = 3.141592653589793238463 / 180.0;
     qreal distance2D(QPointF src, QPointF dst);
     QVector<QPointF> generateCircle(int edges, int radius);
     QPointF midPoint(const QPointF p1, const QPointF p2);
     QPixmap scaleToWidth(QPixmap pixmap, qreal width);
+}
+
+namespace Constant
+{
+    static constexpr qreal e = 2.71828182845904523536;
 }

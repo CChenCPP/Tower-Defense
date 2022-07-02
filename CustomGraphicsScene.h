@@ -10,7 +10,7 @@ public:
 
     static constexpr int defaultWidth = 792;
     static constexpr int defaultHeight = 792;
-    static constexpr int projectileRenderLimit = 120;
+    static constexpr int projectileRenderLimit = 500;
 
     QList<Tower*> allTowers();
     void decrementProjectileCount();

@@ -94,7 +94,6 @@ bool CustomGraphicsView::isRightMousePress(QMouseEvent* event)
 
 void CustomGraphicsView::mouseMoveEvent(QMouseEvent* event)
 {
-    std::cout << event->pos().x() << " " << event->pos().y() << std::endl;
     if (buildingCursor){
         buildingCursor->updatePos(event->pos());
     }
@@ -109,7 +108,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
         QPointF gridIdentifierPos(slotPos.x() + Game::defaultTowerWidth / 2, slotPos.y());
         if (!game->slotOccupied(QPointF(slotPos.x() + building->pixmap().width() / 2, slotPos.y()))){
-            game->buyTower(Tower::getDefaultCost(building), building);
+            if (!game->buyTower(Tower::getDefaultCost(building), building)) { return; };
             game->newTowerAt(gridIdentifierPos);
             connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
             building->init();

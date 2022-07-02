@@ -53,7 +53,7 @@ void TeleportProjectile::setAttributes(int tier)
 // private methods
 void TeleportProjectile::setImage(int tier)
 {
-    QString number = Parse::toQString(RNG::randomNum(1, 8));
+    QString number = Parse::intToQString(RNG::randomNum(1, 8));
     QPixmap pixmap(":/Special/Images/Null" + number + ".png");
     QPixmap scaled = Geometry::scaleToWidth(pixmap, TeleportProjectile::defaultProjectileSize);
     setPixmap(scaled);
@@ -65,7 +65,7 @@ void TeleportProjectile::setProperties(int tier)
     {
         case 1:
             damage = 0;
-            distancePerInterval = 10;
+            distancePerInterval = 20;
             maxDistance = std::numeric_limits<int>::max();
             break;
     }

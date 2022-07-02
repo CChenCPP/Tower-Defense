@@ -10,7 +10,9 @@ public:
 
 private:
     static constexpr int defaultProjectileSize = 64;
+    static constexpr int maxTargets = 8;
 
+    int targets;
     int gifFrameCount;
     int currentFrame;
     QLabel* gif;

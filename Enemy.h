@@ -41,12 +41,13 @@ public:
     static constexpr int defaultHp = 100;
 
     QPointF center() const;
-    void damage(int damage, Projectile* projectile);
+    void damage(Projectile* projectile);
     int getCurrentHp() const;
-    double getDistanceTravelled() const;
+    qreal getDistanceTravelled() const;
     int getValue() const;
     bool hasAttribute(EnemyAttr attr) const;
     void pause();
+    qreal radius() const;
     Enemy& removeAttribute(EnemyAttr attr);
     Enemy& removeAllAttributes();
     void resume();
@@ -55,7 +56,10 @@ public:
     void setPath(QList<QPointF>* path);
 
 protected:
-    static constexpr double defaultDistPerInt = 2;
+    static constexpr qreal defaultDistPerInt = 2;
+    static constexpr int defaultMoveIntervalMs = 40;
+    static constexpr qreal defaultSize = 32;
+    static constexpr qreal valueDecay = 0.78;
 
     QList<QPointF>* path;
     EnemyAttr attributes;
@@ -66,8 +70,8 @@ protected:
     QPointF dest;
     int pathIndex;
     QTimer moveInterval;
-    double distancePerInterval;
-    double distanceTravelled;
+    qreal distancePerInterval;
+    qreal distanceTravelled;
     Projectile* lastProjectile;
     bool hitByNova;
     bool hypothermia;
@@ -84,6 +88,7 @@ protected:
     bool headshot(Projectile* projectile);
     void hypothermic(Projectile* projectile);
     void maim(Projectile* projectile);
+    int piercing(Projectile* projectile);
     void poison(Projectile* projectile);
     void rotateToPoint(QPointF point);
     void setMoveInterval();

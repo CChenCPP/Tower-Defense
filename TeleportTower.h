@@ -16,7 +16,7 @@ public:
 private:
     static constexpr int tier1AttackRange = 225;
     static constexpr int tier1AttackInterval = 3000;
-    static constexpr int tier1Cost = 300;
+    static constexpr int tier1Cost = 2500;
 
     void attackTarget();
     void tier1Attack();

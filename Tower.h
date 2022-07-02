@@ -5,6 +5,7 @@
 #include <QObject>
 #include "Enemy.h"
 #include "Projectile.h"
+#include <thread>
 
 class Enemy;
 class Projectile;
@@ -24,6 +25,7 @@ public:
     Tower(QGraphicsItem* parent = nullptr);
     virtual ~Tower();
 
+    QPointF center() const;
     void consecutiveAttack();
     int getAttackInterval() const;
     int getAttackRange() const;
@@ -47,6 +49,7 @@ public:
     bool isTethered() const;
     bool isUpgradable() const;
     void pause();
+    qreal radius() const;
     void resume();
     static QPixmap scaleToWidth(QPixmap pixmap, qreal width);
     void setAttackIntervalMultiplier(float multiplier);
@@ -61,6 +64,7 @@ public:
 protected:
     static constexpr int consecutiveAttackChance = 30;
     static constexpr int defaultAttackRangeSearchIntervalMs = 1000;
+    static constexpr int minimumAttackInterval = 333;
     static constexpr float valueDecay = 0.90;
 
     int centerX;
@@ -100,11 +104,11 @@ private:
     int gridPosX;
     int gridPosY;
 
-    Enemy* targetNearest(QList<QGraphicsItem*> collisions);
-    Enemy* targetHighestHp(QList<QGraphicsItem*> collisions);
-    Enemy* targetLowestHp(QList<QGraphicsItem*> collisions);
-    Enemy* targetEntrance(QList<QGraphicsItem*> collisions);
-    Enemy* targetExit(QList<QGraphicsItem*> collisions);
+    Enemy* targetNearest();
+    Enemy* targetHighestHp();
+    Enemy* targetLowestHp();
+    Enemy* targetEntrance();
+    Enemy* targetExit();
 
 public slots:
     void onTargetKilled(Enemy* enemy);

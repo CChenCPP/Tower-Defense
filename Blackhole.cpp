@@ -67,7 +67,7 @@ void BlackHole::setAttributes(int tier)
 // private methods
 void BlackHole::setImage(int tier)
 {
-    QString number = Parse::toQString(RNG::randomNum(1, 3));
+    QString number = Parse::intToQString(RNG::randomNum(1, 3));
     setPixmap(QPixmap(":/Special/Images/BlackHole" + number + ".png"));
 }
 

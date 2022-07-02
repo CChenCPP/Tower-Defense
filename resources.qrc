@@ -64,9 +64,19 @@
         <file>Images/Nova1.png</file>
     </qresource>
     <qresource prefix="/Enemies">
-        <file>Images/EnemyBlackCircle.png</file>
-        <file>Images/EnemyBlackSquare.png</file>
-        <file>Images/EnemyChrono1.png</file>
+        <file>Images/EnemyCukzotz1.png</file>
+        <file>Images/EnemyDharuer1.png</file>
+        <file>Images/EnemyEnione1.png</file>
+        <file>Images/EnemyEzlotl1.png</file>
+        <file>Images/EnemyHudor1.png</file>
+        <file>Images/EnemyKhyemis1.png</file>
+        <file>Images/EnemyKronus1.png</file>
+        <file>Images/EnemyLoldohr1.png</file>
+        <file>Images/EnemyPhihenar1.png</file>
+        <file>Images/EnemyRihrus1.png</file>
+        <file>Images/EnemyUdall1.png</file>
+        <file>Images/EnemyUesis1.png</file>
+        <file>Images/EnemyZanbris1.png</file>
     </qresource>
     <qresource prefix="/Maps">
         <file>Maps/Straight horizontal line.txt</file>
@@ -122,5 +132,19 @@
     <qresource prefix="/Backgrounds">
         <file>Backgrounds/FlatFields1.png</file>
         <file>Backgrounds/BrownDirt1.png</file>
+    </qresource>
+    <qresource prefix="/Map Icons">
+        <file>Map Icons/Diamond.png</file>
+        <file>Map Icons/Haven.png</file>
+        <file>Map Icons/Satanic.png</file>
+        <file>Map Icons/Staircase.png</file>
+        <file>Map Icons/Utopia.png</file>
+        <file>Map Icons/Highway.png</file>
+        <file>Map Icons/Obsidian.png</file>
+        <file>Map Icons/Poseidon.png</file>
+        <file>Map Icons/City.png</file>
+        <file>Map Icons/Butterfly.png</file>
+        <file>Map Icons/Forest.png</file>
+        <file>Map Icons/Fusion.png</file>
     </qresource>
 </RCC>
