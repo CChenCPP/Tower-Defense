@@ -78,17 +78,6 @@
         <file>Images/EnemyUesis1.png</file>
         <file>Images/EnemyZanbris1.png</file>
     </qresource>
-    <qresource prefix="/Maps">
-        <file>Maps/Straight horizontal line.txt</file>
-        <file>Maps/Zigzag.txt</file>
-        <file>Maps/Spiral.txt</file>
-        <file>Maps/Square spiral.txt</file>
-        <file>Maps/Straight horizontal line V downward.txt</file>
-        <file>Maps/Straight horizontal line V upward.txt</file>
-        <file>Maps/Maze1.txt</file>
-        <file>Maps/Maze 2 Path 2.txt</file>
-        <file>Maps/Maze 2 Path 1.txt</file>
-    </qresource>
     <qresource prefix="/Special">
         <file>Images/CannonballExplosion2a.png</file>
         <file>Images/CannonballExplosion3a.png</file>
@@ -132,6 +121,7 @@
     <qresource prefix="/Backgrounds">
         <file>Backgrounds/FlatFields1.png</file>
         <file>Backgrounds/BrownDirt1.png</file>
+        <file>Backgrounds/DarkNebula1.png</file>
     </qresource>
     <qresource prefix="/Map Icons">
         <file>Map Icons/Diamond.png</file>
