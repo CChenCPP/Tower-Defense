@@ -65,14 +65,12 @@ void Explosion::setAnimation()
 void Explosion::explode()
 {
     updateInterval.disconnect();
-    QList<QGraphicsItem*> collidingItems = this->collidingItems();
-    for (auto& item : collidingItems){
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy){
-            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled);
-            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged);
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < radius() + enemy->radius()){
+            if (++targets > maxTargets) { return; };
+            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled, Qt::UniqueConnection);
+            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged, Qt::UniqueConnection);
             enemy->damage(this);
-            if (++targets >= maxTargets) { return; };
         }
     }
 }

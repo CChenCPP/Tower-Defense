@@ -129,7 +129,8 @@ bool BeaconTower::canBuffAttackRangeMultiplier(Tower* tower) const
 
 bool BeaconTower::canBuffDamageMultiplier(Tower* tower) const
 {
-    return !(dynamic_cast<BeaconTower*>(tower))
+    return tower
+    && !(dynamic_cast<BeaconTower*>(tower))
     && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
     && (tower && tower->isBuilt() && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end());
 }

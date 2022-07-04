@@ -26,7 +26,12 @@ Wave::~Wave()
 }
 
 // public methods
-std::unordered_set<Enemy*>& Wave::getEnemyList()
+//std::unordered_set<Enemy*>& Wave::getEnemyList()
+//{
+//    return enemiesToSpawn;
+//}
+
+QVector<Enemy*>& Wave::getEnemyList()
 {
     return enemiesToSpawn;
 }
@@ -41,14 +46,14 @@ void Wave::addCukzotz(int amount)
 {
     for (int i = 0; i < amount; ++i){
         CukzotzEnemy* enemy = new CukzotzEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 void Wave::addDharuer(int amount)
 {
     for (int i = 0; i < amount; ++i){
         DharuerEnemy* enemy = new DharuerEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -56,7 +61,7 @@ void Wave::addEnione(int amount)
 {
     for (int i = 0; i < amount; ++i){
         EnioneEnemy* enemy = new EnioneEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -64,7 +69,7 @@ void Wave::addEzlotl(int amount)
 {
     for (int i = 0; i < amount; ++i){
         EzlotlEnemy* enemy = new EzlotlEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -72,7 +77,7 @@ void Wave::addHudor(int amount)
 {
     for (int i = 0; i < amount; ++i){
         HudorEnemy* enemy = new HudorEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -80,7 +85,7 @@ void Wave::addKhyemis(int amount)
 {
     for (int i = 0; i < amount; ++i){
         KhyemisEnemy* enemy = new KhyemisEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -88,7 +93,7 @@ void Wave::addKronus(int amount)
 {
     for (int i = 0; i < amount; ++i){
         KronusEnemy* enemy = new KronusEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -96,7 +101,7 @@ void Wave::addLoldohr(int amount)
 {
     for (int i = 0; i < amount; ++i){
         LoldohrEnemy* enemy = new LoldohrEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -104,7 +109,7 @@ void Wave::addPhihenar(int amount)
 {
     for (int i = 0; i < amount; ++i){
         PhihenarEnemy* enemy = new PhihenarEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -112,7 +117,7 @@ void Wave::addRihrus(int amount)
 {
     for (int i = 0; i < amount; ++i){
         RihrusEnemy* enemy = new RihrusEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -120,7 +125,7 @@ void Wave::addUdall(int amount)
 {
     for (int i = 0; i < amount; ++i){
         UdallEnemy* enemy = new UdallEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -128,7 +133,7 @@ void Wave::addUesis(int amount)
 {
     for (int i = 0; i < amount; ++i){
         UesisEnemy* enemy = new UesisEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -136,7 +141,7 @@ void Wave::addZanbris(int amount)
 {
     for (int i = 0; i < amount; ++i){
         ZanbrisEnemy* enemy = new ZanbrisEnemy(level);
-        enemiesToSpawn.insert(enemy);
+        enemiesToSpawn.push_back(enemy);
     }
 }
 
@@ -1142,6 +1147,7 @@ void Wave::generateEnemyList(int level)
         case 499:
             wave499(); break;
     }
+    std::shuffle(enemiesToSpawn.begin(), enemiesToSpawn.end(), RNG::generator);
 }
 
 void Wave::randomEnemies(int amount)
@@ -1184,6 +1190,7 @@ void Wave::wave1()
 {
     addDharuer(10);
     spawnIntervalMs = 1000;
+//    randomEnemies(5000); spawnIntervalMs = 20;
 }
 
 void Wave::wave2()

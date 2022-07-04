@@ -8,7 +8,7 @@
 extern Game* game;
 
 Enemy::Enemy(int level, QGraphicsItem* parent) :
-    QGraphicsPixmapItem(parent),
+    CustomGraphicsPixmapItem(parent),
     attributes{},
     level(level),
     spawnHp(0),
@@ -18,7 +18,6 @@ Enemy::Enemy(int level, QGraphicsItem* parent) :
     distancePerInterval(0),
     distanceTravelled(0),
     lastProjectile(nullptr),
-    hitByNova(false),
     hypothermia(false),
     maimed(false),
     poisoned(false)
@@ -32,11 +31,6 @@ Enemy::~Enemy()
 }
 
 // public methods
-QPointF Enemy::center() const
-{
-    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
-}
-
 void Enemy::damage(Projectile* projectile)
 {
     lastProjectile = projectile;
@@ -47,7 +41,7 @@ void Enemy::damage(Projectile* projectile)
     bool isHeadshotted = headshot(projectile);
     int trueDamage = piercing(projectile);
     trueDamage = (isHeadshotted) ? hp : trueDamage;
-    emit damagedAmount(trueDamage);
+    emit damagedAmount(lastProjectile, trueDamage);
     hp -= trueDamage;
     checkDeath();
 
@@ -74,11 +68,6 @@ void Enemy::pause()
     moveInterval.disconnect();
 }
 
-qreal Enemy::radius() const
-{
-    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
-}
-
 void Enemy::resume()
 {
     connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward, Qt::UniqueConnection);
@@ -96,19 +85,6 @@ void Enemy::setPath(QList<QPointF>* path)
     this->path = path;
     startPath();
     setMoveInterval();
-}
-
-void Enemy::centerToPoint(qreal x, qreal y)
-{
-    QPointF cent = center();
-    qreal dx = x - cent.x();
-    qreal dy = y - cent.y();
-    setPos(x - dx, y - dy);
-}
-
-void Enemy::centerToPoint(QPointF point)
-{
-    centerToPoint(point.x(), point.y());
 }
 
 // protected methods
@@ -196,7 +172,7 @@ void Enemy::rotateToPoint(QPointF point)
 void Enemy::regen()
 {
     if (isRegenerative()){
-        connect(&regenTimer,&QTimer::timeout,[&](){ hp += (spawnHp / 3); hp = std::min<int>(spawnHp, hp); std::cout << hp << std::endl; });
+        connect(&regenTimer,&QTimer::timeout,[&](){ hp += (spawnHp / 3); hp = std::min<int>(spawnHp, hp); });
         regenTimer.start(1000);
     }
 }

@@ -34,12 +34,13 @@ void NovaProjectile::bounceNext()
 //    animRotationTimer.start(20);
 //    connect(&animRotationTimer,&QTimer::timeout,[&](){targetHitAnim.setRotation(RNG::randomNum(1,360));});
 
+    target = nullptr;
     if (++targetCount >= maxTargets) { returnToSource(); return; };
-    auto enemyList = game->mainScene->enemiesWithinRange(this, searchRadius);
-    if (enemyList.size() > 0) {
-        target = enemyList[RNG::randomNum(0,enemyList.size() - 1)];
+    QVector<Enemy*> inRange = game->getEnemyListWithinRadius(center(), searchRadius);
+    if (inRange.size() > 0) {
+//        target = *std::next(inRange.begin(), RNG::randomNum(0,inRange.size() - 1));
+        target = inRange[RNG::randomNum(0, inRange.size() - 1)];
     }
-
     if (!target) { returnToSource(); return; };
     connect(target,&Enemy::destructing,this,&Projectile::targetIsDead,Qt::UniqueConnection);
 }
@@ -48,7 +49,7 @@ void NovaProjectile::returnToSource()
 {
     QLineF line(pos(), source->pos());
     setRotation(-1 * line.angle());
-    connect(&checkReturned,QTimer::timeout,[&](){ if (Geometry::distance2D(pos(),source->pos()) < 25) { emit returned(); delete this; };});
+    connect(&checkReturned,QTimer::timeout,[&](){ if (Geometry::distance2D(pos(), source->pos()) < 25) { emit returned(); delete this; };});
     checkReturned.start(75);
 }
 

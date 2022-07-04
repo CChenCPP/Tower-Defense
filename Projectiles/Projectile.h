@@ -1,7 +1,7 @@
 #pragma once
 #include <QObject>
-#include <QGraphicsPixmapItem>
 #include <QTimer>
+#include "Game/CustomGraphicsPixmapItem.h"
 #include "Towers/Tower.h"
 #include <iostream>
 
@@ -24,23 +24,15 @@ enum class ProjAttr : std::uint64_t {
     Singularity = 1 << 12
 };
 ProjAttr inline operator|(ProjAttr left, ProjAttr right)
-{
-    return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) | static_cast<std::underlying_type_t<ProjAttr>>(right));
-}
+{   return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) | static_cast<std::underlying_type_t<ProjAttr>>(right)); }
 ProjAttr inline operator&(ProjAttr left, ProjAttr right)
-{
-    return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) & static_cast<std::underlying_type_t<ProjAttr>>(right));
-}
+{   return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) & static_cast<std::underlying_type_t<ProjAttr>>(right)); }
 ProjAttr inline operator^(ProjAttr left, ProjAttr right)
-{
-    return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) ^ static_cast<std::underlying_type_t<ProjAttr>>(right));
-}
+{   return static_cast<ProjAttr>(static_cast<std::underlying_type_t<ProjAttr>>(left) ^ static_cast<std::underlying_type_t<ProjAttr>>(right)); }
 ProjAttr inline operator~(ProjAttr attr)
-{
-    return static_cast<ProjAttr>(~static_cast<int>(attr));
-}
+{   return static_cast<ProjAttr>(~static_cast<int>(attr)); }
 
-class Projectile : public QObject, public QGraphicsPixmapItem
+class Projectile : public QObject, public CustomGraphicsPixmapItem
 {
     Q_OBJECT
 public:
@@ -69,12 +61,12 @@ public:
     inline bool isSingularity() const noexcept;
     inline bool isShattering() const noexcept;
     inline bool isWarping() const noexcept;
-    inline Projectile& removeAttribute(ProjAttr attr) noexcept;
-    inline Projectile& removeAllAttributes() noexcept;
-    inline Projectile& setAttributes(ProjAttr attr);
-    template <class ProjAttr, class... ProjAttrs> inline void setAttributes(ProjAttr attr, ProjAttrs... otherAttrs);
+    inline void removeAllAttributes() noexcept;
+    inline void removeAttributes(ProjAttr attr) noexcept;
+    template <class ProjAttr, class... ProjAttrs> inline void removeAttributes(ProjAttr attr, ProjAttrs... otherAttrs) noexcept;
+    inline void setAttributes(ProjAttr attr) noexcept;
+    template <class ProjAttr, class... ProjAttrs> inline void setAttributes(ProjAttr attr, ProjAttrs... otherAttrs) noexcept;
 
-    QPointF center() const;
     int getDamage() const;
     int getHeadshotChance() const;
     int getHypothermiaChance() const;
@@ -86,7 +78,6 @@ public:
     int getTier() const;
     Tower* getSource() const;
     Enemy* getTarget() const;
-    qreal radius() const;
     void setTarget(Enemy* target);
 
 protected:
@@ -118,7 +109,7 @@ private:
 public slots:
     void hitEnemies();
     void move();
-    void onEnemyDamaged(int damage);
+    void onEnemyDamaged(Projectile* projectile, int damage);
     void onTargetKilled(Projectile* projectile, Enemy* enemy);
     void onTowerDestructing();
     void targetIsDead();
@@ -131,96 +122,60 @@ signals:
 };
 
 inline bool Projectile::hasAttribute(ProjAttr attr) const noexcept
-{
-    return static_cast<bool>(attributes & attr);
-}
+{   return static_cast<bool>(attributes & attr); }
 
 inline bool Projectile::isEthereal() const noexcept
-{
-    return hasAttribute(ProjAttr::Ethereal);
-}
+{   return hasAttribute(ProjAttr::Ethereal); }
 
 inline bool Projectile::isExplosive() const noexcept
-{
-    return hasAttribute(ProjAttr::Explosive);
-}
+{   return hasAttribute(ProjAttr::Explosive); }
 
 inline bool Projectile::isFlame() const noexcept
-{
-    return hasAttribute(ProjAttr::Flame);
-}
+{   return hasAttribute(ProjAttr::Flame);}
 
 inline bool Projectile::isFragmenting() const noexcept
-{
-    return hasAttribute(ProjAttr::Fragmenting);
-}
+{   return hasAttribute(ProjAttr::Fragmenting); }
 
 inline bool Projectile::isHeadshot() const noexcept
-{
-    return hasAttribute(ProjAttr::Headshot);
-}
+{   return hasAttribute(ProjAttr::Headshot); }
 
 inline bool Projectile::isHeatseek() const noexcept
-{
-    return hasAttribute(ProjAttr::Heatseek);
-}
+{   return hasAttribute(ProjAttr::Heatseek); }
 
 inline bool Projectile::isHypothermic() const noexcept
-{
-    return hasAttribute(ProjAttr::Hypothermic);
-}
+{   return hasAttribute(ProjAttr::Hypothermic); }
 
 inline bool Projectile::isMaiming() const noexcept
-{
-    return hasAttribute(ProjAttr::Maiming);
-}
+{   return hasAttribute(ProjAttr::Maiming); }
 
 inline bool Projectile::isPiercing() const noexcept
-{
-    return hasAttribute(ProjAttr::Piercing);
-}
+{   return hasAttribute(ProjAttr::Piercing); }
 
 inline bool Projectile::isPoisonous() const noexcept
-{
-    return hasAttribute(ProjAttr::Poisonous);
-}
+{   return hasAttribute(ProjAttr::Poisonous); }
 
 inline bool Projectile::isSingularity() const noexcept
-{
-    return hasAttribute(ProjAttr::Singularity);
-}
+{   return hasAttribute(ProjAttr::Singularity); }
 
 inline bool Projectile::isShattering() const noexcept
-{
-    return hasAttribute(ProjAttr::Shattering);
-}
+{   return hasAttribute(ProjAttr::Shattering); }
 
 inline bool Projectile::isWarping() const noexcept
-{
-    return hasAttribute(ProjAttr::Warping);
-}
+{   return hasAttribute(ProjAttr::Warping); }
 
-inline Projectile &Projectile::removeAttribute(ProjAttr attr) noexcept
-{
-    attributes = attributes & ~attr;
-    return *this;
-}
+inline void Projectile::removeAllAttributes() noexcept
+{   attributes = {}; }
 
-inline Projectile& Projectile::removeAllAttributes() noexcept
-{
-   attributes = {};
-    return *this;
-}
-
-inline Projectile& Projectile::setAttributes(ProjAttr attr)
-{
-    attributes = attributes | attr;
-    return *this;
-}
+inline void Projectile::removeAttributes(ProjAttr attr) noexcept
+{   attributes = attributes & ~attr; }
 
 template <class ProjAttr, class... ProjAttrs>
-inline void Projectile::setAttributes(ProjAttr attr, ProjAttrs... otherAttrs)
-{
-    attributes = attributes | attr;
-    setAttributes(otherAttrs...);
-}
+inline void Projectile::removeAttributes(ProjAttr attr, ProjAttrs... otherAttrs) noexcept
+{   attributes = attributes & ~attr; removeAttributes(otherAttrs...); }
+
+inline void Projectile::setAttributes(ProjAttr attr) noexcept
+{   attributes = attributes | attr; }
+
+template <class ProjAttr, class... ProjAttrs>
+inline void Projectile::setAttributes(ProjAttr attr, ProjAttrs... otherAttrs) noexcept
+{   attributes = attributes | attr; setAttributes(otherAttrs...); }

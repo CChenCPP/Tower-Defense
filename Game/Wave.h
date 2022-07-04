@@ -8,14 +8,15 @@ public:
     Wave(int level);
     ~Wave();
 
-    std::unordered_set<Enemy*>& getEnemyList();
+//    std::unordered_set<Enemy*>& getEnemyList();
+    QVector<Enemy*>& getEnemyList();
     int getSpawnIntervalMs() const;
-//    void popBackEnemy();
 
 private:
     int level;
     int spawnIntervalMs;
-    std::unordered_set<Enemy*> enemiesToSpawn;
+//    std::unordered_set<Enemy*> enemiesToSpawn;
+    QVector<Enemy*> enemiesToSpawn;
 
     void addCukzotz(int amount = 1);
     void addDharuer(int amount = 1);

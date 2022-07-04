@@ -7,7 +7,7 @@ extern Game* game;
 BuildingCursor::BuildingCursor(Tower* tower)
 {
     towerPixmap.setPixmap(tower->pixmap());
-    towerPixmap.setPos(x() - 25, y() - towerPixmap.pixmap().height() + 25);
+    towerPixmap.setPos(x() - towerPixmap.pixmap().width() / 2, y() - towerPixmap.pixmap().height() + 25);
     generateAttackArea(tower);
     game->mainScene->addItem(this);
     game->mainScene->addItem(&towerPixmap);

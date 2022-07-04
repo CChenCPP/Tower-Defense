@@ -29,7 +29,10 @@ bool Game::buyTower(int cost, Tower* tower)
 {
     if (money < cost) { return false; };
     money -= cost;
-    towerList.insert(tower);
+//    towerList.insert(tower);
+    if (std::find(towerList.begin(), towerList.end(), tower) == towerList.end()){
+        towerList.push_back(tower);
+    }
     return true;
 }
 
@@ -38,12 +41,47 @@ CustomGraphicsView* Game::gameView() const
     return mainView;
 }
 
-std::unordered_set<Enemy*>& Game::getEnemyList()
+//std::unordered_set<Enemy*>& Game::getEnemyList()
+//{
+//    return enemyList;
+//}
+
+QVector<Enemy*>& Game::getEnemyList()
 {
     return enemyList;
 }
 
-std::unordered_set<Tower*>& Game::getTowerList()
+
+//std::unordered_set<Enemy*> Game::getEnemyListWithinRadius(QPointF center, int radius)
+//{
+//    std::unordered_set<Enemy*> enemyList = getEnemyList();
+//    std::unordered_set<Enemy*> inRange;
+//    for (Enemy* enemy : enemyList){
+//        if (Geometry::distance2D(center, enemy->center()) <= radius + enemy->radius()){
+//            inRange.insert(enemy);
+//        }
+//    }
+//    return inRange;
+//}
+
+QVector<Enemy*> Game::getEnemyListWithinRadius(QPointF center, int radius)
+{
+    QVector<Enemy*> enemyList = getEnemyList();
+    QVector<Enemy*> inRange;
+    for (Enemy* enemy : enemyList){
+        if (Geometry::distance2D(center, enemy->center()) <= radius + enemy->radius()){
+            inRange.push_back(enemy);
+        }
+    }
+    return inRange;
+}
+
+//std::unordered_set<Tower*>& Game::getTowerList()
+//{
+//    return towerList;
+//}
+
+QVector<Tower*>& Game::getTowerList()
 {
     return towerList;
 }
@@ -128,7 +166,8 @@ void Game::pause()
 
 Enemy* Game::randomEnemy() const
 {
-    return (enemyList.size() > 0) ? *std::next(enemyList.begin(), RNG::randomNum(0,enemyList.size() - 1)) : nullptr;
+//    return (enemyList.size() > 0) ? *std::next(enemyList.begin(), RNG::randomNum(0,enemyList.size() - 1)) : nullptr;
+    return (enemyList.size() > 0) ? enemyList[RNG::randomNum(0, enemyList.size() - 1)] : nullptr;
 }
 
 void Game::resume()
@@ -196,7 +235,7 @@ void Game::defineLegalTiles()
             }
             QGraphicsRectItem* rectItem = grid[i][j];
             QRectF rect = rectItem->rect();
-            for (CustomGraphicsPathItem* pathItem : map->getPaths()){
+            for (Path* pathItem : map->getPaths()){
             QList<QPointF>* path = pathItem->getPath();
                 for (int k = 0; k < path->size(); ++k){
                     QPointF tileCenter(rectItem->x() + rect.width() / 2, rectItem->y() + rect.height() / 2);
@@ -318,7 +357,12 @@ void Game::setupGrid()
 // public slots
 void Game::removeTower(int posX, int posY, Tower* tower)
 {
-    towerList.erase(tower);
+//    towerList.erase(tower);
+    auto it = std::find(towerList.begin(), towerList.end(), tower);
+    if (it != towerList.end()){
+        towerList[it - towerList.begin()] = towerList.back();
+        towerList.pop_back();
+    }
     enableSlot(posX / Game::tileSize, (posY - Game::tileSize) / Game::tileSize);
 }
 
@@ -327,7 +371,7 @@ void Game::loadMap(QString mapName)
     resetAll();
     map = new Map(mapName);
     loadBackground();
-    QVector<CustomGraphicsPathItem*> paths = map->getPaths();
+    QVector<Path*> paths = map->getPaths();
     for (auto& pathItem : paths){
         mainScene->addItem(pathItem);
     }
@@ -337,16 +381,24 @@ void Game::loadMap(QString mapName)
 // private slots
 void Game::removeEnemy(Enemy* enemy)
 {
-    enemyList.erase(enemy);
+//    enemyList.erase(enemy);
+    auto it = std::find(enemyList.begin(), enemyList.end(), enemy);
+    if (it != enemyList.end()){
+        enemyList[it - enemyList.begin()] = enemyList.back();
+        enemyList.pop_back();
+    }
 }
 
 void Game::spawnEnemy()
 {
     if (enemiesToSpawn.size() == 0) { return; };
-    Enemy* enemy = *std::next(enemiesToSpawn.begin(), RNG::randomNum(0,enemiesToSpawn.size() - 1));
+//    Enemy* enemy = *std::next(enemiesToSpawn.begin(), RNG::randomNum(0,enemiesToSpawn.size() - 1));
+    Enemy* enemy = enemiesToSpawn.back();
     enemy->setPath(map->randomPath());
-    enemyList.insert(enemy);
-    enemiesToSpawn.erase(enemy);
+//    enemyList.insert(enemy);
+    enemyList.push_back(enemy);
+//    enemiesToSpawn.erase(enemy);
+    enemiesToSpawn.pop_back();
     connect(enemy,&Enemy::destructing,this,&Game::removeEnemy,Qt::UniqueConnection);
     mainScene->addItem(enemy);
 }

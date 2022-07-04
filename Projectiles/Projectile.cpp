@@ -9,7 +9,7 @@
 extern Game* game;
 
 Projectile::Projectile(QGraphicsItem *parent) :
-    QGraphicsPixmapItem(parent),
+    CustomGraphicsPixmapItem(parent),
     attributes{},
     source(nullptr),
     target(nullptr),
@@ -36,11 +36,6 @@ Projectile::~Projectile()
 }
 
 // public methods
-QPointF Projectile::center() const
-{
-    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
-}
-
 int Projectile::getDamage() const
 {
     return damage;
@@ -94,11 +89,6 @@ Tower* Projectile::getSource() const
 Enemy* Projectile::getTarget() const
 {
     return target;
-}
-
-qreal Projectile::radius() const
-{
-    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
 }
 
 void Projectile::setTarget(Enemy* target)
@@ -167,22 +157,24 @@ void Projectile::hitEnemies(){
 void Projectile::move()
 {
     rotateToTarget();
-    double theta = rotation();
-    double dx = distancePerInterval * qCos(qDegreesToRadians(theta));
-    double dy = distancePerInterval * qSin(qDegreesToRadians(theta));
+    qreal theta = rotation();
+    qreal dx = distancePerInterval * qCos(qDegreesToRadians(theta));
+    qreal dy = distancePerInterval * qSin(qDegreesToRadians(theta));
     setPos(x() + dx, y() + dy);
     distanceTravelled += distancePerInterval;
     if (distanceTravelled >= maxDistance) {
         if (isExplosive()) { explode(); return; };
-        if (isFragmenting()) { fragment();return; };
-        if (isShattering()) { shatter();return; };
+        if (isFragmenting()) { fragment(); return; };
+        if (isShattering()) { shatter(); return; };
         delete this;
     }
 }
 
-void Projectile::onEnemyDamaged(int damage)
+void Projectile::onEnemyDamaged(Projectile* projectile, int damage)
 {
-    source->incrementDamageDone(damage);
+    if (projectile == this) {
+        source->incrementDamageDone(damage);
+    }
 }
 
 void Projectile::onTargetKilled(Projectile* projectile, Enemy* enemy)

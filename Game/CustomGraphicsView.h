@@ -17,9 +17,8 @@ public:
 
 private:
     BuildingCursor* buildingCursor;
-//    QGraphicsPixmapItem* cursor;
 
-    QPointF convertToGridPos(BuildingCursor* cursor);
+    QPointF convertToGridPos(BuildingCursor* cursor) const;
     void duplicateBuilding();
     bool isRightMousePress(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);

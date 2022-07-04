@@ -1,7 +1,7 @@
 #pragma once
-#include <QGraphicsPixmapItem>
 #include <QObject>
 #include <QTimer>
+#include "Game/CustomGraphicsPixmapItem.h"
 #include "Projectiles/Projectile.h"
 
 class Projectile;
@@ -17,22 +17,15 @@ enum class EnemyAttr : std::uint64_t {
     Regenerative = 1 << 7
 };
 EnemyAttr inline operator|(EnemyAttr left, EnemyAttr right)
-{
-    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) | static_cast<std::underlying_type_t<EnemyAttr>>(right));
-}
+{   return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) | static_cast<std::underlying_type_t<EnemyAttr>>(right)); }
 EnemyAttr inline operator&(EnemyAttr left, EnemyAttr right)
-{
-    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) & static_cast<std::underlying_type_t<EnemyAttr>>(right));
-}
+{   return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) & static_cast<std::underlying_type_t<EnemyAttr>>(right)); }
 EnemyAttr inline operator^(EnemyAttr left, EnemyAttr right)
-{
-    return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) ^ static_cast<std::underlying_type_t<EnemyAttr>>(right));
-}
-EnemyAttr inline operator~(EnemyAttr attr){
-    return static_cast<EnemyAttr>(~static_cast<int>(attr));
-}
+{   return static_cast<EnemyAttr>(static_cast<std::underlying_type_t<EnemyAttr>>(left) ^ static_cast<std::underlying_type_t<EnemyAttr>>(right)); }
+EnemyAttr inline operator~(EnemyAttr attr)
+{   return static_cast<EnemyAttr>(~static_cast<int>(attr)); }
 
-class Enemy : public QObject, public QGraphicsPixmapItem
+class Enemy : public QObject, public CustomGraphicsPixmapItem
 {
     Q_OBJECT
 public:
@@ -48,18 +41,17 @@ public:
     inline bool isMaimResistant() const noexcept;
     inline bool isPoisonResistant() const noexcept;
     inline bool isRegenerative() const noexcept;
-    inline Enemy& removeAttribute(EnemyAttr attr) noexcept;
-    inline Enemy& removeAllAttributes() noexcept;
-    inline Enemy& setAttributes(EnemyAttr attr) noexcept;
+    inline void removeAllAttributes() noexcept;
+    inline void removeAttributes(EnemyAttr attr) noexcept;
+    template <class EnemyAttr, class... EnemyAttrs> inline void removeAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs) noexcept;
+    inline void setAttributes(EnemyAttr attr) noexcept;
     template <class EnemyAttr, class... EnemyAttrs> inline void setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs) noexcept;
 
-    QPointF center() const;
     void damage(Projectile* projectile);
     int getCurrentHp() const;
     qreal getDistanceTravelled() const;
     int getValue() const;
     void pause();
-    qreal radius() const;
     void resume();
     void setPath(QList<QPointF>* path);
 
@@ -81,7 +73,6 @@ protected:
     qreal distancePerInterval;
     qreal distanceTravelled;
     Projectile* lastProjectile;
-    bool hitByNova;
     bool hypothermia;
     QTimer hypothermiaTimer;
     bool maimed;
@@ -90,8 +81,6 @@ protected:
     QTimer poisonTimer;
     QTimer regenTimer;
 
-    void centerToPoint(qreal x, qreal y);
-    void centerToPoint(QPointF point);
     void checkDeath();
     void ethereal(Projectile* projectile);
     bool headshot(Projectile* projectile);
@@ -110,78 +99,52 @@ private slots:
     void moveForward();
 
 signals:
-    void damagedAmount(int damage);
+    void damagedAmount(Projectile* projectile, int damage);
     void destructing(Enemy* enemy);
     void killedBy(Projectile* projectile, Enemy* enemy);
 };
 
 inline bool Enemy::hasAttribute(EnemyAttr attr) const noexcept
-{
-    return static_cast<bool>(attributes & attr);
-}
+{   return static_cast<bool>(attributes & attr); }
 
 inline bool Enemy::isBurnResistant() const noexcept
-{
-    return hasAttribute(EnemyAttr::BurnResistant);
-}
+{   return hasAttribute(EnemyAttr::BurnResistant); }
 
 inline bool Enemy::isChrono() const noexcept
-{
-    return hasAttribute(EnemyAttr::Chrono);
-}
+{   return hasAttribute(EnemyAttr::Chrono); }
 
 inline bool Enemy::isFrost() const noexcept
-{
-    return hasAttribute(EnemyAttr::Frost);
-}
+{   return hasAttribute(EnemyAttr::Frost); }
 
 inline bool Enemy::isHeadshotResistant() const noexcept
-{
-    return hasAttribute(EnemyAttr::HeadshotResistant);
-}
+{   return hasAttribute(EnemyAttr::HeadshotResistant); }
 
 inline bool Enemy::isImpenetrable() const noexcept
-{
-    return hasAttribute(EnemyAttr::Impenetrable);
-}
+{   return hasAttribute(EnemyAttr::Impenetrable); }
 
 inline bool Enemy::isMaimResistant() const noexcept
-{
-    return hasAttribute(EnemyAttr::MaimResistant);
-}
+{   return hasAttribute(EnemyAttr::MaimResistant); }
 
 inline bool Enemy::isPoisonResistant() const noexcept
-{
-    return hasAttribute(EnemyAttr::PoisonResistant);
-}
+{   return hasAttribute(EnemyAttr::PoisonResistant); }
 
 inline bool Enemy::isRegenerative() const noexcept
-{
-    return hasAttribute(EnemyAttr::Regenerative);
-}
+{   return hasAttribute(EnemyAttr::Regenerative); }
 
-inline Enemy& Enemy::removeAttribute(EnemyAttr attr) noexcept
-{
-    attributes = attributes & ~attr;
-    return *this;
-}
+inline void Enemy::removeAllAttributes() noexcept
+{   attributes = {}; }
 
-inline Enemy& Enemy::removeAllAttributes() noexcept
-{
-    attributes = {};
-    return *this;
-}
+inline void Enemy::removeAttributes(EnemyAttr attr) noexcept
+{   attributes = attributes & ~attr; }
 
-inline Enemy& Enemy::setAttributes(EnemyAttr attr) noexcept
-{
-    attributes = attributes | attr;
-    return *this;
-}
+template<class EnemyAttr, class... EnemyAttrs>
+inline void Enemy::removeAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs) noexcept
+{   attributes = attributes & ~attr; removeAttributes(otherAttrs...); }
+
+inline void Enemy::setAttributes(EnemyAttr attr) noexcept
+{   attributes = attributes | attr; }
 
 template <class EnemyAttr, class... EnemyAttrs>
 inline void Enemy::setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs) noexcept
-{
-    attributes = attributes | attr;
-    setAttributes(otherAttrs...);
-}
+{   attributes = attributes | attr; setAttributes(otherAttrs...); }
 

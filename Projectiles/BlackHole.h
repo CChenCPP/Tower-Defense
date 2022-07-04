@@ -6,7 +6,7 @@ class BlackHole : public Projectile
 public:
     BlackHole(QPointF position);
 
-    static constexpr int banishDurationMs = 10000;
+    static constexpr int blackholeDurationMs = 2000;
     static constexpr int maxTargets = 5;
 
 private:

@@ -56,20 +56,20 @@ void CannonballProjectile::setProperties()
     {
         case 1:
             damage = 15;
-            distancePerInterval = 7;
-            maxDistance = 200;
+            distancePerInterval = 8.5;
+            maxDistance = 300;
             break;
 
         case 2:
             damage = 35;
-            distancePerInterval = 7;
-            maxDistance = 300;
+            distancePerInterval = 8.5;
+            maxDistance = 350;
             break;
 
         case 3:
             damage = 125;
-            distancePerInterval = 7;
-            maxDistance = 500;
+            distancePerInterval = 8.5;
+            maxDistance = 400;
             break;
     }
 }

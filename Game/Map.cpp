@@ -15,7 +15,7 @@ Map::Map(QString mapName) :
 Map::~Map()
 {
     delete background;
-    for (CustomGraphicsPathItem* path : paths){
+    for (Path* path : paths){
         delete path;
     }
 }
@@ -25,7 +25,7 @@ QGraphicsPixmapItem* Map::getBackground() const
     return background;
 }
 
-QVector<CustomGraphicsPathItem*> Map::getPaths() const
+QVector<Path*> Map::getPaths() const
 {
     return paths;
 }
@@ -85,57 +85,57 @@ void Map::createBackground(QString mapName)
 void Map::createPaths(QString mapName)
 {
     if (mapName == "Butterfly"){
-        paths.emplace_back(new CustomGraphicsPathItem("ButterflyPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("ButterflyPath2"));
-        paths.emplace_back(new CustomGraphicsPathItem("ButterflyPath3"));
-        paths.emplace_back(new CustomGraphicsPathItem("ButterflyPath4"));
+        paths.emplace_back(new Path("ButterflyPath1"));
+        paths.emplace_back(new Path("ButterflyPath2"));
+        paths.emplace_back(new Path("ButterflyPath3"));
+        paths.emplace_back(new Path("ButterflyPath4"));
     }
     else if (mapName == "City"){
-        paths.emplace_back(new CustomGraphicsPathItem("CityPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("CityPath2"));
+        paths.emplace_back(new Path("CityPath1"));
+        paths.emplace_back(new Path("CityPath2"));
     }
     else if (mapName == "Diamond"){
-        paths.emplace_back(new CustomGraphicsPathItem("DiamondPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("DiamondPath2"));
+        paths.emplace_back(new Path("DiamondPath1"));
+        paths.emplace_back(new Path("DiamondPath2"));
     }
     else if (mapName == "Forest"){
-        paths.emplace_back(new CustomGraphicsPathItem("ForestPath1"));
+        paths.emplace_back(new Path("ForestPath1"));
     }
     else if (mapName == "Fusion"){
-        paths.emplace_back(new CustomGraphicsPathItem("FusionPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("FusionPath2"));
-        paths.emplace_back(new CustomGraphicsPathItem("FusionPath3"));
-        paths.emplace_back(new CustomGraphicsPathItem("FusionPath4"));
+        paths.emplace_back(new Path("FusionPath1"));
+        paths.emplace_back(new Path("FusionPath2"));
+        paths.emplace_back(new Path("FusionPath3"));
+        paths.emplace_back(new Path("FusionPath4"));
     }
     else if (mapName == "Haven"){
-        paths.emplace_back(new CustomGraphicsPathItem("HavenPath1"));
+        paths.emplace_back(new Path("HavenPath1"));
     }
     else if (mapName == "Highway"){
-        paths.emplace_back(new CustomGraphicsPathItem("HighwayPath1"));
+        paths.emplace_back(new Path("HighwayPath1"));
     }
     else if (mapName == "Obsidian"){
-        paths.emplace_back(new CustomGraphicsPathItem("ObsidianPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("ObsidianPath2"));
-        paths.emplace_back(new CustomGraphicsPathItem("ObsidianPath3"));
+        paths.emplace_back(new Path("ObsidianPath1"));
+        paths.emplace_back(new Path("ObsidianPath2"));
+        paths.emplace_back(new Path("ObsidianPath3"));
     }
     else if (mapName == "Poseidon"){
-        paths.emplace_back(new CustomGraphicsPathItem("PoseidonPath1"));
-        paths.emplace_back(new CustomGraphicsPathItem("PoseidonPath2"));
-        paths.emplace_back(new CustomGraphicsPathItem("PoseidonPath3"));
-        paths.emplace_back(new CustomGraphicsPathItem("PoseidonPath4"));
+        paths.emplace_back(new Path("PoseidonPath1"));
+        paths.emplace_back(new Path("PoseidonPath2"));
+        paths.emplace_back(new Path("PoseidonPath3"));
+        paths.emplace_back(new Path("PoseidonPath4"));
     }
     else if (mapName == "Satanic"){
-        paths.emplaceBack(new CustomGraphicsPathItem("SatanicPath1"));
-        paths.emplaceBack(new CustomGraphicsPathItem("SatanicPath2"));
-        paths.emplaceBack(new CustomGraphicsPathItem("SatanicPath3"));
-        paths.emplaceBack(new CustomGraphicsPathItem("SatanicPath4"));
-        paths.emplaceBack(new CustomGraphicsPathItem("SatanicPath5"));
+        paths.emplaceBack(new Path("SatanicPath1"));
+        paths.emplaceBack(new Path("SatanicPath2"));
+        paths.emplaceBack(new Path("SatanicPath3"));
+        paths.emplaceBack(new Path("SatanicPath4"));
+        paths.emplaceBack(new Path("SatanicPath5"));
     }
     else if (mapName == "Staircase"){
-        paths.emplace_back(new CustomGraphicsPathItem("StaircasePath1"));
+        paths.emplace_back(new Path("StaircasePath1"));
     }
     else if (mapName == "Utopia"){
-        paths.emplace_back(new CustomGraphicsPathItem("UtopiaPath1"));
+        paths.emplace_back(new Path("UtopiaPath1"));
     }
 }
 

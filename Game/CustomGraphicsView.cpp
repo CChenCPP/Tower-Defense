@@ -41,7 +41,7 @@ void CustomGraphicsView::setCursor(Tower* tower)
 }
 
 // private methods
-QPointF CustomGraphicsView::convertToGridPos(BuildingCursor* cursor)
+QPointF CustomGraphicsView::convertToGridPos(BuildingCursor* cursor) const
 {
     QPixmap towerPixmap = cursor->getTower().pixmap();
     int bottomLeftX = cursor->x();

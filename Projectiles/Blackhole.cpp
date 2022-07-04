@@ -25,15 +25,11 @@ void BlackHole::banish()
 {
     animate();
     destruct();
-    for (auto& item : collidingItems()){
-        if (targetCount < maxTargets) { return; };
-        Enemy* enemy = dynamic_cast<Enemy*>(item);
-        if (enemy && !enemy->hasAttribute(EnemyAttr::Chrono)){
-            qreal distance = Geometry::distance2D(pos(), enemy->pos());
-            if (distance < 10){
-                delete enemy;
-                ++targetCount;
-            }
+    for (Enemy* enemy : game->getEnemyListWithinRadius(center(), radius())){
+        if (targetCount >= maxTargets) { searchTargetsInterval.disconnect(); return; };
+        if (enemy && !enemy->isChrono()){
+            delete enemy;
+            ++targetCount;
          }
     }
 }
@@ -50,7 +46,7 @@ void BlackHole::destruct()
 {
     if (!animDurationTimer.isActive()){
         connect(&animDurationTimer,&QTimer::timeout,[&](){delete this;});
-        animDurationTimer.start(2000);
+        animDurationTimer.start(blackholeDurationMs);
     }
 }
 

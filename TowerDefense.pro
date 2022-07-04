@@ -26,12 +26,13 @@ SOURCES +=  \
     Enemies/ZanbrisEnemy.cpp \
     Game/BuildTowerIcon.cpp \
     Game/BuildingCursor.cpp \
-    Game/CustomGraphicsPathItem.cpp \
+    Game/CustomGraphicsPixmapItem.cpp \
     Game/CustomGraphicsScene.cpp \
     Game/CustomGraphicsView.cpp \
     Game/Game.cpp \
     Game/GameConstants.cpp \
     Game/Map.cpp \
+    Game/Path.cpp \
     Game/Wave.cpp \
     Misc/Utility.cpp \
     Projectiles/ArrowProjectile.cpp \
@@ -76,12 +77,13 @@ HEADERS +=  \
    Enemies/ZanbrisEnemy.h \
    Game/BuildTowerIcon.h \
    Game/BuildingCursor.h \
-   Game/CustomGraphicsPathItem.h \
+   Game/CustomGraphicsPixmapItem.h \
    Game/CustomGraphicsScene.h \
    Game/CustomGraphicsView.h \
    Game/Game.h \
    Game/GameConstants.h \
    Game/Map.h \
+   Game/Path.h \
    Game/Wave.h \
    Misc/Utility.h \
    Projectiles/ArrowProjectile.h \

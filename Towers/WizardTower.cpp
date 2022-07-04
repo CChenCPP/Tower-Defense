@@ -106,8 +106,6 @@ void WizardTower::tetherNeighbor()
         tetherTarget->setTethered(false);
         tetherTarget = nullptr; };
 
-//    QList<QGraphicsItem*> collisions = attackArea->collidingItems();
-
     for (Tower* tower : game->getTowerList()){
         if (dynamic_cast<WizardTower*>(tower) || dynamic_cast<BeaconTower*>(tower)) { continue; };
         if (Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2)) { continue; };
@@ -131,7 +129,7 @@ void WizardTower::summonBlackHole()
     if (RNG::randomNum(1,100) <= 90) { tetherNeighbor(); return; };
     Enemy* randomEnemy = game->randomEnemy();
     if (randomEnemy){
-        BlackHole* singularity = new BlackHole(randomEnemy->pos());
+        BlackHole* singularity = new BlackHole(randomEnemy->center());
     }
 }
 

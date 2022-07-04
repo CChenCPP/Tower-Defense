@@ -1,8 +1,8 @@
 #pragma once
-#include <QGraphicsPixmapItem>
 #include <QGraphicsPolygonItem>
 #include <QTimer>
 #include <QObject>
+#include "Game/CustomGraphicsPixmapItem.h"
 #include "Enemies/Enemy.h"
 #include "Projectiles/Projectile.h"
 #include <thread>
@@ -18,14 +18,13 @@ enum class TargetPriority
     Exit
 };
 
-class Tower : public QObject, public QGraphicsPixmapItem
+class Tower : public QObject, public CustomGraphicsPixmapItem
 {
     Q_OBJECT
 public:
     Tower(QGraphicsItem* parent = nullptr);
     virtual ~Tower();
 
-    QPointF center() const;
     void consecutiveAttack();
     int getAttackInterval() const;
     int getAttackRange() const;
@@ -49,9 +48,7 @@ public:
     bool isTethered() const;
     bool isUpgradable() const;
     void pause();
-    qreal radius() const;
     void resume();
-    static QPixmap scaleToWidth(QPixmap pixmap, qreal width);
     void setAttackIntervalMultiplier(float multiplier);
     void setAttackRangeMultiplier(float multiplier);
     void setDamageMultiplier(float multiplier);
