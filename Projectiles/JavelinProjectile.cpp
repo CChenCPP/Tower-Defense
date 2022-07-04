@@ -9,6 +9,7 @@ JavelinProjectile::JavelinProjectile(int tier, Tower* source) :
     setAttributes(tier);
     setImage(tier);
     setProperties(tier);
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
 void JavelinProjectile::setAttributes(int tier)

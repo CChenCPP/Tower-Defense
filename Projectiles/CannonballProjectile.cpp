@@ -12,6 +12,7 @@ CannonballProjectile::CannonballProjectile(int tier, Tower* source) :
     setAttributes();
     setImage();
     setProperties();
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
 void CannonballProjectile::setAttributes()
