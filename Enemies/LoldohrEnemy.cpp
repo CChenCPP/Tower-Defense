@@ -21,7 +21,7 @@ void LoldohrEnemy::setAttributes()
 void LoldohrEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyLoldohr" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyLoldohr" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void LoldohrEnemy::setProperties()
     hp = pow(loldohrHp * level, hpScale);
     spawnHp = hp;
     armor = loldohrArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

@@ -3,10 +3,41 @@
 #include <QString>
 #include <QPointF>
 #include <QPixmap>
+#include <chrono>
 
 typedef unsigned char uint8_t;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
+
+namespace Constant
+{
+    static constexpr qreal e = 2.71828182845904523536;
+}
+
+namespace Geometry
+{
+    static constexpr qreal radToDegRatio = 3.141592653589793238463 / 180.0;
+    qreal distance2D(QPointF src, QPointF dst);
+    QVector<QPointF> generateCircle(int edges, int radius);
+    QPointF midPoint(const QPointF p1, const QPointF p2);
+    QPixmap scaleToWidth(QPixmap pixmap, qreal width);
+}
+
+namespace Parse
+{
+    template<typename stringable>
+    QString toQString(stringable& str){
+        return QString::fromUtf8(std::to_string(str));
+    }
+
+    int ctoi(char c);
+    std::string ctos(char c);
+    std::vector<std::string> split(std::string& s, const std::string delimiter);
+    std::vector<std::string> split(std::string& s, char delim = ' ');
+    std::vector<int> stringToInt(const std::vector<std::string>& v);
+    QString intToQString(int num);
+    QString qrealToQString(qreal num);
+}
 
 namespace RNG
 {
@@ -38,35 +69,17 @@ namespace RNG
          std::uniform_int_distribution<long long int> range(min, max);
          return range(generator);
      }
-
 }
 
-namespace Parse
-{
-    template<typename stringable>
-    QString toQString(stringable& str){
-        return QString::fromUtf8(std::to_string(str));
-    }
-
-    int ctoi(char c);
-    std::string ctos(char c);
-    std::vector<std::string> split(std::string& s, const std::string delimiter);
-    std::vector<std::string> split(std::string& s, char delim = ' ');
-    std::vector<int> stringToInt(const std::vector<std::string>& v);
-    QString intToQString(int num);
-    QString qrealToQString(qreal num);
-}
-
-namespace Geometry
-{
-    static constexpr qreal radToDegRatio = 3.141592653589793238463 / 180.0;
-    qreal distance2D(QPointF src, QPointF dst);
-    QVector<QPointF> generateCircle(int edges, int radius);
-    QPointF midPoint(const QPointF p1, const QPointF p2);
-    QPixmap scaleToWidth(QPixmap pixmap, qreal width);
-}
-
-namespace Constant
-{
-    static constexpr qreal e = 2.71828182845904523536;
+namespace Time{
+    typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_point;
+    time_point now();
+    qreal timeSinceSec(time_point startTime);
+    qreal timeSinceMilli(time_point startTime);
+    qreal timeSinceMicro(time_point startTime);
+    qreal timeSinceNano(time_point startTime);
+    qreal timeDiffSec(time_point startTime, time_point endTime);
+    qreal timeDiffMilli(time_point startTime, time_point endTime);
+    qreal timeDiffMicro(time_point startTime, time_point endTime);
+    qreal timeDiffNano(time_point startTime, time_point endTime);
 }

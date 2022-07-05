@@ -21,7 +21,7 @@ void KhyemisEnemy::setAttributes()
 void KhyemisEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyKhyemis" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyKhyemis" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void KhyemisEnemy::setProperties()
     hp = pow(khyemisHp * level, hpScale);
     spawnHp = hp;
     armor = khyemisArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

@@ -21,7 +21,7 @@ void CukzotzEnemy::setAttributes()
 void CukzotzEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyCukzotz" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyCukzotz" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void CukzotzEnemy::setProperties()
     hp = pow(cukzotzHp * level, hpScale);
     spawnHp = hp;
     armor = cukzotzArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

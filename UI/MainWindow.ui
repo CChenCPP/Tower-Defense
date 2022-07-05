@@ -19,7 +19,7 @@
      <rect>
       <x>320</x>
       <y>10</y>
-      <width>792</width>
+      <width>900</width>
       <height>792</height>
      </rect>
     </property>
@@ -173,8 +173,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1140</x>
-      <y>20</y>
+      <x>1310</x>
+      <y>10</y>
       <width>161</width>
       <height>208</height>
      </rect>
@@ -499,8 +499,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>1180</x>
-      <y>270</y>
+      <x>1350</x>
+      <y>260</y>
       <width>75</width>
       <height>24</height>
      </rect>
@@ -515,8 +515,8 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>1190</x>
-      <y>300</y>
+      <x>1360</x>
+      <y>290</y>
       <width>75</width>
       <height>24</height>
      </rect>
@@ -528,8 +528,8 @@
    <widget class="QLineEdit" name="pauseStateLineEdit">
     <property name="geometry">
      <rect>
-      <x>1190</x>
-      <y>330</y>
+      <x>1360</x>
+      <y>320</y>
       <width>113</width>
       <height>22</height>
      </rect>
@@ -544,8 +544,8 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>1150</x>
-      <y>552</y>
+      <x>1320</x>
+      <y>542</y>
       <width>83</width>
       <height>181</height>
      </rect>
@@ -634,8 +634,8 @@
    <widget class="QPushButton" name="pickMapButton">
     <property name="geometry">
      <rect>
-      <x>1160</x>
-      <y>400</y>
+      <x>1330</x>
+      <y>390</y>
       <width>75</width>
       <height>24</height>
      </rect>

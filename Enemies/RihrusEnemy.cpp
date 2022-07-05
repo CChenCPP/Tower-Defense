@@ -21,7 +21,7 @@ void RihrusEnemy::setAttributes()
 void RihrusEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyRihrus" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyRihrus" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void RihrusEnemy::setProperties()
     hp = pow(rihrusHp * level, hpScale);
     spawnHp = hp;
     armor = rihrusArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

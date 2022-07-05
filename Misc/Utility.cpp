@@ -2,6 +2,38 @@
 #include <QVector>
 #include <sstream>
 
+qreal Geometry::distance2D(QPointF src, QPointF dst)
+{
+    int dx = src.x() - dst.x();
+    int dy = src.y() - dst.y();
+    return sqrt(pow(dx,2) + pow(dy,2));
+}
+
+QVector<QPointF> Geometry::generateCircle(int edges, int radius)
+{
+    QVector<QPointF> points;
+    int radians = 0;
+    for (int i = 0; i < edges; ++i, radians = i * (360 / edges)){
+        points << QPointF(cos(radians * Geometry::radToDegRatio), sin(radians * Geometry::radToDegRatio));
+    }
+    for (size_t i = 0; i < points.size(); ++i){
+        points[i] *= radius;
+    }
+    return points;
+}
+
+QPointF Geometry::midPoint(const QPointF p1, const QPointF p2)
+{
+    return QPointF(p1.x() + (p2.x() - p1.x()) / 2, p1.y() + (p2.y() - p1.y()) / 2);
+}
+
+QPixmap Geometry::scaleToWidth(QPixmap pixmap, qreal width)
+{
+    QPixmap scaled = pixmap.scaled(width, pixmap.height() / (pixmap.width() / width));
+    return scaled;
+}
+
+
 int Parse::ctoi(char c)
 {
     return c - '0';
@@ -59,33 +91,43 @@ QString Parse::qrealToQString(qreal num)
 
 }
 
-qreal Geometry::distance2D(QPointF src, QPointF dst)
-{
-    int dx = src.x() - dst.x();
-    int dy = src.y() - dst.y();
-    return sqrt(pow(dx,2) + pow(dy,2));
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> time_point;
+time_point Time::now(){
+    return std::chrono::high_resolution_clock::now();
 }
 
-QVector<QPointF> Geometry::generateCircle(int edges, int radius)
-{
-    QVector<QPointF> points;
-    int radians = 0;
-    for (int i = 0; i < edges; ++i, radians = i * (360 / edges)){
-        points << QPointF(cos(radians * Geometry::radToDegRatio), sin(radians * Geometry::radToDegRatio));
-    }
-    for (size_t i = 0; i < points.size(); ++i){
-        points[i] *= radius;
-    }
-    return points;
+qreal Time::timeSinceSec(time_point startTime){
+    time_point now = Time::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(now - startTime).count() / 1000000000.0;
 }
 
-QPointF Geometry::midPoint(const QPointF p1, const QPointF p2)
-{
-    return QPointF(p1.x() + (p2.x() - p1.x()) / 2, p1.y() + (p2.y() - p1.y()) / 2);
+qreal Time::timeSinceMilli(time_point startTime){
+    time_point now = Time::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(now - startTime).count() / 1000000.0;
 }
 
-QPixmap Geometry::scaleToWidth(QPixmap pixmap, qreal width)
-{
-    QPixmap scaled = pixmap.scaled(width, pixmap.height() / (pixmap.width() / width));
-    return scaled;
+qreal Time::timeSinceMicro(time_point startTime){
+    time_point now = Time::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(now - startTime).count() / 1000.0;
+}
+
+qreal Time::timeSinceNano(time_point startTime){
+    time_point now = Time::now();
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(now - startTime).count() / 1.0;
+}
+
+qreal Time::timeDiffSec(time_point startTime, time_point endTime){
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count() / 1000000000.0;
+}
+
+qreal Time::timeDiffMilli(time_point startTime, time_point endTime){
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count() / 1000000.0;
+}
+
+qreal Time::timeDiffMicro(time_point startTime, time_point endTime){
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count() / 1000.0;
+}
+
+qreal Time::timeDiffNano(time_point startTime, time_point endTime){
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(endTime - startTime).count() / 1.0;
 }

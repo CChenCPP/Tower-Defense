@@ -25,14 +25,41 @@ QGraphicsPixmapItem* Map::getBackground() const
     return background;
 }
 
-QVector<Path*> Map::getPaths() const
+qreal Map::getMapHeight() const
+{
+    return mapHeight;
+}
+
+qreal Map::getMapWidth() const
+{
+    return mapWidth;
+}
+
+QVector<Path*>& Map::getPaths()
 {
     return paths;
 }
 
-QList<QPointF>* Map::randomPath() const
+void Map::scalePaths(qreal widthScale, qreal heightScale)
 {
-    return paths[RNG::randomNum(0, paths.size() - 1)]->getPath();
+    mapWidth *= widthScale;
+    mapHeight *= heightScale;
+
+    QTransform transform;
+    transform.scale(widthScale, heightScale);
+    for (Path* path : paths){
+        path->setTransform(transform);
+        QList<QPointF>* pathPoints = path->getPath();
+        for (QPointF& point : *pathPoints){
+            point.setX(point.x() * widthScale);
+            point.setY(point.y() * heightScale);
+        }
+    }
+}
+
+Path* Map::randomPath() const
+{
+    return paths[RNG::randomNum(0, paths.size() - 1)];
 }
 
 // private methods

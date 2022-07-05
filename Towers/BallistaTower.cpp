@@ -1,8 +1,11 @@
 #include "BallistaTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/JavelinProjectile.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -12,9 +15,9 @@ BallistaTower::BallistaTower() :
     connect(this,&Tower::upgrade,this,&BallistaTower::upgrade);
     attackRange = BallistaTower::tier1AttackRange;
     attackInterval = BallistaTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = std::pow(BallistaTower::tier1Cost, Tower::valueDecay);
+    sellValue = std::pow(BallistaTower::tier1Cost, valueDecay);
 }
 
 // public methods

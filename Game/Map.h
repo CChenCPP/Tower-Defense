@@ -10,10 +10,15 @@ public:
     ~Map();
 
     QGraphicsPixmapItem* getBackground() const;
-    QVector<Path*> getPaths() const;
-    QList<QPointF>* randomPath() const;
+    qreal getMapHeight() const;
+    qreal getMapWidth() const;
+    QVector<Path*>& getPaths();
+    void scalePaths(qreal widthScale, qreal heightScale);
+    Path* randomPath() const;
 
 private:
+    qreal mapWidth = 792;
+    qreal mapHeight = 792;
     QGraphicsPixmapItem* background;
     QString name;
     QVector<Path*> paths;

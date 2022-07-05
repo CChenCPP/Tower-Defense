@@ -5,6 +5,8 @@
 #include "Misc/Utility.h"
 #include <iostream>
 
+using namespace GameConstants::TowerConstants;
+
 extern Game* game;
 
 ArcherTower::ArcherTower() :
@@ -13,9 +15,9 @@ ArcherTower::ArcherTower() :
     connect(this,&Tower::upgrade,this,&ArcherTower::upgrade);
     attackRange = ArcherTower::tier1AttackRange;
     attackInterval = ArcherTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = std::pow(ArcherTower::tier1Cost, Tower::valueDecay);
+    sellValue = std::pow(ArcherTower::tier1Cost, valueDecay);
 }
 
 

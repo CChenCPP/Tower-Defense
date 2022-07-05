@@ -1,8 +1,11 @@
 #include "IceTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/IceShard.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -11,9 +14,9 @@ IceTower::IceTower() : Tower()
     connect(this,&Tower::upgrade,this,&IceTower::upgrade);
     attackRange = IceTower::tier1AttackRange;
     attackInterval = IceTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = pow(IceTower::tier1Cost, Tower::valueDecay);
+    sellValue = pow(IceTower::tier1Cost, valueDecay);
 }
 
 // public methods

@@ -1,4 +1,5 @@
 #pragma once
+#include "GameConstants.h"
 #include "CustomGraphicsScene.h"
 #include "CustomGraphicsView.h"
 #include "Wave.h"
@@ -6,15 +7,13 @@
 #include <unordered_set>
 #include <set>
 
+using namespace GameConstants;
+
 class Game : public QObject
 {
     Q_OBJECT
 public:
     Game();
-
-    static constexpr int tileSize = 36;
-    static constexpr qreal defaultTowerWidth = tileSize * 1.3;
-    static constexpr qreal defaultIconWidth = 55;
 
     CustomGraphicsScene* mainScene;
 
@@ -52,7 +51,6 @@ private:
     CustomGraphicsView* mainView;
     bool running;
     bool paused;
-    static constexpr int startingHealth = 100;
     Map* map;
     QVector<QVector<QGraphicsRectItem*>> grid;
     QVector<QVector<bool>> takenSlots;

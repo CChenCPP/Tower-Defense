@@ -23,7 +23,7 @@ void KronusEnemy::setAttributes()
 void KronusEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyKronus" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyKronus" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -33,5 +33,5 @@ void KronusEnemy::setProperties()
     hp = pow(kronusHp * level, hpScale);
     spawnHp = hp;
     armor = kronusArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

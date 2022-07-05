@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Game/BuildTowerIcon.h"
 #include "Towers/ArcherTower.h"
 #include "Towers/BallistaTower.h"
@@ -13,6 +14,8 @@
 #include "Misc/Utility.h"
 #include <QKeyEvent>
 #include <iostream>
+
+using namespace GameConstants;
 
 extern Game* game;
 
@@ -36,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     UI->setupUi(this);
     setWindowTitle("Tower Defense");
     game->gameView()->setParent(UI->gameFrame);
+    UI->gameFrame->setGeometry(UI->gameFrame->pos().x(), UI->gameFrame->pos().y(), CustomGraphicsScene::defaultWidth, CustomGraphicsScene::defaultHeight);
     setupBuildTowerIcons();
     disablePriorityButtons();
     connect(mapSelectionWindow,&MapSelectionWindow::mapSelected,game,&Game::loadMap);
@@ -222,42 +226,42 @@ void MainWindow::resetSelection()
 
 void MainWindow::setupBuildTowerIcons() const
 {
-    QIcon archerTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), Game::defaultIconWidth));
+    QIcon archerTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultIconWidth));
     auto archerTowerButton = UI->buildArcherTowerButton;
     archerTowerButton->setIcon(archerTowerIcon);
     archerTowerButton->setIconSize(QSize(200,200));
 
-    QIcon beaconTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), Game::defaultIconWidth));
+    QIcon beaconTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultIconWidth));
     auto beaconTowerButton = UI->buildBeaconTowerButton;
     beaconTowerButton->setIcon(beaconTowerIcon);
     beaconTowerButton->setIconSize(QSize(200,200));
 
-    QIcon ballistaTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), Game::defaultIconWidth));
+    QIcon ballistaTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), defaultIconWidth));
     auto ballistaTowerButton = UI->buildBallistaTowerButton;
     ballistaTowerButton->setIcon(ballistaTowerIcon);
     ballistaTowerButton->setIconSize(QSize(200,200));
 
-    QIcon cannonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), Game::defaultIconWidth));
+    QIcon cannonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultIconWidth));
     auto cannonTowerButton = UI->buildCannonTowerButton;
     cannonTowerButton->setIcon(cannonTowerIcon);
     cannonTowerButton->setIconSize(QSize(200,200));
 
-    QIcon iceTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), Game::defaultIconWidth));
+    QIcon iceTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultIconWidth));
     auto iceTowerButton = UI->buildIceTowerButton;
     iceTowerButton->setIcon(iceTowerIcon);
     iceTowerButton->setIconSize(QSize(200,200));
 
-    QIcon stoneTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), Game::defaultIconWidth));
+    QIcon stoneTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultIconWidth));
     auto stoneTowerButton = UI->buildStoneTowerButton;
     stoneTowerButton->setIcon(stoneTowerIcon);
     stoneTowerButton->setIconSize(QSize(200,200));
 
-    QIcon teleportTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), Game::defaultIconWidth));
+    QIcon teleportTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultIconWidth));
     auto teleportTowerButton = UI->buildTeleportTowerButton;
     teleportTowerButton->setIcon(teleportTowerIcon);
     teleportTowerButton->setIconSize(QSize(200,200));
 
-    QIcon wizardTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), Game::defaultIconWidth));
+    QIcon wizardTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultIconWidth));
     auto wizardTowerButton = UI->buildWizardTowerButton;
     wizardTowerButton->setIcon(wizardTowerIcon);
     wizardTowerButton->setIconSize(QSize(200,200));

@@ -11,8 +11,8 @@ Game::Game() :
     map(nullptr),
     enemySpawnTimer(new QTimer()),
     nextWaveCheckTimer(new QTimer()),
-    grid(CustomGraphicsScene::defaultWidth / Game::tileSize, QVector<QGraphicsRectItem*>(CustomGraphicsScene::defaultHeight / Game::tileSize)),
-    takenSlots(CustomGraphicsScene::defaultWidth / Game::tileSize, QVector<bool>(CustomGraphicsScene::defaultHeight / Game::tileSize)),
+    grid(CustomGraphicsScene::defaultWidth / tileSize, QVector<QGraphicsRectItem*>(CustomGraphicsScene::defaultHeight / tileSize)),
+    takenSlots(CustomGraphicsScene::defaultWidth / tileSize, QVector<bool>(CustomGraphicsScene::defaultHeight / tileSize)),
     wave(nullptr),
     level(0),
     totalKillCount(0),
@@ -212,10 +212,10 @@ void Game::showGrid()
 
 void Game::newTowerAt(int x, int y)
 {
-    takenSlots[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize] = true;
+    takenSlots[x / tileSize][(y - tileSize) / tileSize] = true;
     QColor transparentRed = Qt::red;
     transparentRed.setAlphaF(0.3);
-    grid[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize]->setBrush(transparentRed);
+    grid[x / tileSize][(y - tileSize) / tileSize]->setBrush(transparentRed);
 }
 
 void Game::newTowerAt(QPointF pos)
@@ -239,7 +239,7 @@ void Game::defineLegalTiles()
             QList<QPointF>* path = pathItem->getPath();
                 for (int k = 0; k < path->size(); ++k){
                     QPointF tileCenter(rectItem->x() + rect.width() / 2, rectItem->y() + rect.height() / 2);
-                    if (Geometry::distance2D(tileCenter, (*path)[k]) <= Game::tileSize * sqrt(2) / 2){
+                    if (Geometry::distance2D(tileCenter, (*path)[k]) <= tileSize * sqrt(2) / 2){
                             disableSlot(i,j);
                             continue;
                     }
@@ -267,7 +267,7 @@ void Game::enableSlot(int i, int j)
 
 bool Game::slotOccupied(int x, int y)
 {
-    return takenSlots[x / Game::tileSize][(y - Game::tileSize) / Game::tileSize];
+    return takenSlots[x / tileSize][(y - tileSize) / tileSize];
 }
 
 bool Game::slotOccupied(QPointF pos)
@@ -315,7 +315,7 @@ void Game::resetAll()
     paused = false;
     level = 0;
     totalKillCount = 0;
-    health = Game::startingHealth;
+    health = startingHealth;
     money = 1000000;
     emit resetting();
 }
@@ -329,7 +329,7 @@ void Game::setupGrid()
         row.clear();
     }
     for (auto& row : grid){
-        for (int i = 0 ; i < CustomGraphicsScene::defaultHeight / Game::tileSize; ++i){
+        for (int i = 0 ; i < CustomGraphicsScene::defaultHeight / tileSize; ++i){
             QGraphicsRectItem* rectItem = new QGraphicsRectItem();
             row.push_back(rectItem);
         }
@@ -338,12 +338,12 @@ void Game::setupGrid()
     for (int i = 0; i < grid.size(); ++i){
         for (int j = 0; j < grid[0].size(); ++j){
             QGraphicsRectItem* rectItem = grid[i][j];
-            QRectF rect(0, 0, Game::tileSize, Game::tileSize);
+            QRectF rect(0, 0, tileSize, tileSize);
             rectItem->setRect(rect);
-            rectItem->setTransformOriginPoint(Game::tileSize / 2, Game::tileSize / 2);
+            rectItem->setTransformOriginPoint(tileSize / 2, tileSize / 2);
             rectItem->setScale(sqrt(2));
             rectItem->setRotation(45);
-            rectItem->setPos(i * Game::tileSize, j * Game::tileSize);
+            rectItem->setPos(i * tileSize, j * tileSize);
             enableSlot(i,j);
             mainScene->addItem(rectItem);
         }
@@ -363,16 +363,18 @@ void Game::removeTower(int posX, int posY, Tower* tower)
         towerList[it - towerList.begin()] = towerList.back();
         towerList.pop_back();
     }
-    enableSlot(posX / Game::tileSize, (posY - Game::tileSize) / Game::tileSize);
+    enableSlot(posX / tileSize, (posY - tileSize) / tileSize);
 }
 
 void Game::loadMap(QString mapName)
 {
     resetAll();
     map = new Map(mapName);
+    map->scalePaths(CustomGraphicsScene::defaultWidth / map->getMapWidth(), CustomGraphicsScene::defaultHeight / map->getMapHeight());
     loadBackground();
     QVector<Path*> paths = map->getPaths();
-    for (auto& pathItem : paths){
+
+    for (Path* pathItem : paths){
         mainScene->addItem(pathItem);
     }
     setupGrid();

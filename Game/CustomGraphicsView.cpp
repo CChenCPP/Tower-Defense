@@ -46,9 +46,9 @@ QPointF CustomGraphicsView::convertToGridPos(BuildingCursor* cursor) const
     QPixmap towerPixmap = cursor->getTower().pixmap();
     int bottomLeftX = cursor->x();
     int bottomLeftY = cursor->y();
-    int dx = (bottomLeftX % Game::tileSize);
-    int dy = Game::tileSize - (bottomLeftY % Game::tileSize);
-    return QPointF(bottomLeftX - dx + (Game::tileSize - towerPixmap.width()) / 2,bottomLeftY + dy - towerPixmap.height());
+    int dx = (bottomLeftX % tileSize);
+    int dy = tileSize - (bottomLeftY % tileSize);
+    return QPointF(bottomLeftX - dx + (tileSize - towerPixmap.width()) / 2,bottomLeftY + dy - towerPixmap.height());
 }
 
 void CustomGraphicsView::duplicateBuilding()
@@ -106,15 +106,15 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
     if (building){
         QPointF buildingPos = convertToGridPos(buildingCursor);
         QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
-        QPointF gridIdentifierPos(slotPos.x() + Game::defaultTowerWidth / 2, slotPos.y());
+        QPointF gridIdentifierPos(slotPos.x() + defaultTowerWidth / 2, slotPos.y());
         if (!game->slotOccupied(QPointF(slotPos.x() + building->pixmap().width() / 2, slotPos.y()))){
             if (!game->buyTower(Tower::getDefaultCost(building), building)) { return; };
             game->newTowerAt(gridIdentifierPos);
             connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
-            building->init();
             building->setGridPos(slotPos);
             building->setPos(buildingPos);
             building->setZValue(1 - ((CustomGraphicsScene::defaultHeight - slotPos.y()) / 1000000.0));
+            building->init();
             game->mainScene->addItem(building);
             if(QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier)){
                 duplicateBuilding();

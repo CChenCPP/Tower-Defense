@@ -1,10 +1,13 @@
 #include "WizardTower.h"
 #include "BeaconTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/NovaProjectile.h"
 #include "Projectiles/BlackHole.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -17,9 +20,9 @@ WizardTower::WizardTower() :
     connect(this,&Tower::upgrade,this,&WizardTower::upgrade,Qt::UniqueConnection);
     attackRange = WizardTower::tier1AttackRange;
     attackInterval = WizardTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = std::pow(WizardTower::tier1Cost, Tower::valueDecay);
+    sellValue = std::pow(WizardTower::tier1Cost, valueDecay);
 }
 
 WizardTower::~WizardTower()
@@ -85,8 +88,8 @@ void WizardTower::linkTower(Tower* tower)
 void WizardTower::paintTether(Tower* tower)
 {
     QPainterPath path;
-    path.moveTo(x() + centerX,y() + pixmap().height() / 10);
-    path.quadTo(pos(), QPointF(tower->x() + tower->getCenterXOffset(), tower->y() + tower->getCenterYOffset()));
+    path.moveTo(getAttackAreaCenter().x(), y() + pixmap().height() / 10);
+    path.quadTo(pos(), QPointF(tower->getAttackAreaCenter().x(), tower->getAttackAreaCenter().y()));
     QPainterPathStroker stroke;
     QPainterPath strokePath = stroke.createStroke(path);
     tether = new QGraphicsPathItem();

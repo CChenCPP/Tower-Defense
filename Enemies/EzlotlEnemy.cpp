@@ -21,7 +21,7 @@ void EzlotlEnemy::setAttributes()
 void EzlotlEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyEzlotl" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyEzlotl" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void EzlotlEnemy::setProperties()
     hp = pow(ezlotlHp * level, hpScale);
     spawnHp = hp;
     armor = ezlotlArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

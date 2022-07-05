@@ -2,6 +2,7 @@
 #include <QObject>
 #include <QTimer>
 #include "Game/CustomGraphicsPixmapItem.h"
+#include "Game/Path.h"
 #include "Projectiles/Projectile.h"
 
 class Projectile;
@@ -48,38 +49,35 @@ public:
     template <class EnemyAttr, class... EnemyAttrs> inline void setAttributes(EnemyAttr attr, EnemyAttrs... otherAttrs) noexcept;
 
     void damage(Projectile* projectile);
+    qreal distanceToEntrance() const;
+    qreal distanceToExit() const;
     int getCurrentHp() const;
-    qreal getDistanceTravelled() const;
     int getValue() const;
     void pause();
     void resume();
-    void setPath(QList<QPointF>* path);
+    void setPath(Path* path);
 
 protected:
-    static constexpr int defaultMoveIntervalMs = 40;
-    static constexpr qreal defaultSize = 32;
-    static constexpr qreal valueDecay = 0.78;
-
-    QList<QPointF>* path;
     EnemyAttr attributes;
     int level;
     int spawnHp;
     int hp;
     int armor;
     int value;
-    QPointF dest;
     int pathIndex;
-    QTimer moveInterval;
+    QList<QPointF>* path;
+    qreal pathLength;
+    QPointF dest;
     qreal distancePerInterval;
-    qreal distanceTravelled;
-    Projectile* lastProjectile;
     bool hypothermia;
-    QTimer hypothermiaTimer;
     bool maimed;
-    QTimer maimTimer;
     bool poisoned;
+    QTimer moveInterval;
+    QTimer hypothermiaTimer;
+    QTimer maimTimer;
     QTimer poisonTimer;
     QTimer regenTimer;
+    Projectile* lastProjectile;
 
     void checkDeath();
     void ethereal(Projectile* projectile);

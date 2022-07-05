@@ -1,8 +1,11 @@
 #include "StoneTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/StoneFragment.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -11,9 +14,9 @@ StoneTower::StoneTower() : Tower()
     connect(this,&Tower::upgrade,this,&StoneTower::upgrade);
     attackRange = StoneTower::tier1AttackRange;
     attackInterval = StoneTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = pow(StoneTower::tier1Cost, Tower::valueDecay);
+    sellValue = pow(StoneTower::tier1Cost, valueDecay);
 }
 
 // public methods

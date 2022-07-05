@@ -1,9 +1,12 @@
 #include "Enemy.h"
 #include <iostream>
+#include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Misc/Utility.h"
 #include "Projectiles/NovaProjectile.h"
 #include "Projectiles/TeleportProjectile.h"
-#include "Game/Game.h"
+
+using namespace GameConstants::EnemyConstants;
 
 extern Game* game;
 
@@ -15,12 +18,14 @@ Enemy::Enemy(int level, QGraphicsItem* parent) :
     hp(0),
     armor(0),
     value(0),
+    pathIndex(0),
+    path(nullptr),
+    pathLength(0),
     distancePerInterval(0),
-    distanceTravelled(0),
-    lastProjectile(nullptr),
     hypothermia(false),
     maimed(false),
-    poisoned(false)
+    poisoned(false),
+    lastProjectile(nullptr)
 {
     connect(game,&Game::resetting,this,&Enemy::newGame);
 }
@@ -44,18 +49,22 @@ void Enemy::damage(Projectile* projectile)
     emit damagedAmount(lastProjectile, trueDamage);
     hp -= trueDamage;
     checkDeath();
-
     ethereal(projectile);
+}
+
+qreal Enemy::distanceToEntrance() const
+{
+    return static_cast<qreal>(pathIndex)/static_cast<qreal>(path->size()) * pathLength;
+}
+
+qreal Enemy::distanceToExit() const
+{
+    return pathLength - static_cast<qreal>(pathIndex)/static_cast<qreal>(path->size()) * pathLength;
 }
 
 int Enemy::getCurrentHp() const
 {
     return hp;
-}
-
-qreal Enemy::getDistanceTravelled() const
-{
-    return distanceTravelled;
 }
 
 int Enemy::getValue() const
@@ -71,18 +80,19 @@ void Enemy::pause()
 void Enemy::resume()
 {
     connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward, Qt::UniqueConnection);
-    moveInterval.start(Enemy::defaultMoveIntervalMs);
+    moveInterval.start(defaultMoveIntervalMs);
 }
 
 void Enemy::setMoveInterval()
 {
     connect(&moveInterval,&QTimer::timeout,this,&Enemy::moveForward, Qt::UniqueConnection);
-    moveInterval.start(Enemy::defaultMoveIntervalMs);
+    moveInterval.start(defaultMoveIntervalMs);
 }
 
-void Enemy::setPath(QList<QPointF>* path)
+void Enemy::setPath(Path* path)
 {
-    this->path = path;
+    this->path = path->getPath();
+    pathLength = path->getPath()->length();
     startPath();
     setMoveInterval();
 }
@@ -184,7 +194,7 @@ void Enemy::startPath()
     QLineF line((*path)[0],(*path)[1]);
     qreal ratioX = qCos(qDegreesToRadians(line.angle()));
     qreal ratioY = qSin(qDegreesToRadians(line.angle()));
-    setPos(dest.x() - ratioX*pixmap().width(),dest.y() + ratioY*pixmap().height());
+    setPos(dest.x() - ratioX * pixmap().width(),dest.y() + ratioY * pixmap().height());
     centerToPoint(pos());
     rotateToPoint(dest);
 }
@@ -238,5 +248,4 @@ void Enemy::moveForward(){
     if (maimed) { trueDx /= 3; trueDy /= 3; };
     setPos(x() + trueDx, y() + trueDy);
     setRotation(rotation() + 5 * (trueDx + trueDy));
-    distanceTravelled += (trueDx + trueDy);
 }

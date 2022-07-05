@@ -22,8 +22,5 @@ private:
     void setAnimation();
     void explode();
     static QPixmap getExplosionPixmap(int tier);
-
-private slots:
-    void onFrameChanged();
 };
 

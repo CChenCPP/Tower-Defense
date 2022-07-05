@@ -25,11 +25,9 @@ public:
     Tower(QGraphicsItem* parent = nullptr);
     virtual ~Tower();
 
-    void consecutiveAttack();
+    QPointF getAttackAreaCenter() const;
     int getAttackInterval() const;
     int getAttackRange() const;
-    int getCenterXOffset() const;
-    int getCenterYOffset() const;
     int getTotalDamageDone() const;
     float getAttackIntervalMultiplier() const;
     float getAttackRangeMultiplier() const;
@@ -43,7 +41,7 @@ public:
     static QString getType(Tower* tower);
     static int getUpgradeCost(Tower* tower);
     void incrementDamageDone(int damage);
-    virtual void init();
+    void init();
     bool isBuilt() const;
     bool isTethered() const;
     bool isUpgradable() const;
@@ -59,48 +57,38 @@ public:
     void upgradeTier();
 
 protected:
-    static constexpr int consecutiveAttackChance = 30;
-    static constexpr int defaultAttackRangeSearchIntervalMs = 1000;
-    static constexpr int minimumAttackInterval = 333;
-    static constexpr float valueDecay = 0.90;
-
-    int centerX;
-    int centerY;
-    bool built;
     int tier;
     int maxTier;
-    float damageMultiplier;
-    int totalDamageDone;
-    float attackRangeMultiplier;
-    int attackRange;
-    QTimer attackRangeSearchTimer;
-    QGraphicsPolygonItem* attackArea;
-    QPointF attackDestination;
     float attackIntervalMultiplier;
+    float attackRangeMultiplier;
+    float damageMultiplier;
     int attackInterval;
+    int attackRange;
+    QGraphicsPolygonItem* attackArea;
     QTimer attackIntervalTimer;
-    bool tethered;
     TargetPriority priority;
     Enemy* target;
-    bool hasTarget;
+    QPointF attackDestination;
+    int totalDamageDone;
     int killCount;
     int sellValue;
 
-    virtual void attackTarget() = 0;
-    void defineAttackArea();
     void linkToTarget(Projectile* projectile, Enemy* enemy);
     void setAttackInterval();
     void setAttackInterval(int ms);
     void setAttackRange(int range);
-    void setCenterOffset();
-    void setRangeSearchInterval();
     bool targetWithinRange() const;
 
 private:
-    static constexpr int defaultMaxTier = 3;
+    bool built;
+    bool tethered;
     int gridPosX;
     int gridPosY;
 
+    void attack();
+    virtual void attackTarget() = 0;
+    void consecutiveAttack();
+    void defineAttackArea();
     Enemy* targetNearest();
     Enemy* targetHighestHp();
     Enemy* targetLowestHp();

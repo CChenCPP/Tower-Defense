@@ -1,5 +1,6 @@
 #include "Tower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "ArcherTower.h"
 #include "BallistaTower.h"
 #include "BeaconTower.h"
@@ -13,40 +14,47 @@
 #include <QPointF>
 #include <iostream>
 
+using namespace GameConstants::TowerConstants;
+
 extern Game* game;
 
 Tower::Tower(QGraphicsItem* parent) :
     CustomGraphicsPixmapItem(parent),
-    built(false),
     tier(1),
-    maxTier(Tower::defaultMaxTier),
+    maxTier(defaultMaxTier),
+    damageMultiplier(1),
     attackIntervalMultiplier(1),
     attackRangeMultiplier(1),
-    damageMultiplier(1),
-    totalDamageDone(0),
-    priority(TargetPriority::Nearest),
-    attackRange(1),
+    attackInterval(0),
+    attackRange(0),
     attackArea(nullptr),
-    attackInterval(1000),
-    attackDestination(QPoint(0,0)),
-    tethered(false),
+    priority(TargetPriority::Nearest),
     target(nullptr),
-    killCount(0)
+    totalDamageDone(0),
+    killCount(0),
+    sellValue(0),
+    built(false),
+    tethered(false),
+    gridPosX(0),
+    gridPosY(0)
 {
     connect(game,&Game::resetting,this,&Tower::newGame);
 }
 
 Tower::~Tower()
 {
+    if (attackArea) { delete attackArea; };
     emit removeFromGrid(gridPosX + (pixmap().width() / 2), gridPosY, this);
     emit untether(this);
     emit destructing(this);
 }
 
 // public methods
-void Tower::consecutiveAttack()
+QPointF Tower::getAttackAreaCenter() const
 {
-    determineTarget();
+    qreal xCor = x() + pixmap().width() / 2;
+    qreal yCor = y() + pixmap().height() - 25;
+    return QPointF(xCor, yCor);
 }
 
 int Tower::getAttackInterval() const
@@ -57,16 +65,6 @@ int Tower::getAttackInterval() const
 int Tower::getAttackRange() const
 {
     return attackRange;
-}
-
-int Tower::getCenterXOffset() const
-{
-    return centerX;
-}
-
-int Tower::getCenterYOffset() const
-{
-    return centerY;
 }
 
 int Tower::getTotalDamageDone() const
@@ -228,10 +226,8 @@ void Tower::incrementDamageDone(int damage)
 
 void Tower::init()
 {
-    setCenterOffset();
     defineAttackArea();
     showAttackArea(false);
-    setRangeSearchInterval();
     setAttackInterval();
     built = true;
     if (game->isPaused()) { pause(); };
@@ -259,8 +255,8 @@ void Tower::pause()
 
 void Tower::resume()
 {
-    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget, Qt::UniqueConnection);
-    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, Tower::minimumAttackInterval));
+    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attack, Qt::UniqueConnection);
+    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, minimumAttackInterval));
 }
 
 void Tower::setAttackIntervalMultiplier(float multiplier)
@@ -310,7 +306,7 @@ void Tower::upgradeTier()
     QPixmap oldPixmap = pixmap();
     emit upgrade();
     QPixmap newPixmap = getImageUrl(this);
-    QPixmap scaled = newPixmap.scaled(Game::defaultTowerWidth, newPixmap.height() / (newPixmap.width() / Game::defaultTowerWidth));
+    QPixmap scaled = newPixmap.scaled(defaultTowerWidth, newPixmap.height() / (newPixmap.width() / defaultTowerWidth));
     int heightDiff = scaled.height() - oldPixmap.height();
     int widthDiff = scaled.width() - oldPixmap.width();
 
@@ -318,41 +314,7 @@ void Tower::upgradeTier()
     setPos(pos().x() - widthDiff / 2, pos().y() - heightDiff);
 }
 
-void Tower::defineAttackArea()
-{
-    QVector<QPointF> circle = Geometry::generateCircle(45, attackRange * attackRangeMultiplier);
-    QPolygonF polygon(circle);
-    QPointF polygonCenter(0,0);
-
-    // scale to tower range
-    polygonCenter *= attackRange * attackRangeMultiplier;
-    polygonCenter = mapToScene(polygonCenter);
-    QPointF towerCenter;
-
-    bool isShowing = false;
-
-    if (attackArea) {
-        isShowing = attackArea->isVisible();
-        towerCenter.setX(centerX);
-        towerCenter.setY(centerY);
-        delete attackArea;
-    }
-    else{
-        towerCenter.setX(x() + centerX);
-        towerCenter.setY(y() + centerY);
-    }
-
-    // move circle to center of tower
-    QLineF line(polygonCenter,towerCenter);
-    attackArea = new QGraphicsPolygonItem(polygon, this);
-    attackArea->setPos(x() + line.dx(), y() + line.dy());
-    attackArea->setPen(Qt::NoPen);
-    QColor transparentRed = Qt::red;
-    transparentRed.setAlphaF(0.1);
-    attackArea->setBrush(transparentRed);
-    showAttackArea((isShowing) ? true : false);
-}
-
+// protected methods
 void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 {
     connect(this,&Tower::destructing,projectile,&Projectile::onTowerDestructing, Qt::UniqueConnection);
@@ -371,8 +333,9 @@ void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
 void Tower::setAttackInterval()
 {
     attackIntervalTimer.disconnect();
-    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attackTarget, Qt::UniqueConnection);
-    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, Tower::minimumAttackInterval));
+    QObject::connect(&attackIntervalTimer,&QTimer::timeout,this,&Tower::attack, Qt::UniqueConnection);
+    attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, minimumAttackInterval));
+
     game->isPaused() ? pause() : resume();
 }
 
@@ -388,22 +351,47 @@ void Tower::setAttackRange(int range)
     defineAttackArea();
 }
 
-void Tower::setCenterOffset()
-{
-    centerX = pixmap().width() / 2;
-    centerY = pixmap().height() - pixmap().width() / 2;
-}
-
-void Tower::setRangeSearchInterval()
-{
-    QObject::connect(&attackRangeSearchTimer,&QTimer::timeout,this,&Tower::determineTarget, Qt::UniqueConnection);
-    attackRangeSearchTimer.start(Tower::defaultAttackRangeSearchIntervalMs);
-}
 
 bool Tower::targetWithinRange() const
 {
     if (!target) { return false; };
     return Geometry::distance2D(center(), target->center()) <= (attackRange * attackRangeMultiplier + target->radius() / 2);
+}
+
+// private methods
+void Tower::attack()
+{
+    determineTarget();
+    attackTarget();
+}
+
+void Tower::consecutiveAttack()
+{
+    attack();
+}
+
+void Tower::defineAttackArea()
+{
+    QVector<QPointF> circle = Geometry::generateCircle(45, attackRange * attackRangeMultiplier);
+    QPolygonF polygon(circle);
+
+    bool isShowing = false;
+
+    if (attackArea) {
+        isShowing = attackArea->isVisible();
+        delete attackArea;
+        attackArea = nullptr;
+    }
+
+    // move circle to center of tower
+    attackArea = new QGraphicsPolygonItem(polygon);
+    attackArea->setPos(getAttackAreaCenter());
+    attackArea->setPen(Qt::NoPen);
+    QColor transparentRed = Qt::red;
+    transparentRed.setAlphaF(0.1);
+    attackArea->setBrush(transparentRed);
+    game->mainScene->addItem(attackArea);
+    showAttackArea((isShowing) ? true : false);
 }
 
 Enemy* Tower::targetNearest()
@@ -455,11 +443,12 @@ Enemy* Tower::targetLowestHp()
 Enemy* Tower::targetEntrance()
 {
     Enemy* target = nullptr;
-    qreal distanceTravelled = std::numeric_limits<int>::max();
+    qreal distanceToEntrance = std::numeric_limits<qreal>::max();
     for (Enemy* enemy : game->getEnemyList()){
         if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
-            if (distanceTravelled >= enemy->getDistanceTravelled()){
-                distanceTravelled = enemy->getDistanceTravelled();
+            qreal dist = enemy->distanceToEntrance();
+            if (distanceToEntrance > dist){
+                distanceToEntrance = dist;
                 target = enemy;
             }
         }
@@ -470,11 +459,12 @@ Enemy* Tower::targetEntrance()
 Enemy* Tower::targetExit()
 {
     Enemy* target = nullptr;
-    qreal distanceTravelled = std::numeric_limits<qreal>::min();
+    qreal distanceToExit = std::numeric_limits<qreal>::max();
     for (Enemy* enemy : game->getEnemyList()){
         if (Geometry::distance2D(center(), enemy->center()) < attackRange * attackRangeMultiplier + enemy->radius()){
-            if (distanceTravelled <= enemy->getDistanceTravelled()){
-                distanceTravelled = enemy->getDistanceTravelled();
+            qreal dist = enemy->distanceToExit();
+            if (distanceToExit > dist){
+                distanceToExit = dist;
                 target = enemy;
             }
         }
@@ -498,7 +488,6 @@ void Tower::tetherPartnerDestructing()
 void Tower::determineTarget()
 {
     if (game->mainScene->getProjectileCount() > CustomGraphicsScene::projectileRenderLimit) { return; };
-    hasTarget = false;
 
     Enemy* enemy = nullptr;
     switch(priority){
@@ -522,7 +511,6 @@ void Tower::determineTarget()
     if (enemy){
         attackDestination = QPointF(enemy->center());
         target = enemy;
-        hasTarget = true;
         connect(enemy,&Enemy::destructing,this,&Tower::targetDestructing, Qt::UniqueConnection);
     }
 }

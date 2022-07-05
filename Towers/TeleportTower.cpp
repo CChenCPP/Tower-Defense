@@ -1,8 +1,11 @@
 #include "TeleportTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/TeleportProjectile.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -13,9 +16,9 @@ TeleportTower::TeleportTower() :
     maxTier = 1;
     attackRange = TeleportTower::tier1AttackRange;
     attackInterval = TeleportTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = std::pow(TeleportTower::tier1Cost, Tower::valueDecay);
+    sellValue = std::pow(TeleportTower::tier1Cost, valueDecay);
 }
 
 TeleportTower::~TeleportTower()

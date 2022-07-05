@@ -2,7 +2,15 @@
 #include "Enemies/Enemy.h"
 
 namespace GameConstants{
+    static constexpr int tileSize = 36;
+    static constexpr qreal defaultTowerWidth = tileSize * 1.3;
+    static constexpr qreal defaultIconWidth = 55;
+    static constexpr int startingHealth = 100;
+
     namespace EnemyConstants{
+        static constexpr int defaultMoveIntervalMs = 40;
+        static constexpr qreal defaultSize = 32;
+        static constexpr qreal valueDecay = 0.78;
         static constexpr qreal hpScale = 1;
 
         static EnemyAttr cukzotzAttributes = EnemyAttr::MaimResistant | EnemyAttr::Impenetrable;
@@ -70,5 +78,12 @@ namespace GameConstants{
         static constexpr int zanbrisHp = 125;
         static constexpr int zanbrisArmor = 15;
         static constexpr qreal zanbrisSpeed = 5;
+    }
+
+    namespace TowerConstants{
+        static constexpr int consecutiveAttackChance = 30;
+        static constexpr int minimumAttackInterval = 333;
+        static constexpr float valueDecay = 0.90;
+        static constexpr int defaultMaxTier = 3;
     }
 }

@@ -22,7 +22,7 @@ void HudorEnemy::setAttributes()
 void HudorEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyHudor" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyHudor" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -32,5 +32,5 @@ void HudorEnemy::setProperties()
     hp = pow(hudorHp * level, hpScale);
     spawnHp = hp;
     armor = hudorArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }

@@ -1,8 +1,11 @@
 #include "CannonTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Projectiles/Explosion.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -11,9 +14,9 @@ CannonTower::CannonTower() : Tower()
     connect(this,&Tower::upgrade,this,&CannonTower::upgrade);
     attackRange = CannonTower::tier1AttackRange;
     attackInterval = CannonTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), Game::defaultTowerWidth);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultTowerWidth);
     setPixmap(scaled);
-    sellValue = pow(CannonTower::tier1Cost, Tower::valueDecay);
+    sellValue = pow(CannonTower::tier1Cost, valueDecay);
 }
 
 // public methods

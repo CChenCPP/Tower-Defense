@@ -23,8 +23,9 @@ Explosion::Explosion(Projectile* parent) :
     damage = parent->getDamage();
 
     setPixmap(Explosion::getExplosionPixmap(source->getTier()));
-    setPos(parent->pos());
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
     setRotation(parent->rotation());
+    centerToPoint(parent->center());
 
     connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
@@ -54,9 +55,7 @@ void Explosion::setAnimation()
     gifFrameCount =  movie->frameCount();
     int speed = 100 * gifFrameCount / 33;
     movie->setSpeed(speed);
-    int xOffset = qCos(rotation() * Geometry::radToDegRatio) * this->pixmap().width() / 2;
-    int yOffset = qSin(rotation() * Geometry::radToDegRatio) * this->pixmap().height() / 2;
-    gif->setGeometry(x() - scaledPixmap.width() / 2 + xOffset,y() - scaledPixmap.height() / 2 + yOffset, scaledPixmap.width(), scaledPixmap.height());
+    gif->setGeometry(center().x() - scaledPixmap.width() / 2,center().y() - scaledPixmap.height() / 2, scaledPixmap.width(), scaledPixmap.height());
     gif->setAttribute(Qt::WA_TranslucentBackground);
     proxy = game->mainScene->addWidget(gif);
     QTimer::singleShot(gifFrameCount * 30 / speed * 100, this, [this](){ delete this; });
@@ -81,10 +80,4 @@ QPixmap Explosion::getExplosionPixmap(int tier)
     QPixmap pixmap(":/Special/Images/CannonballExplosion" + Parse::toQString(tier) + "a.png");
     QPixmap scaled = Geometry::scaleToWidth(pixmap, Explosion::defaultProjectileSize);
     return scaled;
-}
-
-void Explosion::onFrameChanged()
-{
-    ++currentFrame;
-    if (currentFrame >= 10) { delete this; return; };
 }

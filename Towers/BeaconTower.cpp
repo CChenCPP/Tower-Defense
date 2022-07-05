@@ -1,8 +1,11 @@
 #include "BeaconTower.h"
 #include "WizardTower.h"
 #include "Game/Game.h"
+#include "Game/GameConstants.h"
 #include "Misc/Utility.h"
 #include <iostream>
+
+using namespace GameConstants::TowerConstants;
 
 extern Game* game;
 
@@ -12,9 +15,9 @@ BeaconTower::BeaconTower() :
     connect(this,&Tower::upgrade,this,&BeaconTower::upgrade);
     attackRange = BeaconTower::tier1AttackRange;
     attackInterval = BeaconTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), Game::defaultTowerWidth);;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultTowerWidth);;
     setPixmap(scaled);
-    sellValue = std::pow(BeaconTower::tier1Cost, Tower::valueDecay);
+    sellValue = std::pow(BeaconTower::tier1Cost, valueDecay);
 }
 
 BeaconTower::~BeaconTower()

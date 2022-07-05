@@ -21,7 +21,7 @@ void ZanbrisEnemy::setAttributes()
 void ZanbrisEnemy::setImage()
 {
     int num = RNG::randomNum(1,1);
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyZanbris" + Parse::toQString(num) + ".png"), Enemy::defaultSize);
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Enemies/Images/EnemyZanbris" + Parse::toQString(num) + ".png"), defaultSize);
     setPixmap(scaled);
 }
 
@@ -31,5 +31,5 @@ void ZanbrisEnemy::setProperties()
     hp = pow(zanbrisHp * level, hpScale);
     spawnHp = hp;
     armor = zanbrisArmor;
-    value = pow(hp, Enemy::valueDecay);
+    value = pow(hp, valueDecay);
 }
