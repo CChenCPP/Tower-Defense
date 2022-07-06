@@ -20,7 +20,7 @@ CannonTower::CannonTower() : Tower()
 }
 
 // public methods
-int CannonTower::getDefaultCost()
+int CannonTower::getTier1Cost()
 {
     return CannonTower::tier1Cost;
 }

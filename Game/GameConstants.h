@@ -10,8 +10,8 @@ namespace GameConstants{
     namespace EnemyConstants{
         static constexpr int defaultMoveIntervalMs = 40;
         static constexpr qreal defaultSize = 32;
-        static constexpr qreal valueDecay = 0.78;
-        static constexpr qreal hpScale = 1;
+        static constexpr qreal valueDecay = 0.76;
+        static constexpr qreal hpScale = 1.05;
 
         static EnemyAttr cukzotzAttributes = EnemyAttr::MaimResistant | EnemyAttr::Impenetrable;
         static constexpr int cukzotzHp = 150;

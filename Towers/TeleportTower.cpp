@@ -26,12 +26,7 @@ TeleportTower::~TeleportTower()
 }
 
 // public methods
-void TeleportTower::init()
-{
-    Tower::init();
-}
-
-int TeleportTower::getDefaultCost()
+int TeleportTower::getTier1Cost()
 {
     return TeleportTower::tier1Cost;
 }

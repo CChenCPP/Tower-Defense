@@ -7,6 +7,7 @@
 #include "Towers/BeaconTower.h"
 #include "Towers/CannonTower.h"
 #include "Towers/IceTower.h"
+#include "Towers/PoisonTower.h"
 #include "Towers/StoneTower.h"
 #include "Towers/TeleportTower.h"
 #include "Towers/WizardTower.h"
@@ -68,6 +69,9 @@ void CustomGraphicsView::duplicateBuilding()
     if (dynamic_cast<IceTower*>(building)){
         building = new IceTower();
     }
+    if (dynamic_cast<PoisonTower*>(building)){
+        building = new PoisonTower();
+    }
     if (dynamic_cast<StoneTower*>(building)){
         building = new StoneTower();
     }
@@ -108,7 +112,7 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
         QPointF gridIdentifierPos(slotPos.x() + defaultTowerWidth / 2, slotPos.y());
         if (!game->slotOccupied(QPointF(slotPos.x() + building->pixmap().width() / 2, slotPos.y()))){
-            if (!game->buyTower(Tower::getDefaultCost(building), building)) { return; };
+            if (!game->buyTower(Game::getTier1Cost(building), building)) { return; };
             game->newTowerAt(gridIdentifierPos);
             connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
             building->setGridPos(slotPos);

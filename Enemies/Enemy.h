@@ -72,6 +72,8 @@ protected:
     bool hypothermia;
     bool maimed;
     bool poisoned;
+    int poisonMinRoll;
+    int poisonMaxRoll;
     QTimer moveInterval;
     QTimer hypothermiaTimer;
     QTimer maimTimer;
@@ -86,7 +88,6 @@ protected:
     void maim(Projectile* projectile);
     int piercing(Projectile* projectile);
     void poison(Projectile* projectile);
-    void rotateToPoint(QPointF point);
     void regen();
     void setMoveInterval();
     void startPath();
@@ -100,6 +101,7 @@ signals:
     void damagedAmount(Projectile* projectile, int damage);
     void destructing(Enemy* enemy);
     void killedBy(Projectile* projectile, Enemy* enemy);
+    void poisonDamage(int damage);
 };
 
 inline bool Enemy::hasAttribute(EnemyAttr attr) const noexcept

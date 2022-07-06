@@ -21,7 +21,7 @@ BallistaTower::BallistaTower() :
 }
 
 // public methods
-int BallistaTower::getDefaultCost()
+int BallistaTower::getTier1Cost()
 {
     return BallistaTower::tier1Cost;
 }

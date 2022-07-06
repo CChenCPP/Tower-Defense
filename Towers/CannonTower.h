@@ -6,7 +6,7 @@ class CannonTower : public Tower
 public:
     CannonTower();
 
-    static int getDefaultCost();
+    static int getTier1Cost();
     static QString getImageUrl(Tower* tower, bool HD = false);
     static int getUpgradeCost(Tower* tower);
 

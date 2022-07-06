@@ -47,11 +47,13 @@ SOURCES +=  \
     Projectiles/StoneFragment.cpp \
     Projectiles/StoneProjectile.cpp \
     Projectiles/TeleportProjectile.cpp \
+    Projectiles/VenomProjectile.cpp \
     Towers/ArcherTower.cpp \
     Towers/BallistaTower.cpp \
     Towers/BeaconTower.cpp \
     Towers/CannonTower.cpp \
     Towers/IceTower.cpp \
+    Towers/PoisonTower.cpp \
     Towers/StoneTower.cpp \
     Towers/TeleportTower.cpp \
     Towers/Tower.cpp \
@@ -98,12 +100,14 @@ HEADERS +=  \
    Projectiles/StoneFragment.h \
    Projectiles/StoneProjectile.h \
    Projectiles/TeleportProjectile.h \
+   Projectiles/VenomProjectile.h \
    Towers/ArcherTower.h \
    Towers/ArcherTower.h \
    Towers/BallistaTower.h \
    Towers/BeaconTower.h \
    Towers/CannonTower.h \
    Towers/IceTower.h \
+   Towers/PoisonTower.h \
    Towers/StoneTower.h \
    Towers/TeleportTower.h \
    Towers/Tower.h \

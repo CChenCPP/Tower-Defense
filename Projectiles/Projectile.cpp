@@ -20,7 +20,9 @@ Projectile::Projectile(QGraphicsItem *parent) :
     maimChance(Projectile::defaultMaimChance),
     maimDurationMs(Projectile::defaultMaimDurationMs),
     poisonChance(Projectile::defaultPoisonChance),
-    poisonIntervalMs(Projectile::defaultPoisonIntervalMs)
+    poisonIntervalMs(Projectile::defaultPoisonIntervalMs),
+    poisonMinRoll(Projectile::defaultPoisonMinRoll),
+    poisonMaxRoll(Projectile::defaultPoisonMaxRoll)
 {
     game->mainScene->incrementProjectileCount();
 //    determineIfRenderable();
@@ -76,6 +78,16 @@ int Projectile::getPoisonIntervalMs() const
     return poisonIntervalMs;
 }
 
+int Projectile::getPoisonMinRoll() const
+{
+    return poisonMinRoll;
+}
+
+int Projectile::getPoisonMaxRoll() const
+{
+    return poisonMaxRoll;
+}
+
 int Projectile::getTier() const
 {
     return tier;
@@ -96,7 +108,7 @@ void Projectile::setTarget(Enemy* target)
     this->target = target;
 }
 
-// public methods
+// protected methods
 void Projectile::determineIfRenderable()
 {
     game->mainScene->projectileCapacity() > 1 ? hide() : show();
@@ -104,11 +116,7 @@ void Projectile::determineIfRenderable()
 
 void Projectile::rotateToTarget()
 {
-    if (target){
-        QLineF line(pos(),
-                    target->pos());
-        setRotation(-1 * line.angle());
-    }
+    if (target){ QLineF line(center(), target->center()); setRotation(-1 * line.angle()); };
 }
 
 // private methods
@@ -140,15 +148,14 @@ void Projectile::hitEnemies(){
         if (Geometry::distance2D(center(), enemy->center()) <= (radius() + enemy->radius()) / 2){
             if (isEthereal() && enemy != target) { continue; };
             if (isExplosive()) { explode(); return; };
-            if (isFragmenting()) { fragment();return; };
-            if (isShattering()) { shatter();return; };
+            if (isFragmenting()) { fragment(); return; };
+            if (isShattering()) { shatter(); return; };
 
             connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled,Qt::UniqueConnection);
             connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged,Qt::UniqueConnection);
 
             enemy->damage(this);
-            if (isWarping() || isEthereal()) { return; };
-            delete this;
+            if (!isWarping() && !isEthereal()) { delete this; };
             return;
         }
     }
@@ -194,7 +201,7 @@ void Projectile::targetIsDead()
     target = nullptr;
 
     NovaProjectile* nova = dynamic_cast<NovaProjectile*>(this);
-    if (nova) { nova->returnToSource(); };
+    if (nova) { nova->bounceNext(); };
 }
 
 // private slots

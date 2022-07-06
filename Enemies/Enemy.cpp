@@ -25,6 +25,8 @@ Enemy::Enemy(int level, QGraphicsItem* parent) :
     hypothermia(false),
     maimed(false),
     poisoned(false),
+    poisonMinRoll(0),
+    poisonMaxRoll(0),
     lastProjectile(nullptr)
 {
     connect(game,&Game::resetting,this,&Enemy::newGame);
@@ -165,18 +167,16 @@ void Enemy::poison(Projectile* projectile)
     if (RNG::randomNum(1,100) > projectile->getPoisonChance()) { return; };
 
     poisoned = true;
+    poisonMinRoll = projectile->getPoisonMinRoll();
+    poisonMaxRoll = projectile->getPoisonMaxRoll();
+    connect(this,&Enemy::poisonDamage,projectile->getSource(),&Tower::poisonDamage, Qt::UniqueConnection);
     connect(&poisonTimer,&QTimer::timeout,[&](){
-        hp = std::max<int>(0, hp -= 1.0 / 10.0 * hp);
+        int currentHp = hp;
+        hp = std::max<int>(1, hp -= RNG::randomNum(poisonMinRoll, poisonMaxRoll) / 100.0 * hp);
+        emit poisonDamage(currentHp - hp);
         checkDeath();
     });
     poisonTimer.start(projectile->getPoisonIntervalMs());
-}
-
-void Enemy::rotateToPoint(QPointF point)
-{
-//    QPointF cent = center();
-//    QLineF line(cent, point);
-    //    setRotation(-1 * line.angle());
 }
 
 void Enemy::regen()
@@ -194,9 +194,7 @@ void Enemy::startPath()
     QLineF line((*path)[0],(*path)[1]);
     qreal ratioX = qCos(qDegreesToRadians(line.angle()));
     qreal ratioY = qSin(qDegreesToRadians(line.angle()));
-    setPos(dest.x() - ratioX * pixmap().width(),dest.y() + ratioY * pixmap().height());
-    centerToPoint(pos());
-    rotateToPoint(dest);
+    centerToPoint(dest.x() - ratioX * pixmap().width(),dest.y() + ratioY * pixmap().height());
 }
 
 void Enemy::warp(Projectile* projectile)
@@ -208,8 +206,7 @@ void Enemy::warp(Projectile* projectile)
     int newIndex = std::max<int>(0, RNG::randomNum(0, pathIndex - 1));
     pathIndex = newIndex;
     dest = (*path)[pathIndex];
-    setPos(dest);
-    rotateToPoint(QPointF(dest.x(), dest.y()));
+    centerToPoint(dest);
 }
 
 void Enemy::newGame()
@@ -222,8 +219,7 @@ void Enemy::newGame()
 void Enemy::moveForward(){
     if (hypothermia) { return; };
 
-    QPointF cent = center();
-    QLineF line(cent, dest);
+    QLineF line(center(), dest);
     qreal length = line.length();
 
     if (length < distancePerInterval){
@@ -233,7 +229,6 @@ void Enemy::moveForward(){
             delete this;
             return; };
         dest = (*path)[pathIndex];
-//        rotateToPoint(QPointF(dest));
     }
 
     qreal theta = -1 * line.angle();
@@ -246,6 +241,6 @@ void Enemy::moveForward(){
     qreal trueDx = (std::abs(dx) > std::abs(dx2)) ? dx2 : dx;
     qreal trueDy = (std::abs(dy) > std::abs(dy2)) ? dy2 : dy;
     if (maimed) { trueDx /= 3; trueDy /= 3; };
-    setPos(x() + trueDx, y() + trueDy);
+    centerToPoint(centerX() + trueDx, centerY() + trueDy);
     setRotation(rotation() + 5 * (trueDx + trueDy));
 }

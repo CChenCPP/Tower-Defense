@@ -20,7 +20,7 @@ IceTower::IceTower() : Tower()
 }
 
 // public methods
-int IceTower::getDefaultCost()
+int IceTower::getTier1Cost()
 {
     return IceTower::tier1Cost;
 }

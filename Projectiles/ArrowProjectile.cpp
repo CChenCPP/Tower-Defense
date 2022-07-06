@@ -55,21 +55,21 @@ void ArrowProjectile::setProperties()
         case 1:
             damage = 75 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 2000;
+            maxDistance = 1000;
             maimChance = 30;
             break;
 
         case 2:
             damage = 30 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 2000;
+            maxDistance = 1000;
             maimChance = 20;
             break;
 
         case 3:
             damage = 25 * pow(tier, 2);
             distancePerInterval = 15;
-            maxDistance = 2000;
+            maxDistance = 1000;
             maimChance = 10;
             break;
     }

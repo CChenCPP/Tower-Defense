@@ -52,12 +52,12 @@ private slots:
     // UI slots
     void on_buildArcherTowerButton_released();
     void on_buildBallistaTowerButton_released();
-    void on_buildBeaconTowerButton_clicked();
+    void on_buildBeaconTowerButton_released();
     void on_buildCannonTowerButton_released();
     void on_buildIceTowerButton_released();
     void on_buildStoneTowerButton_released();
-    void on_buildTeleportTowerButton_clicked();
-    void on_buildWizardTowerButton_clicked();
+    void on_buildTeleportTowerButton_released();
+    void on_buildWizardTowerButton_released();
     void on_sellTowerButton_clicked();
     void on_upgradeTierButton_clicked();
     void on_nearestPriorityRadioButton_clicked();
@@ -68,4 +68,5 @@ private slots:
     void on_startGameButton_clicked();
     void on_pauseButton_clicked();
     void on_pickMapButton_clicked();
+    void on_buildPoisonTowerButton_released();
 };

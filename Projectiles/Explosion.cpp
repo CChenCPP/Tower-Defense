@@ -55,7 +55,7 @@ void Explosion::setAnimation()
     gifFrameCount =  movie->frameCount();
     int speed = 100 * gifFrameCount / 33;
     movie->setSpeed(speed);
-    gif->setGeometry(center().x() - scaledPixmap.width() / 2,center().y() - scaledPixmap.height() / 2, scaledPixmap.width(), scaledPixmap.height());
+    gif->setGeometry(centerX() - scaledPixmap.width() / 2,centerY() - scaledPixmap.height() / 2, scaledPixmap.width(), scaledPixmap.height());
     gif->setAttribute(Qt::WA_TranslucentBackground);
     proxy = game->mainScene->addWidget(gif);
     QTimer::singleShot(gifFrameCount * 30 / speed * 100, this, [this](){ delete this; });

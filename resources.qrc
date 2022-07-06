@@ -44,6 +44,12 @@
         <file>Images/WizardTower2HD.png</file>
         <file>Images/WizardTower3.png</file>
         <file>Images/WizardTower3HD.png</file>
+        <file>Images/PoisonTower1.png</file>
+        <file>Images/PoisonTower1HD.png</file>
+        <file>Images/PoisonTower2.png</file>
+        <file>Images/PoisonTower2HD.png</file>
+        <file>Images/PoisonTower3.png</file>
+        <file>Images/PoisonTower3HD.png</file>
     </qresource>
     <qresource prefix="/Projectiles">
         <file>Images/Arrow1.png</file>
@@ -62,6 +68,9 @@
         <file>Images/Nova2.png</file>
         <file>Images/Nova3.png</file>
         <file>Images/Nova1.png</file>
+        <file>Images/Venom1.png</file>
+        <file>Images/Venom2.png</file>
+        <file>Images/Venom3.png</file>
     </qresource>
     <qresource prefix="/Enemies">
         <file>Images/EnemyCukzotz1.png</file>

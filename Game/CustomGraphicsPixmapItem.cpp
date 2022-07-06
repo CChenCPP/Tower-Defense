@@ -7,11 +7,6 @@ CustomGraphicsPixmapItem::CustomGraphicsPixmapItem(QGraphicsItem* parent) :
 }
 
 // public methods
-QPointF CustomGraphicsPixmapItem::center() const
-{
-    return mapToScene(QPointF(boundingRect().center().x(),boundingRect().center().y()));
-}
-
 void CustomGraphicsPixmapItem::centerToPoint(qreal x, qreal y)
 {
     QPointF cent = center();
@@ -23,9 +18,4 @@ void CustomGraphicsPixmapItem::centerToPoint(qreal x, qreal y)
 void CustomGraphicsPixmapItem::centerToPoint(QPointF point)
 {
     centerToPoint(point.x(), point.y());
-}
-
-qreal CustomGraphicsPixmapItem::radius() const
-{
-    return std::max<qreal>(pixmap().width(), pixmap().height()) * sqrt(2) / 2;
 }

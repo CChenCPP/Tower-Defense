@@ -6,7 +6,7 @@ class BallistaTower : public Tower
 public:
     BallistaTower();
 
-    static int getDefaultCost();
+    static int getTier1Cost();
     static QString getImageUrl(Tower* tower, bool HD = false);
     static int getUpgradeCost(Tower* tower);
 

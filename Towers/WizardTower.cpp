@@ -32,7 +32,7 @@ WizardTower::~WizardTower()
 }
 
 // public methods
-int WizardTower::getDefaultCost()
+int WizardTower::getTier1Cost()
 {
     return WizardTower::tier1Cost;
 }

@@ -84,21 +84,21 @@ void NovaProjectile::setProperties()
         case 1:
             damage = 6 * pow(tier, 2);
             distancePerInterval = 7;
-            maxDistance = 5000;
+            maxDistance = 2000;
             searchRadius = 250;
             maxTargets = 20;
             break;
         case 2:
             damage = 30 * pow(tier, 2);
             distancePerInterval = 5;
-            maxDistance = 5000;
+            maxDistance = 2000;
             searchRadius = 300;
             maxTargets = 8;
             break;
         case 3:
             damage = 120 * pow(tier, 2);
             distancePerInterval = 3.5;
-            maxDistance = 5000;
+            maxDistance = 2000;
             searchRadius = 400;
             maxTargets = 4;
             break;

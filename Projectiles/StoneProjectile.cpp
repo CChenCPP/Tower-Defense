@@ -60,13 +60,13 @@ void StoneProjectile::setProperties()
         case 2:
             damage = 240;
             distancePerInterval = 9;
-            maxDistance = 1200;
+            maxDistance = 800;
             break;
 
         case 3:
             damage = 1080;
             distancePerInterval = 9;
-            maxDistance = 3000;
+            maxDistance = 800;
             break;
     }
 }

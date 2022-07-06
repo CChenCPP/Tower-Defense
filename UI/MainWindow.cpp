@@ -8,6 +8,7 @@
 #include "Towers/BeaconTower.h"
 #include "Towers/CannonTower.h"
 #include "Towers/IceTower.h"
+#include "Towers/PoisonTower.h"
 #include "Towers/StoneTower.h"
 #include "Towers/TeleportTower.h"
 #include "Towers/WizardTower.h"
@@ -118,6 +119,7 @@ void MainWindow::enableBuildTowerIconButtons() const
     UI->buildBeaconTowerButton->setEnabled(true);
     UI->buildCannonTowerButton->setEnabled(true);
     UI->buildIceTowerButton->setEnabled(true);
+    UI->buildPoisonTowerButton->setEnabled(true);
     UI->buildStoneTowerButton->setEnabled(true);
     UI->buildTeleportTowerButton->setEnabled(true);
     UI->buildWizardTowerButton->setEnabled(true);
@@ -136,7 +138,7 @@ void MainWindow::drawSelectedTowerToScene()
 {
     if (selectedTowerImage) { delete selectedTowerImage; selectedTowerImage = nullptr; };
     selectedTowerImage = new QGraphicsPixmapItem();
-    QPixmap pixmap(Tower::getImageUrl(selectedTower, true));
+    QPixmap pixmap(Game::getImageUrl(selectedTower, true));
     selectedTowerImage->setPixmap(pixmap);
 
     qreal height = UI->towerSelectionView->height();
@@ -251,6 +253,11 @@ void MainWindow::setupBuildTowerIcons() const
     iceTowerButton->setIcon(iceTowerIcon);
     iceTowerButton->setIconSize(QSize(200,200));
 
+    QIcon poisonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/PoisonTower1.png"), defaultIconWidth));
+    auto poisonTowerButton = UI->buildPoisonTowerButton;
+    poisonTowerButton->setIcon(poisonTowerIcon);
+    poisonTowerButton->setIconSize(QSize(200,200));
+
     QIcon stoneTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultIconWidth));
     auto stoneTowerButton = UI->buildStoneTowerButton;
     stoneTowerButton->setIcon(stoneTowerIcon);
@@ -284,8 +291,8 @@ void MainWindow::onTowerSelected(Tower* tower)
 
     selectedTower = tower;
     selectedTower->showAttackArea(true);
-    upgradeCost = Tower::getUpgradeCost(selectedTower);
-    UI->typeLineEdit->setText(Tower::getType(tower));
+    upgradeCost = Game::getUpgradeCost(selectedTower);
+    UI->typeLineEdit->setText(Game::getType(tower));
     UI->tierLineEdit->setText(Parse::intToQString(tower->getTier()));
     UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
     UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
@@ -315,7 +322,7 @@ void MainWindow::onTowerSelected(Tower* tower)
 void MainWindow::on_buildArcherTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= ArcherTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= ArcherTower::getTier1Cost()){
         game->gameView()->building = new ArcherTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -325,7 +332,7 @@ void MainWindow::on_buildArcherTowerButton_released()
 void MainWindow::on_buildBallistaTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= BallistaTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= BallistaTower::getTier1Cost()){
         game->gameView()->building = new BallistaTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -333,10 +340,10 @@ void MainWindow::on_buildBallistaTowerButton_released()
 }
 
 
-void MainWindow::on_buildBeaconTowerButton_clicked()
+void MainWindow::on_buildBeaconTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= BeaconTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= BeaconTower::getTier1Cost()){
         game->gameView()->building = new BeaconTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -346,7 +353,7 @@ void MainWindow::on_buildBeaconTowerButton_clicked()
 void MainWindow::on_buildCannonTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= CannonTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= CannonTower::getTier1Cost()){
         game->gameView()->building = new CannonTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -356,38 +363,49 @@ void MainWindow::on_buildCannonTowerButton_released()
 void MainWindow::on_buildIceTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= IceTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= IceTower::getTier1Cost()){
         game->gameView()->building = new IceTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
     }
 }
 
+void MainWindow::on_buildPoisonTowerButton_released()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() >= PoisonTower::getTier1Cost()){
+        game->gameView()->building = new PoisonTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
+    }
+}
+
+
 
 void MainWindow::on_buildStoneTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= StoneTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= StoneTower::getTier1Cost()){
         game->gameView()->building = new StoneTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
     }
 }
 
-void MainWindow::on_buildTeleportTowerButton_clicked()
+void MainWindow::on_buildTeleportTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= TeleportTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= TeleportTower::getTier1Cost()){
         game->gameView()->building = new TeleportTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
     }
 }
 
-void MainWindow::on_buildWizardTowerButton_clicked()
+void MainWindow::on_buildWizardTowerButton_released()
 {
     resetSelection();
-    if (!game->gameView()->building && game->getMoney() >= WizardTower::getDefaultCost()){
+    if (!game->gameView()->building && game->getMoney() >= WizardTower::getTier1Cost()){
         game->gameView()->building = new WizardTower();
         game->gameView()->setCursor(game->gameView()->building);
         game->showGrid();
@@ -414,7 +432,7 @@ void MainWindow::on_upgradeTierButton_clicked()
     drawTowerOutline();
     drawSelectedTowerToScene();
     selectedTower->showAttackArea(true);
-    upgradeCost = Tower::getUpgradeCost(selectedTower);
+    upgradeCost = Game::getUpgradeCost(selectedTower);
     UI->tierLineEdit->setText(Parse::intToQString(selectedTower->getTier()));
     UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
     UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));

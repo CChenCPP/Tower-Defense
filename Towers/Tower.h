@@ -32,14 +32,10 @@ public:
     float getAttackIntervalMultiplier() const;
     float getAttackRangeMultiplier() const;
     float getDamageMultiplier() const;
-    static int getDefaultCost(Tower* tower);
-    static QString getImageUrl(Tower* tower, bool HD = false);
     int getKillCount() const;
     int getSellValue() const;
     TargetPriority getTargetPriority() const;
     int getTier() const;
-    static QString getType(Tower* tower);
-    static int getUpgradeCost(Tower* tower);
     void incrementDamageDone(int damage);
     void init();
     bool isBuilt() const;
@@ -97,6 +93,7 @@ private:
 
 public slots:
     void onTargetKilled(Enemy* enemy);
+    void poisonDamage(int damage);
     void tetherPartnerDestructing();
 
 private slots:

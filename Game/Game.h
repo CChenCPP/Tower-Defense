@@ -17,15 +17,17 @@ public:
 
     CustomGraphicsScene* mainScene;
 
+    static int getTier1Cost(Tower* tower);
+    static QString getImageUrl(Tower* tower, bool HD = true);
+    static QString getType(Tower* tower);
+    static int getUpgradeCost(Tower* tower);
+
     bool buyTower(int cost, Tower* tower);
     void enemyLeaked();
     void enemyKilled(Enemy* enemy);
     CustomGraphicsView* gameView() const;
-//    std::unordered_set<Enemy*>& getEnemyList();
     QVector<Enemy*>& getEnemyList();
-//    std::unordered_set<Enemy*> getEnemyListWithinRadius(QPointF center, int radius);
     QVector<Enemy*> getEnemyListWithinRadius(QPointF center, int radius);
-//    std::unordered_set<Tower*>& getTowerList();
     QVector<Tower*>& getTowerList();
     int getEnemiesToSpawnCount() const;
     int getHealth() const;

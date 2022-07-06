@@ -1,6 +1,15 @@
 #include "Game.h"
 #include "BuildTowerIcon.h"
 #include "Enemies/Enemy.h"
+#include "Towers/ArcherTower.h"
+#include "Towers/BallistaTower.h"
+#include "Towers/BeaconTower.h"
+#include "Towers/CannonTower.h"
+#include "Towers/IceTower.h"
+#include "Towers/PoisonTower.h"
+#include "Towers/StoneTower.h"
+#include "Towers/TeleportTower.h"
+#include "Towers/WizardTower.h"
 #include "Misc/Utility.h"
 
 Game::Game() :
@@ -25,11 +34,63 @@ Game::Game() :
     mainView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
 }
 
+// public methods
+int Game::getTier1Cost(Tower* tower)
+{
+    if (dynamic_cast<ArcherTower*>(tower)){ return ArcherTower::getTier1Cost(); }
+    if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getTier1Cost(); }
+    if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getTier1Cost(); }
+    if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getTier1Cost(); }
+    if (dynamic_cast<IceTower*>(tower)){ return IceTower::getTier1Cost(); }
+    if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getTier1Cost(); }
+    if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getTier1Cost(); }
+    if (dynamic_cast<TeleportTower*>(tower)){ return TeleportTower::getTier1Cost(); }
+    if (dynamic_cast<WizardTower*>(tower)){ return WizardTower::getTier1Cost(); }
+}
+
+QString Game::getImageUrl(Tower* tower, bool HD)
+{
+    if (dynamic_cast<ArcherTower*>(tower)){ return ArcherTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<IceTower*>(tower)){ return IceTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<TeleportTower*>(tower)){ return TeleportTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<WizardTower*>(tower)){ return WizardTower::getImageUrl(tower, HD); }
+}
+
+QString Game::getType(Tower* tower)
+{
+    if (dynamic_cast<ArcherTower*>(tower)){ return "Archer"; }
+    if (dynamic_cast<BallistaTower*>(tower)){ return "Ballista"; }
+    if (dynamic_cast<BeaconTower*>(tower)){ return "Beacon"; }
+    if (dynamic_cast<CannonTower*>(tower)){ return "Cannon"; }
+    if (dynamic_cast<IceTower*>(tower)){ return "Ice"; }
+    if (dynamic_cast<PoisonTower*>(tower)){ return "Poison"; }
+    if (dynamic_cast<StoneTower*>(tower)){ return "Stone"; }
+    if (dynamic_cast<TeleportTower*>(tower)){ return "Teleport"; }
+    if (dynamic_cast<WizardTower*>(tower)){ return "Wizard"; }
+}
+
+int Game::getUpgradeCost(Tower* tower)
+{
+    if (dynamic_cast<ArcherTower*>(tower)){ return ArcherTower::getUpgradeCost(tower); }
+    if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getUpgradeCost(tower); }
+    if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getUpgradeCost(tower); }
+    if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getUpgradeCost(tower); }
+    if (dynamic_cast<IceTower*>(tower)){ return IceTower::getUpgradeCost(tower); }
+    if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getUpgradeCost(tower); }
+    if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getUpgradeCost(tower); }
+    if (dynamic_cast<TeleportTower*>(tower)){ return TeleportTower::getUpgradeCost(tower); }
+    if (dynamic_cast<WizardTower*>(tower)){ return WizardTower::getUpgradeCost(tower); }
+}
+
 bool Game::buyTower(int cost, Tower* tower)
 {
     if (money < cost) { return false; };
     money -= cost;
-//    towerList.insert(tower);
     if (std::find(towerList.begin(), towerList.end(), tower) == towerList.end()){
         towerList.push_back(tower);
     }
@@ -41,28 +102,10 @@ CustomGraphicsView* Game::gameView() const
     return mainView;
 }
 
-//std::unordered_set<Enemy*>& Game::getEnemyList()
-//{
-//    return enemyList;
-//}
-
 QVector<Enemy*>& Game::getEnemyList()
 {
     return enemyList;
 }
-
-
-//std::unordered_set<Enemy*> Game::getEnemyListWithinRadius(QPointF center, int radius)
-//{
-//    std::unordered_set<Enemy*> enemyList = getEnemyList();
-//    std::unordered_set<Enemy*> inRange;
-//    for (Enemy* enemy : enemyList){
-//        if (Geometry::distance2D(center, enemy->center()) <= radius + enemy->radius()){
-//            inRange.insert(enemy);
-//        }
-//    }
-//    return inRange;
-//}
 
 QVector<Enemy*> Game::getEnemyListWithinRadius(QPointF center, int radius)
 {
@@ -75,11 +118,6 @@ QVector<Enemy*> Game::getEnemyListWithinRadius(QPointF center, int radius)
     }
     return inRange;
 }
-
-//std::unordered_set<Tower*>& Game::getTowerList()
-//{
-//    return towerList;
-//}
 
 QVector<Tower*>& Game::getTowerList()
 {
@@ -166,7 +204,6 @@ void Game::pause()
 
 Enemy* Game::randomEnemy() const
 {
-//    return (enemyList.size() > 0) ? *std::next(enemyList.begin(), RNG::randomNum(0,enemyList.size() - 1)) : nullptr;
     return (enemyList.size() > 0) ? enemyList[RNG::randomNum(0, enemyList.size() - 1)] : nullptr;
 }
 
@@ -316,7 +353,7 @@ void Game::resetAll()
     level = 0;
     totalKillCount = 0;
     health = startingHealth;
-    money = 1000000;
+    money = 1000;
     emit resetting();
 }
 

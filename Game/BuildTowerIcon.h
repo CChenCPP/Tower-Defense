@@ -7,6 +7,7 @@ enum class TowerType{
     Beacon,
     Cannon,
     Ice,
+    Poison,
     Stone,
     Teleport,
     Wizard

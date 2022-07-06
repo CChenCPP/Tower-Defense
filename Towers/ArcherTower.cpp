@@ -22,7 +22,7 @@ ArcherTower::ArcherTower() :
 
 
 // public methods
-int ArcherTower::getDefaultCost()
+int ArcherTower::getTier1Cost()
 {
     return ArcherTower::tier1Cost;
 }

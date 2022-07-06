@@ -46,6 +46,8 @@ public:
     static constexpr int defaultMaimDurationMs = 5000;
     static constexpr int defaultPoisonChance = 50;
     static constexpr int defaultPoisonIntervalMs = 10000;
+    static constexpr int defaultPoisonMinRoll = 0;
+    static constexpr int defaultPoisonMaxRoll = 20;
 
     inline bool hasAttribute(ProjAttr attr) const noexcept;
     inline bool isEthereal() const noexcept;
@@ -75,6 +77,8 @@ public:
     int getMaimDurationMs() const;
     int getPoisonChance() const;
     int getPoisonIntervalMs() const;
+    int getPoisonMinRoll() const;
+    int getPoisonMaxRoll() const;
     int getTier() const;
     Tower* getSource() const;
     Enemy* getTarget() const;
@@ -97,6 +101,8 @@ protected:
     int maimDurationMs;
     int poisonChance;
     int poisonIntervalMs;
+    int poisonMinRoll;
+    int poisonMaxRoll;
 
     void determineIfRenderable();
     void rotateToTarget();

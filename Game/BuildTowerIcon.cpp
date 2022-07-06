@@ -24,6 +24,8 @@ QString BuildTowerIcon::getFilePath(TowerType type)
             return ":/Towers/Images/CannonTower1HD.png";
         case TowerType::Ice:
             return ":/Towers/Images/IceTower1HD.png";
+        case TowerType::Poison:
+            return ":/Towers/Images/PoisonTower1HD.png";
         case TowerType::Stone:
             return ":/Towers/Images/StoneTower1HD.png";
         case TowerType::Teleport:

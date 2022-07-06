@@ -34,7 +34,7 @@ BeaconTower::~BeaconTower()
 }
 
 // public methods
-int BeaconTower::getDefaultCost()
+int BeaconTower::getTier1Cost()
 {
     return BeaconTower::tier1Cost;
 }

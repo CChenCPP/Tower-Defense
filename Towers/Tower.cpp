@@ -1,14 +1,6 @@
 #include "Tower.h"
 #include "Game/Game.h"
 #include "Game/GameConstants.h"
-#include "ArcherTower.h"
-#include "BallistaTower.h"
-#include "BeaconTower.h"
-#include "CannonTower.h"
-#include "IceTower.h"
-#include "StoneTower.h"
-#include "TeleportTower.h"
-#include "WizardTower.h"
 #include "Misc/Utility.h"
 #include <QVector>
 #include <QPointF>
@@ -87,62 +79,6 @@ float Tower::getDamageMultiplier() const
     return damageMultiplier;
 }
 
-int Tower::getDefaultCost(Tower* tower)
-{
-    if (dynamic_cast<ArcherTower*>(tower)){
-        return ArcherTower::getDefaultCost();
-    }
-    if (dynamic_cast<BallistaTower*>(tower)){
-        return BallistaTower::getDefaultCost();
-    }
-    if (dynamic_cast<BeaconTower*>(tower)){
-        return BeaconTower::getDefaultCost();
-    }
-    if (dynamic_cast<CannonTower*>(tower)){
-        return CannonTower::getDefaultCost();
-    }
-    if (dynamic_cast<IceTower*>(tower)){
-        return IceTower::getDefaultCost();
-    }
-    if (dynamic_cast<StoneTower*>(tower)){
-        return StoneTower::getDefaultCost();
-    }
-    if (dynamic_cast<TeleportTower*>(tower)){
-        return TeleportTower::getDefaultCost();
-    }
-    if (dynamic_cast<WizardTower*>(tower)){
-        return WizardTower::getDefaultCost();
-    }
-}
-
-QString Tower::getImageUrl(Tower *tower, bool HD)
-{
-    if (dynamic_cast<ArcherTower*>(tower)){
-        return ArcherTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<BallistaTower*>(tower)){
-        return BallistaTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<BeaconTower*>(tower)){
-        return BeaconTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<CannonTower*>(tower)){
-        return CannonTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<IceTower*>(tower)){
-        return IceTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<StoneTower*>(tower)){
-        return StoneTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<TeleportTower*>(tower)){
-        return TeleportTower::getImageUrl(tower, HD);
-    }
-    if (dynamic_cast<WizardTower*>(tower)){
-        return WizardTower::getImageUrl(tower, HD);
-    }
-}
-
 int Tower::getKillCount() const
 {
     return killCount;
@@ -161,62 +97,6 @@ TargetPriority Tower::getTargetPriority() const
 int Tower::getTier() const
 {
     return tier;
-}
-
-QString Tower::getType(Tower* tower)
-{
-    if (dynamic_cast<ArcherTower*>(tower)){
-        return "Archer";
-    }
-    if (dynamic_cast<BallistaTower*>(tower)){
-        return "Ballista";
-    }
-    if (dynamic_cast<BeaconTower*>(tower)){
-        return "Beacon";
-    }
-    if (dynamic_cast<CannonTower*>(tower)){
-        return "Cannon";
-    }
-    if (dynamic_cast<IceTower*>(tower)){
-        return "Ice";
-    }
-    if (dynamic_cast<StoneTower*>(tower)){
-        return "Stone";
-    }
-    if (dynamic_cast<TeleportTower*>(tower)){
-        return "Teleport";
-    }
-    if (dynamic_cast<WizardTower*>(tower)){
-        return "Wizard";
-    }
-}
-
-int Tower::getUpgradeCost(Tower* tower)
-{
-    if (dynamic_cast<ArcherTower*>(tower)){
-        return ArcherTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<BallistaTower*>(tower)){
-        return BallistaTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<BeaconTower*>(tower)){
-        return BeaconTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<CannonTower*>(tower)){
-        return CannonTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<IceTower*>(tower)){
-        return IceTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<StoneTower*>(tower)){
-        return StoneTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<TeleportTower*>(tower)){
-        return TeleportTower::getUpgradeCost(tower);
-    }
-    if (dynamic_cast<WizardTower*>(tower)){
-        return WizardTower::getUpgradeCost(tower);
-    }
 }
 
 void Tower::incrementDamageDone(int damage)
@@ -305,7 +185,7 @@ void Tower::upgradeTier()
     tier = std::min<int>(tier + 1, maxTier);
     QPixmap oldPixmap = pixmap();
     emit upgrade();
-    QPixmap newPixmap = getImageUrl(this);
+    QPixmap newPixmap = Game::getImageUrl(this);
     QPixmap scaled = newPixmap.scaled(defaultTowerWidth, newPixmap.height() / (newPixmap.width() / defaultTowerWidth));
     int heightDiff = scaled.height() - oldPixmap.height();
     int widthDiff = scaled.width() - oldPixmap.width();
@@ -322,7 +202,7 @@ void Tower::linkToTarget(Projectile* projectile, Enemy* enemy)
     connect(projectile,&Projectile::killedTarget,this,&Tower::onTargetKilled, Qt::UniqueConnection);
 
     projectile->setPos(center());
-    projectile->setTarget(projectile->isHeadshot() ? target : nullptr);
+    projectile->setTarget(projectile->isHeatseek() ? target : nullptr);
 
     QLineF line(center(), enemy->center());
     int angle = -1 * line.angle();
@@ -355,7 +235,7 @@ void Tower::setAttackRange(int range)
 bool Tower::targetWithinRange() const
 {
     if (!target) { return false; };
-    return Geometry::distance2D(center(), target->center()) <= (attackRange * attackRangeMultiplier + target->radius() / 2);
+    return Geometry::distance2D(center(), target->center()) <= (attackRange * attackRangeMultiplier + target->radius() - 1);
 }
 
 // private methods
@@ -477,6 +357,11 @@ void Tower::onTargetKilled(Enemy* enemy)
 {
     ++killCount;
     sellValue += sqrt(enemy->getValue());
+}
+
+void Tower::poisonDamage(int damage)
+{
+    incrementDamageDone(damage);
 }
 
 void Tower::tetherPartnerDestructing()

@@ -20,7 +20,7 @@ StoneTower::StoneTower() : Tower()
 }
 
 // public methods
-int StoneTower::getDefaultCost()
+int StoneTower::getTier1Cost()
 {
     return StoneTower::tier1Cost;
 }

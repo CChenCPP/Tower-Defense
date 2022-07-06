@@ -1147,7 +1147,7 @@ void Wave::generateEnemyList(int level)
         case 499:
             wave499(); break;
     }
-    std::shuffle(enemiesToSpawn.begin(), enemiesToSpawn.end(), RNG::generator);
+//    std::shuffle(enemiesToSpawn.begin(), enemiesToSpawn.end(), RNG::generator);
 }
 
 void Wave::randomEnemies(int amount)
@@ -1190,7 +1190,7 @@ void Wave::wave1()
 {
     addDharuer(10);
     spawnIntervalMs = 1000;
-//    randomEnemies(5000); spawnIntervalMs = 20;
+//    randomEnemies(5000); spawnIntervalMs = 15;
 }
 
 void Wave::wave2()
@@ -1487,19 +1487,19 @@ void Wave::wave44()
 
 void Wave::wave45()
 {
-    addKronus(200);
+    addKronus(400);
     spawnIntervalMs = 50;
 }
 
 void Wave::wave46()
 {
-    addCukzotz(300);
+    addCukzotz(400);
     spawnIntervalMs = 50;
 }
 
 void Wave::wave47()
 {
-    addPhihenar(350);
+    addPhihenar(400);
     spawnIntervalMs = 50;
 }
 
@@ -1565,46 +1565,72 @@ void Wave::wave57()
 
 void Wave::wave58()
 {
+    randomEnemies(2000);
+    spawnIntervalMs = 50;
 }
 
 void Wave::wave59()
 {
+    randomEnemies(2000);
+    spawnIntervalMs = 30;
 }
 
 void Wave::wave60()
 {
+    addKronus(2000);
+    spawnIntervalMs = 30;
 }
 
 void Wave::wave61()
 {
+    addKronus(3000);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave62()
 {
+    addPhihenar(1500);
+    addKhyemis(1500);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave63()
 {
+    addPhihenar(1500);
+    addKhyemis(1500);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave64()
 {
+    addEnione(1500);
+    addDharuer(1500);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave65()
 {
+    addHudor(2000);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave66()
 {
+    addUdall(3000);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave67()
 {
+    randomEnemies(3000);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave68()
 {
+    addKronus(2000);
+    randomEnemies(1000);
+    spawnIntervalMs = 20;
 }
 
 void Wave::wave69()
