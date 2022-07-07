@@ -12,9 +12,11 @@ extern Game* game;
 PoisonTower::PoisonTower() : Tower()
 {
     connect(this,&Tower::upgrade,this,&PoisonTower::upgrade);
+    type = TowerType::Poison;
     attackRange = PoisonTower::tier1AttackRange;
     attackInterval = PoisonTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/PoisonTower1.png"), defaultTowerWidth);
+    sizeMultiplier = poisonTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/PoisonTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = pow(PoisonTower::tier1Cost, valueDecay);
 }

@@ -22,7 +22,7 @@ NovaProjectile::NovaProjectile(int tier, Tower* source) :
 
 NovaProjectile::~NovaProjectile()
 {
-
+    emit returned();
 }
 
 // public methods
@@ -49,7 +49,7 @@ void NovaProjectile::returnToSource()
 {
     QLineF line(pos(), source->pos());
     setRotation(-1 * line.angle());
-    connect(&checkReturned,QTimer::timeout,[&](){ if (Geometry::distance2D(pos(), source->pos()) < 25) { emit returned(); delete this; };});
+    connect(&checkReturned,QTimer::timeout,[&](){ if (Geometry::distance2D(pos(), source->pos()) < 25) { delete this; };});
     checkReturned.start(75);
 }
 
@@ -83,21 +83,21 @@ void NovaProjectile::setProperties()
     {
         case 1:
             damage = 6 * pow(tier, 2);
-            distancePerInterval = 7;
+            distancePerInterval = 10;
             maxDistance = 2000;
             searchRadius = 250;
             maxTargets = 20;
             break;
         case 2:
             damage = 30 * pow(tier, 2);
-            distancePerInterval = 5;
+            distancePerInterval = 9;
             maxDistance = 2000;
             searchRadius = 300;
             maxTargets = 8;
             break;
         case 3:
             damage = 120 * pow(tier, 2);
-            distancePerInterval = 3.5;
+            distancePerInterval = 8;
             maxDistance = 2000;
             searchRadius = 400;
             maxTargets = 4;

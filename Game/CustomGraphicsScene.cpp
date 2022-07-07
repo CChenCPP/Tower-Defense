@@ -8,7 +8,6 @@ CustomGraphicsScene::CustomGraphicsScene(QObject* parent) :
     projectileCount(0)
 {
     setSceneRect(0,0,defaultWidth,defaultHeight);
-    QTimer* t = new QTimer();
 }
 
 bool lessThan(QGraphicsItem * left, QGraphicsItem * right)
@@ -31,7 +30,7 @@ void CustomGraphicsScene::incrementProjectileCount()
     ++projectileCount;
 }
 
-QList<QGraphicsItem *> CustomGraphicsScene::itemsWithinRange(QGraphicsItem* graphicsItem, qreal radius)
+QList<QGraphicsItem*> CustomGraphicsScene::itemsWithinRange(QGraphicsItem* graphicsItem, qreal radius)
 {
     QList<QGraphicsItem*> allItems = items();
     QList<QGraphicsItem*> filtered;

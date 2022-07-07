@@ -22,9 +22,9 @@ private:
     static constexpr int tier3AttackRange = 225;
     static constexpr int tier3AttackInterval = 1000;
     static constexpr int tier3Cost = 7500;
-    static constexpr float attackRangeMultiplierBuff = 1.05;
-    static constexpr float attackIntervalMultiplierBuff = 0.93;
-    static constexpr float damageMultiplierBuff = 1.1;
+    static constexpr qreal attackRangeMultiplierBuff = 1.05;
+    static constexpr qreal attackIntervalMultiplierBuff = 0.93;
+    static constexpr qreal damageMultiplierBuff = 1.1;
 
     std::unordered_set<Tower*> buffedAttackRangeNeighbors;
     std::unordered_set<Tower*> buffedAttackRateNeighbors;

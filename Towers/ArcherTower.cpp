@@ -13,9 +13,11 @@ ArcherTower::ArcherTower() :
     Tower()
 {
     connect(this,&Tower::upgrade,this,&ArcherTower::upgrade);
+    type = TowerType::Archer;
     attackRange = ArcherTower::tier1AttackRange;
     attackInterval = ArcherTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultTowerWidth);
+    sizeMultiplier = archerTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = std::pow(ArcherTower::tier1Cost, valueDecay);
 }

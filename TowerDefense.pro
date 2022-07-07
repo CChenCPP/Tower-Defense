@@ -24,7 +24,6 @@ SOURCES +=  \
     Enemies/UdallEnemy.cpp \
     Enemies/UesisEnemy.cpp \
     Enemies/ZanbrisEnemy.cpp \
-    Game/BuildTowerIcon.cpp \
     Game/BuildingCursor.cpp \
     Game/CustomGraphicsPixmapItem.cpp \
     Game/CustomGraphicsScene.cpp \
@@ -52,6 +51,7 @@ SOURCES +=  \
     Towers/BallistaTower.cpp \
     Towers/BeaconTower.cpp \
     Towers/CannonTower.cpp \
+    Towers/FortressTower.cpp \
     Towers/IceTower.cpp \
     Towers/PoisonTower.cpp \
     Towers/StoneTower.cpp \
@@ -77,7 +77,6 @@ HEADERS +=  \
    Enemies/UdallEnemy.h \
    Enemies/UesisEnemy.h \
    Enemies/ZanbrisEnemy.h \
-   Game/BuildTowerIcon.h \
    Game/BuildingCursor.h \
    Game/CustomGraphicsPixmapItem.h \
    Game/CustomGraphicsScene.h \
@@ -106,6 +105,7 @@ HEADERS +=  \
    Towers/BallistaTower.h \
    Towers/BeaconTower.h \
    Towers/CannonTower.h \
+   Towers/FortressTower.h \
    Towers/IceTower.h \
    Towers/PoisonTower.h \
    Towers/StoneTower.h \

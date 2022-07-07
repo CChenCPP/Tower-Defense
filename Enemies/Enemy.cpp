@@ -10,6 +10,9 @@ using namespace GameConstants::EnemyConstants;
 
 extern Game* game;
 
+qreal Enemy::hpScale = defaultHpScale;
+qreal Enemy::valueDecay = defaultValueDecay;
+
 Enemy::Enemy(int level, QGraphicsItem* parent) :
     CustomGraphicsPixmapItem(parent),
     attributes{},

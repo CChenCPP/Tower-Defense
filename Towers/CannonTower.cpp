@@ -12,9 +12,11 @@ extern Game* game;
 CannonTower::CannonTower() : Tower()
 {
     connect(this,&Tower::upgrade,this,&CannonTower::upgrade);
+    type = TowerType::Cannon;
     attackRange = CannonTower::tier1AttackRange;
     attackInterval = CannonTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultTowerWidth);
+    sizeMultiplier = cannonTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = pow(CannonTower::tier1Cost, valueDecay);
 }

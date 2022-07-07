@@ -54,7 +54,9 @@ private slots:
     void on_buildBallistaTowerButton_released();
     void on_buildBeaconTowerButton_released();
     void on_buildCannonTowerButton_released();
+    void on_buildFortressTowerButton_released();
     void on_buildIceTowerButton_released();
+    void on_buildPoisonTowerButton_released();
     void on_buildStoneTowerButton_released();
     void on_buildTeleportTowerButton_released();
     void on_buildWizardTowerButton_released();
@@ -65,8 +67,7 @@ private slots:
     void on_lowestHpPriorityRadioButton_clicked();
     void on_entrancePriorityRadioButton_clicked();
     void on_exitPriorityRadioButton_clicked();
+    void on_newGameButton_clicked();
     void on_startGameButton_clicked();
     void on_pauseButton_clicked();
-    void on_pickMapButton_clicked();
-    void on_buildPoisonTowerButton_released();
 };

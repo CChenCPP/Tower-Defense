@@ -1,10 +1,10 @@
 #include "Game.h"
-#include "BuildTowerIcon.h"
 #include "Enemies/Enemy.h"
 #include "Towers/ArcherTower.h"
 #include "Towers/BallistaTower.h"
 #include "Towers/BeaconTower.h"
 #include "Towers/CannonTower.h"
+#include "Towers/FortressTower.h"
 #include "Towers/IceTower.h"
 #include "Towers/PoisonTower.h"
 #include "Towers/StoneTower.h"
@@ -16,7 +16,7 @@ Game::Game() :
     mainScene(new CustomGraphicsScene()),
     mainView(new CustomGraphicsView(mainScene)),
     running(false),
-    paused(false),
+    paused(true),
     map(nullptr),
     enemySpawnTimer(new QTimer()),
     nextWaveCheckTimer(new QTimer()),
@@ -25,8 +25,8 @@ Game::Game() :
     wave(nullptr),
     level(0),
     totalKillCount(0),
-    health(startingHealth),
-    money(1000)
+    health(0),
+    money(0)
 {
     mainScene->setItemIndexMethod(QGraphicsScene::BspTreeIndex);
     mainScene->setBspTreeDepth(11);
@@ -41,6 +41,7 @@ int Game::getTier1Cost(Tower* tower)
     if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getTier1Cost(); }
     if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getTier1Cost(); }
     if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getTier1Cost(); }
+    if (dynamic_cast<FortressTower*>(tower)){ return FortressTower::getTier1Cost(); }
     if (dynamic_cast<IceTower*>(tower)){ return IceTower::getTier1Cost(); }
     if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getTier1Cost(); }
     if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getTier1Cost(); }
@@ -54,6 +55,7 @@ QString Game::getImageUrl(Tower* tower, bool HD)
     if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getImageUrl(tower, HD); }
     if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getImageUrl(tower, HD); }
     if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getImageUrl(tower, HD); }
+    if (dynamic_cast<FortressTower*>(tower)){ return FortressTower::getImageUrl(tower, HD); }
     if (dynamic_cast<IceTower*>(tower)){ return IceTower::getImageUrl(tower, HD); }
     if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getImageUrl(tower, HD); }
     if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getImageUrl(tower, HD); }
@@ -67,6 +69,7 @@ QString Game::getType(Tower* tower)
     if (dynamic_cast<BallistaTower*>(tower)){ return "Ballista"; }
     if (dynamic_cast<BeaconTower*>(tower)){ return "Beacon"; }
     if (dynamic_cast<CannonTower*>(tower)){ return "Cannon"; }
+    if (dynamic_cast<FortressTower*>(tower)){ return "Fortress"; }
     if (dynamic_cast<IceTower*>(tower)){ return "Ice"; }
     if (dynamic_cast<PoisonTower*>(tower)){ return "Poison"; }
     if (dynamic_cast<StoneTower*>(tower)){ return "Stone"; }
@@ -80,6 +83,7 @@ int Game::getUpgradeCost(Tower* tower)
     if (dynamic_cast<BallistaTower*>(tower)){ return BallistaTower::getUpgradeCost(tower); }
     if (dynamic_cast<BeaconTower*>(tower)){ return BeaconTower::getUpgradeCost(tower); }
     if (dynamic_cast<CannonTower*>(tower)){ return CannonTower::getUpgradeCost(tower); }
+    if (dynamic_cast<FortressTower*>(tower)){ return FortressTower::getUpgradeCost(tower); }
     if (dynamic_cast<IceTower*>(tower)){ return IceTower::getUpgradeCost(tower); }
     if (dynamic_cast<PoisonTower*>(tower)){ return PoisonTower::getUpgradeCost(tower); }
     if (dynamic_cast<StoneTower*>(tower)){ return StoneTower::getUpgradeCost(tower); }
@@ -89,10 +93,18 @@ int Game::getUpgradeCost(Tower* tower)
 
 bool Game::buyTower(int cost, Tower* tower)
 {
-    if (money < cost) { return false; };
+    TowerType towerType = tower->getTowerType();
+    if (money < cost || atTowerLimit(towerType)) { return false; };
     money -= cost;
     if (std::find(towerList.begin(), towerList.end(), tower) == towerList.end()){
         towerList.push_back(tower);
+    }
+    auto countIt = towerCount.find(towerType);
+    if (countIt != towerCount.end()){
+        ++countIt->second;
+    }
+    else {
+        towerCount.insert(std::make_pair(towerType, 1));
     }
     return true;
 }
@@ -261,6 +273,11 @@ void Game::newTowerAt(QPointF pos)
 }
 
 // private methods
+bool Game::atTowerLimit(TowerType type)
+{
+    return towerCount[type] + 1 > towerLimit(type);
+}
+
 void Game::defineLegalTiles()
 {
     for (int i = 0; i < grid.size(); ++i){
@@ -326,6 +343,7 @@ void Game::nextWave()
 {
     enemySpawnTimer->disconnect();
     ++level;
+    scaleEnemies();
     emit newWave();
     if (wave) { delete wave; wave = nullptr; };
     wave = new Wave(level);
@@ -353,8 +371,16 @@ void Game::resetAll()
     level = 0;
     totalKillCount = 0;
     health = startingHealth;
-    money = 1000;
+    money = startingMoney;
     emit resetting();
+}
+
+void Game::scaleEnemies() const
+{
+    if (level != 0 && level % 15 == 0){
+        Enemy::hpScale = pow(Enemy::hpScale, 1.8);
+        Enemy::valueDecay = pow(Enemy::valueDecay, 1.3);
+    }
 }
 
 void Game::setupGrid()
@@ -391,16 +417,51 @@ void Game::setupGrid()
     hideGrid();
 }
 
+int Game::towerLimit(TowerType type) const
+{
+    switch (type){
+        case TowerType::Archer:
+            return archerTowerLimit;
+        case TowerType::Ballista:
+            return ballistaTowerLimit;
+        case TowerType::Beacon:
+            return beaconTowerLimit;
+        case TowerType::Cannon:
+            return cannonTowerLimit;
+        case TowerType::Fortress:
+            return fortressTowerLimit;
+        case TowerType::Ice:
+            return iceTowerLimit;
+        case TowerType::Poison:
+            return poisonTowerLimit;
+        case TowerType::Stone:
+            return stoneTowerLimit;
+        case TowerType::Teleport:
+            return teleportTowerLimit;
+        case TowerType::Wizard:
+            return wizardTowerLimit;
+    }
+}
+
 // public slots
 void Game::removeTower(int posX, int posY, Tower* tower)
 {
 //    towerList.erase(tower);
-    auto it = std::find(towerList.begin(), towerList.end(), tower);
-    if (it != towerList.end()){
-        towerList[it - towerList.begin()] = towerList.back();
+    auto listIt = std::find(towerList.begin(), towerList.end(), tower);
+    if (listIt != towerList.end()){
+        towerList[listIt - towerList.begin()] = towerList.back();
         towerList.pop_back();
     }
+    auto countIt = towerCount.find(tower->getTowerType());
+    if (countIt != towerCount.end()){
+        --countIt->second;
+    }
     enableSlot(posX / tileSize, (posY - tileSize) / tileSize);
+}
+
+void Game::onRevenueGenerated(int amount)
+{
+    money += amount;
 }
 
 void Game::loadMap(QString mapName)
@@ -421,9 +482,9 @@ void Game::loadMap(QString mapName)
 void Game::removeEnemy(Enemy* enemy)
 {
 //    enemyList.erase(enemy);
-    auto it = std::find(enemyList.begin(), enemyList.end(), enemy);
-    if (it != enemyList.end()){
-        enemyList[it - enemyList.begin()] = enemyList.back();
+    auto listIt = std::find(enemyList.begin(), enemyList.end(), enemy);
+    if (listIt != enemyList.end()){
+        enemyList[listIt - enemyList.begin()] = enemyList.back();
         enemyList.pop_back();
     }
 }
@@ -431,12 +492,9 @@ void Game::removeEnemy(Enemy* enemy)
 void Game::spawnEnemy()
 {
     if (enemiesToSpawn.size() == 0) { return; };
-//    Enemy* enemy = *std::next(enemiesToSpawn.begin(), RNG::randomNum(0,enemiesToSpawn.size() - 1));
     Enemy* enemy = enemiesToSpawn.back();
     enemy->setPath(map->randomPath());
-//    enemyList.insert(enemy);
     enemyList.push_back(enemy);
-//    enemiesToSpawn.erase(enemy);
     enemiesToSpawn.pop_back();
     connect(enemy,&Enemy::destructing,this,&Game::removeEnemy,Qt::UniqueConnection);
     mainScene->addItem(enemy);

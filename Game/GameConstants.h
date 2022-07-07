@@ -5,13 +5,36 @@ namespace GameConstants{
     static constexpr int tileSize = 36;
     static constexpr qreal defaultTowerWidth = tileSize * 1.3;
     static constexpr qreal defaultIconWidth = 55;
+
+    static constexpr int archerTowerLimit = std::numeric_limits<int>::max();
+    static constexpr int ballistaTowerLimit = std::numeric_limits<int>::max();
+    static constexpr int beaconTowerLimit = std::numeric_limits<int>::max();
+    static constexpr int cannonTowerLimit = std::numeric_limits<int>::max();
+    static constexpr int fortressTowerLimit = 15;
+    static constexpr int iceTowerLimit = 10;
+    static constexpr int poisonTowerLimit = 10;
+    static constexpr int stoneTowerLimit = std::numeric_limits<int>::max();
+    static constexpr int teleportTowerLimit = 5;
+    static constexpr int wizardTowerLimit = std::numeric_limits<int>::max();
+
+    static constexpr qreal archerTowerIconSizeMultiplier = 0.95;
+    static constexpr qreal ballistaTowerIconSizeMultiplier = 1.00;
+    static constexpr qreal beaconTowerIconSizeMultiplier = 0.75;
+    static constexpr qreal cannonTowerIconSizeMultiplier = 1.00;
+    static constexpr qreal fortressTowerIconSizeMultiplier = 1.20;
+    static constexpr qreal iceTowerIconSizeMultiplier = 1.10;
+    static constexpr qreal poisonTowerIconSizeMultiplier = 1.15;
+    static constexpr qreal stoneTowerIconSizeMultiplier = 1.00;
+    static constexpr qreal teleportTowerIconSizeMultiplier = 0.75;
+    static constexpr qreal wizardTowerIconSizeMultiplier = 0.85;
     static constexpr int startingHealth = 100;
+    static constexpr int startingMoney = 1000000;
 
     namespace EnemyConstants{
         static constexpr int defaultMoveIntervalMs = 40;
         static constexpr qreal defaultSize = 32;
-        static constexpr qreal valueDecay = 0.76;
-        static constexpr qreal hpScale = 1.05;
+        static constexpr qreal defaultValueDecay = 0.75;
+        static constexpr qreal defaultHpScale = 1.06;
 
         static EnemyAttr cukzotzAttributes = EnemyAttr::MaimResistant | EnemyAttr::Impenetrable;
         static constexpr int cukzotzHp = 150;
@@ -83,7 +106,18 @@ namespace GameConstants{
     namespace TowerConstants{
         static constexpr int consecutiveAttackChance = 30;
         static constexpr int minimumAttackInterval = 333;
-        static constexpr float valueDecay = 0.90;
+        static constexpr qreal valueDecay = 0.90;
         static constexpr int defaultMaxTier = 3;
+
+        static constexpr qreal archerTowerSizeMultiplier = 1.10;
+        static constexpr qreal ballistaTowerSizeMultiplier = 0.95;
+        static constexpr qreal beaconTowerSizeMultiplier = 0.95;
+        static constexpr qreal cannonTowerSizeMultiplier = 1.00;
+        static constexpr qreal fortressTowerSizeMultiplier = 1.40;
+        static constexpr qreal iceTowerSizeMultiplier = 1.10;
+        static constexpr qreal poisonTowerSizeMultiplier = 1.15;
+        static constexpr qreal stoneTowerSizeMultiplier = 1.05;
+        static constexpr qreal teleportTowerSizeMultiplier = 0.95;
+        static constexpr qreal wizardTowerSizeMultiplier = 0.95;
     }
 }

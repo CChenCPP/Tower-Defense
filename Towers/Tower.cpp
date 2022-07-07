@@ -12,6 +12,7 @@ extern Game* game;
 
 Tower::Tower(QGraphicsItem* parent) :
     CustomGraphicsPixmapItem(parent),
+    type{},
     tier(1),
     maxTier(defaultMaxTier),
     damageMultiplier(1),
@@ -28,7 +29,8 @@ Tower::Tower(QGraphicsItem* parent) :
     built(false),
     tethered(false),
     gridPosX(0),
-    gridPosY(0)
+    gridPosY(0),
+    sizeMultiplier(1)
 {
     connect(game,&Game::resetting,this,&Tower::newGame);
 }
@@ -64,17 +66,17 @@ int Tower::getTotalDamageDone() const
     return totalDamageDone;
 }
 
-float Tower::getAttackIntervalMultiplier() const
+qreal Tower::getAttackIntervalMultiplier() const
 {
     return attackIntervalMultiplier;
 }
 
-float Tower::getAttackRangeMultiplier() const
+qreal Tower::getAttackRangeMultiplier() const
 {
     return attackRangeMultiplier;
 }
 
-float Tower::getDamageMultiplier() const
+qreal Tower::getDamageMultiplier() const
 {
     return damageMultiplier;
 }
@@ -82,6 +84,16 @@ float Tower::getDamageMultiplier() const
 int Tower::getKillCount() const
 {
     return killCount;
+}
+
+qreal Tower::getSizeMultiplier() const
+{
+    return sizeMultiplier;
+}
+
+TowerType Tower::getTowerType() const
+{
+    return type;
 }
 
 int Tower::getSellValue() const
@@ -139,19 +151,19 @@ void Tower::resume()
     attackIntervalTimer.start(std::max<int>(attackInterval * attackIntervalMultiplier, minimumAttackInterval));
 }
 
-void Tower::setAttackIntervalMultiplier(float multiplier)
+void Tower::setAttackIntervalMultiplier(qreal multiplier)
 {
     attackIntervalMultiplier = multiplier;
     setAttackInterval();
 }
 
-void Tower::setAttackRangeMultiplier(float multiplier)
+void Tower::setAttackRangeMultiplier(qreal multiplier)
 {
     attackRangeMultiplier = multiplier;
     defineAttackArea();
 }
 
-void Tower::setDamageMultiplier(float multiplier)
+void Tower::setDamageMultiplier(qreal multiplier)
 {
     damageMultiplier = multiplier;
 }
@@ -186,7 +198,7 @@ void Tower::upgradeTier()
     QPixmap oldPixmap = pixmap();
     emit upgrade();
     QPixmap newPixmap = Game::getImageUrl(this);
-    QPixmap scaled = newPixmap.scaled(defaultTowerWidth, newPixmap.height() / (newPixmap.width() / defaultTowerWidth));
+    QPixmap scaled = newPixmap.scaled(defaultTowerWidth * sizeMultiplier, newPixmap.height() / (newPixmap.width() / (defaultTowerWidth * sizeMultiplier)));
     int heightDiff = scaled.height() - oldPixmap.height();
     int widthDiff = scaled.width() - oldPixmap.width();
 

@@ -129,7 +129,7 @@ void Path::paintPath(QColor color, int pathWidth)
 void Path::generatePathPoints(qreal granularity)
 {
     qreal segments = path().length() / granularity;
-    for (qreal i = 0; i <= segments + 1; ++i){
+    for (int i = 0; i <= segments + 1; ++i){
         pointsOnPath << path().pointAtPercent(i / segments / 2);
     }
 }

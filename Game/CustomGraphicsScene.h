@@ -10,7 +10,7 @@ public:
 
     static constexpr int defaultWidth = 900;
     static constexpr int defaultHeight = 792;
-    static constexpr int projectileRenderLimit = 500;
+    static constexpr int projectileRenderLimit = 1250;
 
     void decrementProjectileCount();
     int getProjectileCount() const;

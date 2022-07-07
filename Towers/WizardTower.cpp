@@ -1,5 +1,6 @@
 #include "WizardTower.h"
 #include "BeaconTower.h"
+#include "FortressTower.h"
 #include "Game/Game.h"
 #include "Game/GameConstants.h"
 #include "Projectiles/NovaProjectile.h"
@@ -18,9 +19,11 @@ WizardTower::WizardTower() :
     tetherTarget(nullptr)
 {
     connect(this,&Tower::upgrade,this,&WizardTower::upgrade,Qt::UniqueConnection);
+    type = TowerType::Wizard;
     attackRange = WizardTower::tier1AttackRange;
     attackInterval = WizardTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultTowerWidth);
+    sizeMultiplier = wizardTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = std::pow(WizardTower::tier1Cost, valueDecay);
 }
@@ -68,9 +71,11 @@ void WizardTower::attackTarget()
             summonNova();
             return;
         case(2):
+            summonNova();
             tetherNeighbor();
             return;
         case(3):
+            summonNova();
             summonBlackHole();
             return;
     }
@@ -110,7 +115,7 @@ void WizardTower::tetherNeighbor()
         tetherTarget = nullptr; };
 
     for (Tower* tower : game->getTowerList()){
-        if (dynamic_cast<WizardTower*>(tower) || dynamic_cast<BeaconTower*>(tower)) { continue; };
+        if (dynamic_cast<WizardTower*>(tower) || dynamic_cast<BeaconTower*>(tower) || dynamic_cast<FortressTower*>(tower)) { continue; };
         if (Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2)) { continue; };
         if (tower && RNG::randomNum(1,100) <= WizardTower::tetherChance){
             if (!tower->isTethered()) {
@@ -123,8 +128,6 @@ void WizardTower::tetherNeighbor()
             }
         }
     }
-
-    summonNova();
 }
 
 void WizardTower::summonBlackHole()

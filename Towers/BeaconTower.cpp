@@ -1,4 +1,5 @@
 #include "BeaconTower.h"
+#include "FortressTower.h"
 #include "WizardTower.h"
 #include "Game/Game.h"
 #include "Game/GameConstants.h"
@@ -13,9 +14,11 @@ BeaconTower::BeaconTower() :
     Tower()
 {
     connect(this,&Tower::upgrade,this,&BeaconTower::upgrade);
+    type = TowerType::Beacon;
     attackRange = BeaconTower::tier1AttackRange;
     attackInterval = BeaconTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultTowerWidth);;
+    sizeMultiplier = beaconTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultTowerWidth * sizeMultiplier);;
     setPixmap(scaled);
     sellValue = std::pow(BeaconTower::tier1Cost, valueDecay);
 }
@@ -118,22 +121,21 @@ void BeaconTower::buffAttackRange()
 
 bool BeaconTower::canBuffAttackIntervalMultiplier(Tower* tower) const
 {
-    return !(dynamic_cast<BeaconTower*>(tower))
+    return !dynamic_cast<BeaconTower*>(tower) && !dynamic_cast<FortressTower*>(tower)
     && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
     && (tower && tower->isBuilt() && buffedAttackRateNeighbors.find(tower) == buffedAttackRateNeighbors.end());
 }
 
 bool BeaconTower::canBuffAttackRangeMultiplier(Tower* tower) const
 {
-    return !(dynamic_cast<BeaconTower*>(tower))
+    return !dynamic_cast<BeaconTower*>(tower) && !dynamic_cast<FortressTower*>(tower)
     && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
     && (tower && tower->isBuilt() && buffedAttackRangeNeighbors.find(tower) == buffedAttackRangeNeighbors.end());
 }
 
 bool BeaconTower::canBuffDamageMultiplier(Tower* tower) const
 {
-    return tower
-    && !(dynamic_cast<BeaconTower*>(tower))
+    return !dynamic_cast<BeaconTower*>(tower) && !dynamic_cast<FortressTower*>(tower)
     && !(Geometry::distance2D(center(), tower->center()) > (attackRange + tower->radius() / 2))
     && (tower && tower->isBuilt() && buffedDamageNeighbors.find(tower) == buffedDamageNeighbors.end());
 }

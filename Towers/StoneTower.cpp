@@ -12,9 +12,11 @@ extern Game* game;
 StoneTower::StoneTower() : Tower()
 {
     connect(this,&Tower::upgrade,this,&StoneTower::upgrade);
+    type = TowerType::Stone;
     attackRange = StoneTower::tier1AttackRange;
     attackInterval = StoneTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultTowerWidth);
+    sizeMultiplier = stoneTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = pow(StoneTower::tier1Cost, valueDecay);
 }

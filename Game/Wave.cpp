@@ -1237,14 +1237,14 @@ void Wave::wave7()
 void Wave::wave8()
 {
     addUdall(30);
-    spawnIntervalMs = 1250;
+    spawnIntervalMs = 750;
 }
 
 void Wave::wave9()
 {
     wave6();
     wave8();
-    spawnIntervalMs = 800;
+    spawnIntervalMs = 700;
 }
 
 void Wave::wave10()

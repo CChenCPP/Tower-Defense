@@ -7,6 +7,7 @@
 #include "Towers/BallistaTower.h"
 #include "Towers/BeaconTower.h"
 #include "Towers/CannonTower.h"
+#include "Towers/FortressTower.h"
 #include "Towers/IceTower.h"
 #include "Towers/PoisonTower.h"
 #include "Towers/StoneTower.h"
@@ -53,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(moneyUpdater,&QTimer::timeout,[&](){ UI->moneyLineEdit->setText(Parse::intToQString(game->getMoney()));}); moneyUpdater->start(500);
     connect(game->gameView(),&CustomGraphicsView::towerSelected,this,&MainWindow::onTowerSelected);
     selectedTowerView->setParent(UI->towerSelectionView);
-
 }
 
 MainWindow::~MainWindow()
@@ -118,6 +118,7 @@ void MainWindow::enableBuildTowerIconButtons() const
     UI->buildBallistaTowerButton->setEnabled(true);
     UI->buildBeaconTowerButton->setEnabled(true);
     UI->buildCannonTowerButton->setEnabled(true);
+    UI->buildFortressTowerButton->setEnabled(true);
     UI->buildIceTowerButton->setEnabled(true);
     UI->buildPoisonTowerButton->setEnabled(true);
     UI->buildStoneTowerButton->setEnabled(true);
@@ -181,25 +182,28 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 {
     switch(event->key()){
         case Qt::Key_P:
-            UI->pauseButton->click();
-            return;
+            UI->pauseButton->click();return;
         case Qt::Key_S:
-            if (selectedTower){
-                UI->sellTowerButton->click();
-            }
-            return;
+            if (selectedTower){ UI->sellTowerButton->click(); } return;
         case Qt::Key_U:
-            if (selectedTower){
-                UI->upgradeTierButton->click();
-            }
-            return;
+            if (selectedTower){ UI->upgradeTierButton->click(); } return;
+        case Qt::Key_1:
+            if (selectedTower) { UI->nearestPriorityRadioButton->click(); } return;
+        case Qt::Key_2:
+            if (selectedTower) { UI->highestHpPriorityRadioButton->click(); } return;
+        case Qt::Key_3:
+            if (selectedTower) { UI->lowestHpPriorityRadioButton->click(); } return;
+        case Qt::Key_4:
+            if (selectedTower) { UI->entrancePriorityRadioButton->click(); } return;
+        case Qt::Key_5:
+            if (selectedTower) { UI->exitPriorityRadioButton->click(); } return;
     }
 }
 
 void MainWindow::resetSelection()
 {
     game->hideGrid();
-    selectedTowerStatsUpdater->stop();
+    selectedTowerStatsUpdater->disconnect();
 
     UI->typeLineEdit->setText("");
     UI->tierLineEdit->setText("");
@@ -228,47 +232,52 @@ void MainWindow::resetSelection()
 
 void MainWindow::setupBuildTowerIcons() const
 {
-    QIcon archerTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultIconWidth));
+    QIcon archerTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/ArcherTower1.png"), defaultIconWidth * archerTowerIconSizeMultiplier));
     auto archerTowerButton = UI->buildArcherTowerButton;
     archerTowerButton->setIcon(archerTowerIcon);
     archerTowerButton->setIconSize(QSize(200,200));
 
-    QIcon beaconTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultIconWidth));
-    auto beaconTowerButton = UI->buildBeaconTowerButton;
-    beaconTowerButton->setIcon(beaconTowerIcon);
-    beaconTowerButton->setIconSize(QSize(200,200));
-
-    QIcon ballistaTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), defaultIconWidth));
+    QIcon ballistaTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BallistaTower1.png"), defaultIconWidth * ballistaTowerIconSizeMultiplier));
     auto ballistaTowerButton = UI->buildBallistaTowerButton;
     ballistaTowerButton->setIcon(ballistaTowerIcon);
     ballistaTowerButton->setIconSize(QSize(200,200));
 
-    QIcon cannonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultIconWidth));
+    QIcon beaconTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/BeaconTower1.png"), defaultIconWidth * beaconTowerIconSizeMultiplier));
+    auto beaconTowerButton = UI->buildBeaconTowerButton;
+    beaconTowerButton->setIcon(beaconTowerIcon);
+    beaconTowerButton->setIconSize(QSize(200,200));
+
+    QIcon cannonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/CannonTower1.png"), defaultIconWidth * cannonTowerIconSizeMultiplier));
     auto cannonTowerButton = UI->buildCannonTowerButton;
     cannonTowerButton->setIcon(cannonTowerIcon);
     cannonTowerButton->setIconSize(QSize(200,200));
 
-    QIcon iceTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultIconWidth));
+    QIcon fortressTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/FortressTower1.png"), defaultIconWidth * fortressTowerIconSizeMultiplier));
+    auto fortressTowerButton = UI->buildFortressTowerButton;
+    fortressTowerButton->setIcon(fortressTowerIcon);
+    fortressTowerButton->setIconSize(QSize(200,200));
+
+    QIcon iceTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultIconWidth * iceTowerIconSizeMultiplier));
     auto iceTowerButton = UI->buildIceTowerButton;
     iceTowerButton->setIcon(iceTowerIcon);
     iceTowerButton->setIconSize(QSize(200,200));
 
-    QIcon poisonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/PoisonTower1.png"), defaultIconWidth));
+    QIcon poisonTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/PoisonTower1.png"), defaultIconWidth * poisonTowerIconSizeMultiplier));
     auto poisonTowerButton = UI->buildPoisonTowerButton;
     poisonTowerButton->setIcon(poisonTowerIcon);
     poisonTowerButton->setIconSize(QSize(200,200));
 
-    QIcon stoneTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultIconWidth));
+    QIcon stoneTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/StoneTower1.png"), defaultIconWidth * stoneTowerIconSizeMultiplier));
     auto stoneTowerButton = UI->buildStoneTowerButton;
     stoneTowerButton->setIcon(stoneTowerIcon);
     stoneTowerButton->setIconSize(QSize(200,200));
 
-    QIcon teleportTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultIconWidth));
+    QIcon teleportTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultIconWidth * teleportTowerIconSizeMultiplier));
     auto teleportTowerButton = UI->buildTeleportTowerButton;
     teleportTowerButton->setIcon(teleportTowerIcon);
     teleportTowerButton->setIconSize(QSize(200,200));
 
-    QIcon wizardTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultIconWidth));
+    QIcon wizardTowerIcon(Geometry::scaleToWidth(QPixmap(":/Towers/Images/WizardTower1.png"), defaultIconWidth * wizardTowerIconSizeMultiplier));
     auto wizardTowerButton = UI->buildWizardTowerButton;
     wizardTowerButton->setIcon(wizardTowerIcon);
     wizardTowerButton->setIconSize(QSize(200,200));
@@ -300,7 +309,7 @@ void MainWindow::onTowerSelected(Tower* tower)
     UI->totalDamageDoneLineEdit->setText(Parse::intToQString(selectedTower->getTotalDamageDone()));
     UI->killsLineEdit->setText(Parse::intToQString(selectedTower->getKillCount()));
     UI->upgradeTierButton->setEnabled((tower->isUpgradable()) ? true : false);
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::intToQString(upgradeCost) : "Max tier. Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(upgradeCost) : "Cannot upgrade");
     UI->sellTowerButton->setEnabled(true);
     enablePriorityButtons();
     determineTowerPriority();
@@ -311,7 +320,7 @@ void MainWindow::onTowerSelected(Tower* tower)
         UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
         UI->totalDamageDoneLineEdit->setText(Parse::intToQString(selectedTower->getTotalDamageDone()));
         UI->killsLineEdit->setText(Parse::intToQString(selectedTower->getKillCount()));
-        UI->sellTowerButton->setText("Sell tower $" + Parse::intToQString(selectedTower->getSellValue()));
+        UI->sellTowerButton->setText("Sell for " + Parse::intToQString(selectedTower->getSellValue()));
     });
     selectedTowerStatsUpdater->start(250);
 
@@ -359,6 +368,18 @@ void MainWindow::on_buildCannonTowerButton_released()
         game->showGrid();
     }
 }
+
+void MainWindow::on_buildFortressTowerButton_released()
+{
+    resetSelection();
+    if (!game->gameView()->building && game->getMoney() >= FortressTower::getTier1Cost()){
+        game->gameView()->building = new FortressTower();
+        game->gameView()->setCursor(game->gameView()->building);
+        game->showGrid();
+    }
+}
+
+
 
 void MainWindow::on_buildIceTowerButton_released()
 {
@@ -423,7 +444,7 @@ void MainWindow::on_upgradeTierButton_clicked()
 {
     if (game->getMoney() < upgradeCost){
         UI->upgradeTierButton->setText("NOT ENOUGH MONEY");
-        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade tower for $" + Parse::intToQString(upgradeCost));});
+        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade for " + Parse::intToQString(upgradeCost));});
         return;
     }
 
@@ -438,7 +459,7 @@ void MainWindow::on_upgradeTierButton_clicked()
     UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
     UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
     UI->upgradeTierButton->setEnabled((selectedTower->isUpgradable() ? true : false));
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade tower for $" + Parse::intToQString(upgradeCost) : "Max tier. Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(upgradeCost) : "Cannot upgrade");
 }
 
 
@@ -471,6 +492,11 @@ void MainWindow::on_exitPriorityRadioButton_clicked()
     selectedTower->setPriority(TargetPriority::Exit);
 }
 
+void MainWindow::on_newGameButton_clicked()
+{
+    mapSelectionWindow->exec();
+}
+
 
 void MainWindow::on_startGameButton_clicked()
 {
@@ -493,9 +519,3 @@ void MainWindow::on_pauseButton_clicked()
     UI->pauseButton->setDisabled(true);
     QTimer::singleShot(500,[&](){ UI->pauseButton->setEnabled(true);});
 }
-
-void MainWindow::on_pickMapButton_clicked()
-{
-    mapSelectionWindow->exec();
-}
-

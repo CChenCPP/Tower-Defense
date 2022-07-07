@@ -13,10 +13,12 @@ TeleportTower::TeleportTower() :
     Tower()
 {
     connect(this,&Tower::upgrade,this,&TeleportTower::upgrade);
+    type = TowerType::Teleport;
     maxTier = 1;
     attackRange = TeleportTower::tier1AttackRange;
     attackInterval = TeleportTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultTowerWidth);
+    sizeMultiplier = teleportTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/TeleportTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = std::pow(TeleportTower::tier1Cost, valueDecay);
 }

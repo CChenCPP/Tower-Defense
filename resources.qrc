@@ -50,6 +50,12 @@
         <file>Images/PoisonTower2HD.png</file>
         <file>Images/PoisonTower3.png</file>
         <file>Images/PoisonTower3HD.png</file>
+        <file>Images/FortressTower1.png</file>
+        <file>Images/FortressTower1HD.png</file>
+        <file>Images/FortressTower2.png</file>
+        <file>Images/FortressTower2HD.png</file>
+        <file>Images/FortressTower3.png</file>
+        <file>Images/FortressTower3HD.png</file>
     </qresource>
     <qresource prefix="/Projectiles">
         <file>Images/Arrow1.png</file>

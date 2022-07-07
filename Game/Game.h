@@ -4,8 +4,6 @@
 #include "CustomGraphicsView.h"
 #include "Wave.h"
 #include "Map.h"
-#include <unordered_set>
-#include <set>
 
 using namespace GameConstants;
 
@@ -56,11 +54,9 @@ private:
     Map* map;
     QVector<QVector<QGraphicsRectItem*>> grid;
     QVector<QVector<bool>> takenSlots;
-//    std::unordered_set<Tower*> towerList;
+    std::unordered_map<TowerType,int> towerCount;
     QVector<Tower*> towerList;
-//    std::unordered_set<Enemy*> enemyList;
     QVector<Enemy*> enemyList;
-//    std::unordered_set<Enemy*> enemiesToSpawn;
     QVector<Enemy*> enemiesToSpawn;
     QTimer* enemySpawnTimer;
     QTimer* nextWaveCheckTimer;
@@ -70,16 +66,20 @@ private:
     int health;
     int money;
 
+    bool atTowerLimit(TowerType type);
     void defineLegalTiles();
     void disableSlot(int i, int j);
     void enableSlot(int i, int j);
     void loadBackground();
     void nextWave();
     void resetAll();
+    void scaleEnemies() const;
     void setupGrid();
+    int towerLimit(TowerType type) const;
 
 public slots:
     void loadMap(QString mapName);
+    void onRevenueGenerated(int amount);
     void removeTower(int posX, int posY, Tower* tower);
 
 private slots:

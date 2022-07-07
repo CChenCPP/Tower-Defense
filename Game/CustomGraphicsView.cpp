@@ -6,6 +6,7 @@
 #include "Towers/BallistaTower.h"
 #include "Towers/BeaconTower.h"
 #include "Towers/CannonTower.h"
+#include "Towers/FortressTower.h"
 #include "Towers/IceTower.h"
 #include "Towers/PoisonTower.h"
 #include "Towers/StoneTower.h"
@@ -65,6 +66,9 @@ void CustomGraphicsView::duplicateBuilding()
     }
     if (dynamic_cast<CannonTower*>(building)){
         building = new CannonTower();
+    }
+    if (dynamic_cast<FortressTower*>(building)){
+        building = new FortressTower();
     }
     if (dynamic_cast<IceTower*>(building)){
         building = new IceTower();

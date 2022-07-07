@@ -8,11 +8,11 @@ BlackHole::BlackHole(QPointF position) :
     Projectile(),
     targetCount(0)
 {
-    setPos(position);
     setAttributes();
     setImage();
     setProperties();
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    centerToPoint(position);
 
     updateInterval.disconnect();
     connect(&searchTargetsInterval,&QTimer::timeout,this,&BlackHole::banish);

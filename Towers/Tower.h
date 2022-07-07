@@ -9,6 +9,21 @@
 
 class Enemy;
 class Projectile;
+enum class TowerType
+{
+    Archer,
+    Ballista,
+    Beacon,
+    Cannon,
+    Fortress,
+    Ice,
+    Poison,
+    Stone,
+    Teleport,
+    Wizard
+};
+
+
 enum class TargetPriority
 {
     Nearest,
@@ -29,9 +44,11 @@ public:
     int getAttackInterval() const;
     int getAttackRange() const;
     int getTotalDamageDone() const;
-    float getAttackIntervalMultiplier() const;
-    float getAttackRangeMultiplier() const;
-    float getDamageMultiplier() const;
+    qreal getAttackIntervalMultiplier() const;
+    qreal getAttackRangeMultiplier() const;
+    qreal getDamageMultiplier() const;
+    qreal getSizeMultiplier() const;
+    TowerType getTowerType() const;
     int getKillCount() const;
     int getSellValue() const;
     TargetPriority getTargetPriority() const;
@@ -43,9 +60,9 @@ public:
     bool isUpgradable() const;
     void pause();
     void resume();
-    void setAttackIntervalMultiplier(float multiplier);
-    void setAttackRangeMultiplier(float multiplier);
-    void setDamageMultiplier(float multiplier);
+    void setAttackIntervalMultiplier(qreal multiplier);
+    void setAttackRangeMultiplier(qreal multiplier);
+    void setDamageMultiplier(qreal multiplier);
     void setGridPos(QPointF pos);
     void setTethered(bool value);
     void setPriority(TargetPriority targetPriority);
@@ -53,11 +70,13 @@ public:
     void upgradeTier();
 
 protected:
+    TowerType type;
     int tier;
     int maxTier;
-    float attackIntervalMultiplier;
-    float attackRangeMultiplier;
-    float damageMultiplier;
+    qreal attackIntervalMultiplier;
+    qreal attackRangeMultiplier;
+    qreal damageMultiplier;
+    qreal sizeMultiplier;
     int attackInterval;
     int attackRange;
     QGraphicsPolygonItem* attackArea;

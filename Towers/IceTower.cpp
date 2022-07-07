@@ -12,9 +12,11 @@ extern Game* game;
 IceTower::IceTower() : Tower()
 {
     connect(this,&Tower::upgrade,this,&IceTower::upgrade);
+    type = TowerType::Ice;
     attackRange = IceTower::tier1AttackRange;
     attackInterval = IceTower::tier1AttackInterval;
-    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultTowerWidth);
+    sizeMultiplier = iceTowerSizeMultiplier;
+    QPixmap scaled = Geometry::scaleToWidth(QPixmap(":/Towers/Images/IceTower1.png"), defaultTowerWidth * sizeMultiplier);
     setPixmap(scaled);
     sellValue = pow(IceTower::tier1Cost, valueDecay);
 }
