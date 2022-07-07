@@ -116,7 +116,8 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         QPointF slotPos(buildingPos.x() , buildingPos.y() + buildingCursor->getTower().pixmap().height());
         QPointF gridIdentifierPos(slotPos.x() + defaultTowerWidth / 2, slotPos.y());
         if (!game->slotOccupied(QPointF(slotPos.x() + building->pixmap().width() / 2, slotPos.y()))){
-            if (!game->buyTower(Game::getTier1Cost(building), building)) { return; };
+            if (!game->canBuyTower(Game::getTier1Cost(building), building)) { return; };
+            game->buyTower(Game::getTier1Cost(building), building);
             game->newTowerAt(gridIdentifierPos);
             connect(building,&Tower::removeFromGrid,game,&Game::removeTower);
             building->setGridPos(slotPos);

@@ -91,11 +91,10 @@ int Game::getUpgradeCost(Tower* tower)
     if (dynamic_cast<WizardTower*>(tower)){ return WizardTower::getUpgradeCost(tower); }
 }
 
-bool Game::buyTower(int cost, Tower* tower)
+void Game::buyTower(int cost, Tower* tower)
 {
-    TowerType towerType = tower->getTowerType();
-    if (money < cost || atTowerLimit(towerType)) { return false; };
     money -= cost;
+    TowerType towerType = tower->getTowerType();
     if (std::find(towerList.begin(), towerList.end(), tower) == towerList.end()){
         towerList.push_back(tower);
     }
@@ -106,6 +105,12 @@ bool Game::buyTower(int cost, Tower* tower)
     else {
         towerCount.insert(std::make_pair(towerType, 1));
     }
+}
+
+bool Game::canBuyTower(int cost, Tower* tower)
+{
+    TowerType towerType = tower->getTowerType();
+    if (money < cost || atTowerLimit(towerType)) { return false; };
     return true;
 }
 
@@ -202,6 +207,19 @@ bool Game::isPaused() const
     return paused;
 }
 
+void Game::newTowerAt(int x, int y)
+{
+    takenSlots[x / tileSize][(y - tileSize) / tileSize] = true;
+    QColor transparentRed = Qt::red;
+    transparentRed.setAlphaF(0.3);
+    grid[x / tileSize][(y - tileSize) / tileSize]->setBrush(transparentRed);
+}
+
+void Game::newTowerAt(QPointF pos)
+{
+    newTowerAt(pos.x(), pos.y());
+}
+
 void Game::pause()
 {
     for (Tower* tower : towerList){
@@ -235,6 +253,7 @@ void Game::resume()
 void Game::run()
 {
     running = true;
+    paused = false;
     connect(nextWaveCheckTimer,&QTimer::timeout,[&]() { if (enemyList.size() == 0 && enemiesToSpawn.size() == 0) nextWave(); });
     nextWaveCheckTimer->start(500);
     connect(enemySpawnTimer,&QTimer::timeout,this,&Game::spawnEnemy, Qt::UniqueConnection);
@@ -259,17 +278,10 @@ void Game::showGrid()
     }
 }
 
-void Game::newTowerAt(int x, int y)
+void Game::upgradeTower(int cost, Tower* tower)
 {
-    takenSlots[x / tileSize][(y - tileSize) / tileSize] = true;
-    QColor transparentRed = Qt::red;
-    transparentRed.setAlphaF(0.3);
-    grid[x / tileSize][(y - tileSize) / tileSize]->setBrush(transparentRed);
-}
-
-void Game::newTowerAt(QPointF pos)
-{
-    newTowerAt(pos.x(), pos.y());
+    TowerType towerType = tower->getTowerType();
+    money -= cost;
 }
 
 // private methods
@@ -367,7 +379,6 @@ void Game::resetAll()
     enemiesToSpawn.clear();
     enemyList.clear();
     running = false;
-    paused = false;
     level = 0;
     totalKillCount = 0;
     health = startingHealth;
@@ -377,6 +388,8 @@ void Game::resetAll()
 
 void Game::scaleEnemies() const
 {
+    std::cout << "HP SCALE: " << Enemy::hpScale << std::endl;
+    std::cout << "VALUE DECAY: " << Enemy::valueDecay << std::endl;
     if (level != 0 && level % 15 == 0){
         Enemy::hpScale = pow(Enemy::hpScale, 1.8);
         Enemy::valueDecay = pow(Enemy::valueDecay, 1.3);

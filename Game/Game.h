@@ -20,7 +20,8 @@ public:
     static QString getType(Tower* tower);
     static int getUpgradeCost(Tower* tower);
 
-    bool buyTower(int cost, Tower* tower);
+    void buyTower(int cost, Tower* tower);
+    bool canBuyTower(int cost, Tower* tower);
     void enemyLeaked();
     void enemyKilled(Enemy* enemy);
     CustomGraphicsView* gameView() const;
@@ -36,6 +37,8 @@ public:
     void hideGrid();
     bool isRunning() const;
     bool isPaused() const;
+    void newTowerAt(int x, int y);
+    void newTowerAt(QPointF pos);
     void pause();
     Enemy* randomEnemy() const;
     void resume();
@@ -44,8 +47,7 @@ public:
     void showGrid();
     bool slotOccupied(int x, int y);
     bool slotOccupied(QPointF pos);
-    void newTowerAt(int x, int y);
-    void newTowerAt(QPointF pos);
+    void upgradeTower(int cost, Tower* tower);
 
 private:
     CustomGraphicsView* mainView;

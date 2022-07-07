@@ -448,7 +448,7 @@ void MainWindow::on_upgradeTierButton_clicked()
         return;
     }
 
-    game->buyTower(upgradeCost, selectedTower);
+    game->upgradeTower(upgradeCost, selectedTower);
     selectedTower->upgradeTier();
     drawTowerOutline();
     drawSelectedTowerToScene();
