@@ -2,6 +2,10 @@
 #include <QVector>
 #include <sstream>
 
+bool Math::isEven(int i){ return i % 2 == 0; }
+bool Math::isOdd(int i){ return i % 2 != 0; }
+bool Math::isOddAndEven(int i, int j){ return ((isEven(i) && isOdd(j)) || (isEven(j) && isOdd(i))); }
+
 qreal Geometry::distance2D(QPointF src, QPointF dst)
 {
     int dx = src.x() - dst.x();

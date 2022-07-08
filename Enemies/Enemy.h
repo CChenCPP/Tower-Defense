@@ -33,9 +33,6 @@ public:
     explicit Enemy(int level, QGraphicsItem* parent = nullptr);
     ~Enemy();
 
-    static qreal hpScale;
-    static qreal valueDecay;
-
     inline bool hasAttribute(EnemyAttr attr) const noexcept;
     inline bool isBurnResistant() const noexcept;
     inline bool isChrono() const noexcept;
@@ -84,6 +81,11 @@ protected:
     QTimer regenTimer;
     Projectile* lastProjectile;
 
+    virtual void init();
+    virtual void setAttributes() = 0;
+    virtual void setImage() = 0;
+    virtual void setProperties() = 0;
+
     void checkDeath();
     void ethereal(Projectile* projectile);
     bool headshot(Projectile* projectile);
@@ -92,10 +94,11 @@ protected:
     int piercing(Projectile* projectile);
     void poison(Projectile* projectile);
     void regen();
-    void scaleProperties();
     void setMoveInterval();
     void startPath();
     void warp(Projectile* projectile);
+
+private:
 
 private slots:
     void newGame();

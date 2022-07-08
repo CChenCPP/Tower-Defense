@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 KronusEnemy::KronusEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void KronusEnemy::setAttributes()
@@ -30,8 +27,8 @@ void KronusEnemy::setImage()
 void KronusEnemy::setProperties()
 {
     distancePerInterval = kronusSpeed;
-    hp = pow(kronusHp * level, hpScale);
+    hp = kronusHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = kronusArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

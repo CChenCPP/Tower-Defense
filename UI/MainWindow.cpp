@@ -15,7 +15,7 @@
 #include "Towers/WizardTower.h"
 #include "Misc/Utility.h"
 #include <QKeyEvent>
-#include <iostream>
+
 
 using namespace GameConstants;
 
@@ -202,7 +202,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::resetSelection()
 {
-    game->hideGrid();
     selectedTowerStatsUpdater->disconnect();
 
     UI->typeLineEdit->setText("");
@@ -300,7 +299,6 @@ void MainWindow::onTowerSelected(Tower* tower)
 
     selectedTower = tower;
     selectedTower->showAttackArea(true);
-    upgradeCost = Game::getUpgradeCost(selectedTower);
     UI->typeLineEdit->setText(Game::getType(tower));
     UI->tierLineEdit->setText(Parse::intToQString(tower->getTier()));
     UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
@@ -309,7 +307,7 @@ void MainWindow::onTowerSelected(Tower* tower)
     UI->totalDamageDoneLineEdit->setText(Parse::intToQString(selectedTower->getTotalDamageDone()));
     UI->killsLineEdit->setText(Parse::intToQString(selectedTower->getKillCount()));
     UI->upgradeTierButton->setEnabled((tower->isUpgradable()) ? true : false);
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(upgradeCost) : "Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(Game::getUpgradeCost(selectedTower)) : "Cannot upgrade");
     UI->sellTowerButton->setEnabled(true);
     enablePriorityButtons();
     determineTowerPriority();
@@ -442,24 +440,23 @@ void MainWindow::on_sellTowerButton_clicked()
 
 void MainWindow::on_upgradeTierButton_clicked()
 {
-    if (game->getMoney() < upgradeCost){
+    if (game->getMoney() < Game::getUpgradeCost(selectedTower)){
         UI->upgradeTierButton->setText("NOT ENOUGH MONEY");
-        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade for " + Parse::intToQString(upgradeCost));});
+        QTimer::singleShot(500, [&](){ UI->upgradeTierButton->setText("Upgrade for " + Parse::intToQString(Game::getUpgradeCost(selectedTower)));});
         return;
     }
 
-    game->upgradeTower(upgradeCost, selectedTower);
+    game->upgradeTower(Game::getUpgradeCost(selectedTower));
     selectedTower->upgradeTier();
     drawTowerOutline();
     drawSelectedTowerToScene();
     selectedTower->showAttackArea(true);
-    upgradeCost = Game::getUpgradeCost(selectedTower);
     UI->tierLineEdit->setText(Parse::intToQString(selectedTower->getTier()));
     UI->attackRangeLineEdit->setText(Parse::intToQString(selectedTower->getAttackRange() * selectedTower->getAttackRangeMultiplier()));
     UI->attackRateLineEdit->setText(Parse::intToQString(selectedTower->getAttackInterval() * selectedTower->getAttackIntervalMultiplier()));
     UI->damageMultiplierLineEdit->setText(Parse::qrealToQString(selectedTower->getDamageMultiplier()));
     UI->upgradeTierButton->setEnabled((selectedTower->isUpgradable() ? true : false));
-    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(upgradeCost) : "Cannot upgrade");
+    UI->upgradeTierButton->setText((UI->upgradeTierButton->isEnabled()) ? "Upgrade for " + Parse::intToQString(Game::getUpgradeCost(selectedTower)) : "Cannot upgrade");
 }
 
 

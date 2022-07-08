@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 EzlotlEnemy::EzlotlEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void EzlotlEnemy::setAttributes()
@@ -28,8 +25,8 @@ void EzlotlEnemy::setImage()
 void EzlotlEnemy::setProperties()
 {
     distancePerInterval = ezlotlSpeed;
-    hp = pow(ezlotlHp * level, hpScale);
+    hp = ezlotlHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = ezlotlArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

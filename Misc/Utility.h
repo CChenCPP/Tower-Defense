@@ -9,9 +9,12 @@ typedef unsigned char uint8_t;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
 
-namespace Constant
+namespace Math
 {
     static constexpr qreal e = 2.71828182845904523536;
+    bool isEven(int i);
+    bool isOdd(int i);
+    bool isOddAndEven(int i, int j);
 }
 
 namespace Geometry

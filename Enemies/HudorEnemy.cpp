@@ -7,16 +7,12 @@ using namespace GameConstants::EnemyConstants;
 HudorEnemy::HudorEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void HudorEnemy::setAttributes()
 {
     Enemy::setAttributes(hudorAttributes);
-    regen();
 }
 
 void HudorEnemy::setImage()
@@ -29,8 +25,8 @@ void HudorEnemy::setImage()
 void HudorEnemy::setProperties()
 {
     distancePerInterval = hudorSpeed;
-    hp = pow(hudorHp * level, hpScale);
+    hp = hudorHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = hudorArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

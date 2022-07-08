@@ -1,5 +1,5 @@
 #include "Enemy.h"
-#include <iostream>
+
 #include "Game/Game.h"
 #include "Game/GameConstants.h"
 #include "Misc/Utility.h"
@@ -9,9 +9,6 @@
 using namespace GameConstants::EnemyConstants;
 
 extern Game* game;
-
-qreal Enemy::hpScale = defaultHpScale;
-qreal Enemy::valueDecay = defaultValueDecay;
 
 Enemy::Enemy(int level, QGraphicsItem* parent) :
     CustomGraphicsPixmapItem(parent),
@@ -103,6 +100,16 @@ void Enemy::setPath(Path* path)
 }
 
 // protected methods
+void Enemy::init()
+{
+    setAttributes();
+    setImage();
+    setProperties();
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    regen();
+}
+
+
 void Enemy::checkDeath()
 {
     if (hp <= 0) {
@@ -158,7 +165,7 @@ int Enemy::piercing(Projectile* projectile)
     if (!isImpenetrable() && projectile->isPiercing()) {
     return std::min<int>(hp, projectile->getDamage() * projectile->getSource()->getDamageMultiplier()); };
 
-    qreal trueDamage = projectile->getDamage() * projectile->getSource()->getDamageMultiplier() / log(armor + Constant::e);
+    qreal trueDamage = projectile->getDamage() * projectile->getSource()->getDamageMultiplier() / log(armor + Math::e);
     trueDamage = std::min<int>(hp, trueDamage);
     return trueDamage;
 }
@@ -216,7 +223,6 @@ void Enemy::newGame()
 {
     delete this;
 }
-
 
 // slots
 void Enemy::moveForward(){

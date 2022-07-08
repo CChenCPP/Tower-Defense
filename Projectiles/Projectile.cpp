@@ -145,7 +145,7 @@ void Projectile::shatter()
 // public slots
 void Projectile::hitEnemies(){
     for (Enemy* enemy : game->getEnemyList()){
-        if (Geometry::distance2D(center(), enemy->center()) <= (radius() + enemy->radius()) / 2){
+        if (Geometry::distance2D(center(), enemy->center()) <= radius() + enemy->radius() - 1){
             if (isEthereal() && enemy != target) { continue; };
             if (isExplosive()) { explode(); return; };
             if (isFragmenting()) { fragment(); return; };

@@ -29,7 +29,7 @@ Game::Game() :
     money(0)
 {
     mainScene->setItemIndexMethod(QGraphicsScene::BspTreeIndex);
-    mainScene->setBspTreeDepth(11);
+    mainScene->setBspTreeDepth(12);
     mainView->setRenderHint(QPainter::Antialiasing, false);
     mainView->setOptimizationFlag(QGraphicsView::DontAdjustForAntialiasing, true);
 }
@@ -95,16 +95,8 @@ void Game::buyTower(int cost, Tower* tower)
 {
     money -= cost;
     TowerType towerType = tower->getTowerType();
-    if (std::find(towerList.begin(), towerList.end(), tower) == towerList.end()){
-        towerList.push_back(tower);
-    }
-    auto countIt = towerCount.find(towerType);
-    if (countIt != towerCount.end()){
-        ++countIt->second;
-    }
-    else {
-        towerCount.insert(std::make_pair(towerType, 1));
-    }
+    towerList.push_back(tower);
+    ++towerCount[towerType];
 }
 
 bool Game::canBuyTower(int cost, Tower* tower)
@@ -191,7 +183,7 @@ void Game::hideGrid()
     if (!map) { return; };
     for (int i = 0; i < grid.size(); ++i){
         for (int j = 0; j < grid[0].size(); ++j){
-            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+            if (Math::isOddAndEven(i,j)) { continue; };
             grid[i][j]->setVisible(false);
         }
     }
@@ -272,15 +264,14 @@ void Game::showGrid()
 {
     for (int i = 0; i < grid.size(); ++i){
         for (int j = 0; j < grid[0].size(); ++j){
-            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)) { continue; };
+            if (Math::isOddAndEven(i,j)) { continue; };
             grid[i][j]->setVisible(true);
         }
     }
 }
 
-void Game::upgradeTower(int cost, Tower* tower)
+void Game::upgradeTower(int cost)
 {
-    TowerType towerType = tower->getTowerType();
     money -= cost;
 }
 
@@ -290,12 +281,12 @@ bool Game::atTowerLimit(TowerType type)
     return towerCount[type] + 1 > towerLimit(type);
 }
 
-void Game::defineLegalTiles()
+void Game::defineBuildableTiles()
 {
     for (int i = 0; i < grid.size(); ++i){
         for (int j = 0; j < grid[0].size(); ++j){
             enableSlot(i,j);
-            if ((i % 2 == 0 && j % 2 == 1) || (i % 2 == 1 && j % 2 == 0)){
+            if (Math::isOddAndEven(i,j)){
                 disableSlot(i,j);
                 continue;
             }
@@ -355,7 +346,6 @@ void Game::nextWave()
 {
     enemySpawnTimer->disconnect();
     ++level;
-    scaleEnemies();
     emit newWave();
     if (wave) { delete wave; wave = nullptr; };
     wave = new Wave(level);
@@ -375,6 +365,7 @@ void Game::resetAll()
     nextWaveCheckTimer->disconnect();
     if (map) { delete map; map = nullptr; };
     if (wave) { delete wave; wave = nullptr; };
+    towerCount.clear();
     towerList.clear();
     enemiesToSpawn.clear();
     enemyList.clear();
@@ -384,16 +375,6 @@ void Game::resetAll()
     health = startingHealth;
     money = startingMoney;
     emit resetting();
-}
-
-void Game::scaleEnemies() const
-{
-    std::cout << "HP SCALE: " << Enemy::hpScale << std::endl;
-    std::cout << "VALUE DECAY: " << Enemy::valueDecay << std::endl;
-    if (level != 0 && level % 15 == 0){
-        Enemy::hpScale = pow(Enemy::hpScale, 1.8);
-        Enemy::valueDecay = pow(Enemy::valueDecay, 1.3);
-    }
 }
 
 void Game::setupGrid()
@@ -425,7 +406,7 @@ void Game::setupGrid()
         }
     }
 
-    defineLegalTiles();
+    defineBuildableTiles();
     hideGridAll();
     hideGrid();
 }
@@ -459,16 +440,12 @@ int Game::towerLimit(TowerType type) const
 // public slots
 void Game::removeTower(int posX, int posY, Tower* tower)
 {
-//    towerList.erase(tower);
-    auto listIt = std::find(towerList.begin(), towerList.end(), tower);
-    if (listIt != towerList.end()){
-        towerList[listIt - towerList.begin()] = towerList.back();
-        towerList.pop_back();
-    }
-    auto countIt = towerCount.find(tower->getTowerType());
-    if (countIt != towerCount.end()){
-        --countIt->second;
-    }
+    auto it = std::find(towerList.begin(), towerList.end(), tower);
+    if (it == towerList.end()) { return; };
+    towerList[it - towerList.begin()] = towerList.back();
+    towerList.pop_back();
+    TowerType towerType = tower->getTowerType();
+    --towerCount[towerType];
     enableSlot(posX / tileSize, (posY - tileSize) / tileSize);
 }
 
@@ -494,12 +471,10 @@ void Game::loadMap(QString mapName)
 // private slots
 void Game::removeEnemy(Enemy* enemy)
 {
-//    enemyList.erase(enemy);
-    auto listIt = std::find(enemyList.begin(), enemyList.end(), enemy);
-    if (listIt != enemyList.end()){
-        enemyList[listIt - enemyList.begin()] = enemyList.back();
-        enemyList.pop_back();
-    }
+    auto it = std::find(enemyList.begin(), enemyList.end(), enemy);
+    if (it == enemyList.end()) { return; };
+    enemyList[it - enemyList.begin()] = enemyList.back();
+    enemyList.pop_back();
 }
 
 void Game::spawnEnemy()

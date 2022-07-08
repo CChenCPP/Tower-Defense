@@ -140,17 +140,22 @@ void CustomGraphicsView::mousePressEvent(QMouseEvent* event)
         }
     }
     else {
-        QGraphicsRectItem cursor;
-        cursor.setRect(QRect(event->pos().x(),event->pos().y(),5,5));
-        game->mainScene->addItem(&cursor);
-        auto collisions = cursor.collidingItems();
-        for (auto& item : collisions){
-            Tower* tower = dynamic_cast<Tower*>(item);
-            if (tower){
-                emit towerSelected(tower);
-                return;
-            }
-        }
-        emit towerSelected(nullptr);
+        selectTowerAt(event->pos());
     }
+}
+
+void CustomGraphicsView::selectTowerAt(QPointF pos)
+{
+    QGraphicsRectItem cursor;
+    cursor.setRect(QRect(pos.x(),pos.y(),5,5));
+    game->mainScene->addItem(&cursor);
+    auto collisions = cursor.collidingItems();
+    for (auto& item : collisions){
+        Tower* tower = dynamic_cast<Tower*>(item);
+        if (tower){
+            emit towerSelected(tower);
+            return;
+        }
+    }
+    emit towerSelected(nullptr);
 }

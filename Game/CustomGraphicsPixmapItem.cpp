@@ -1,5 +1,5 @@
 #include "CustomGraphicsPixmapItem.h"
-#include <iostream>
+
 
 CustomGraphicsPixmapItem::CustomGraphicsPixmapItem(QGraphicsItem* parent) :
     QGraphicsPixmapItem(parent)

@@ -1,7 +1,7 @@
 #include "IceShard.h"
 #include "Game/Game.h"
 #include "Misc/Utility.h"
-#include <iostream>
+
 
 extern Game* game;
 

@@ -13,7 +13,7 @@ public:
 private:
     static constexpr int tier1AttackRange = 200;
     static constexpr int tier1AttackInterval = 1000;
-    static constexpr int tier1Cost = 75;
+    static constexpr int tier1Cost = 100;
     static constexpr int tier2AttackRange = 225;
     static constexpr int tier2AttackInterval = 1000;
     static constexpr int tier2Cost = 750;

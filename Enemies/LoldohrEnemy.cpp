@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 LoldohrEnemy::LoldohrEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void LoldohrEnemy::setAttributes()
@@ -28,8 +25,8 @@ void LoldohrEnemy::setImage()
 void LoldohrEnemy::setProperties()
 {
     distancePerInterval = loldohrSpeed;
-    hp = pow(loldohrHp * level, hpScale);
+    hp = loldohrHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = loldohrArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

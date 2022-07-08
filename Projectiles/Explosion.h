@@ -9,8 +9,8 @@ public:
     ~Explosion();
 
 private:
-    static constexpr int defaultProjectileSize = 64;
-    static constexpr int maxTargets = 8;
+    static constexpr int defaultProjectileSize = 96;
+    static constexpr int maxTargets = 10;
 
     int targets;
     int gifFrameCount;

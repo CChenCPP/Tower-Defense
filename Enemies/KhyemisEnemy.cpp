@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 KhyemisEnemy::KhyemisEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void KhyemisEnemy::setAttributes()
@@ -28,8 +25,8 @@ void KhyemisEnemy::setImage()
 void KhyemisEnemy::setProperties()
 {
     distancePerInterval = khyemisSpeed;
-    hp = pow(khyemisHp * level, hpScale);
+    hp = khyemisHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = khyemisArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

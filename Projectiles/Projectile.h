@@ -3,7 +3,7 @@
 #include <QTimer>
 #include "Game/CustomGraphicsPixmapItem.h"
 #include "Towers/Tower.h"
-#include <iostream>
+
 
 class Enemy;
 class Tower;

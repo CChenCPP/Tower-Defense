@@ -25,6 +25,5 @@ private:
 
     void createBackground(QString mapName);
     void createPaths(QString mapName);
-    QPointF truncateToView(int x, int y) const;
 };
 

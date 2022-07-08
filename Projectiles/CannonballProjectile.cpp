@@ -56,20 +56,20 @@ void CannonballProjectile::setProperties()
     switch(tier)
     {
         case 1:
-            damage = 15;
-            distancePerInterval = 9;
+            damage = 12;
+            distancePerInterval = 10;
             maxDistance = 300;
             break;
 
         case 2:
-            damage = 35;
-            distancePerInterval = 9;
+            damage = 30;
+            distancePerInterval = 10;
             maxDistance = 350;
             break;
 
         case 3:
-            damage = 125;
-            distancePerInterval = 9;
+            damage = 110;
+            distancePerInterval = 10;
             maxDistance = 400;
             break;
     }

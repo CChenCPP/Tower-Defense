@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 UesisEnemy::UesisEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void UesisEnemy::setAttributes()
@@ -28,8 +25,8 @@ void UesisEnemy::setImage()
 void UesisEnemy::setProperties()
 {
     distancePerInterval = uesisSpeed;
-    hp = pow(uesisHp * level, hpScale);
+    hp = uesisHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = uesisArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

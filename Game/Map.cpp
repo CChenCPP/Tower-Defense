@@ -165,16 +165,3 @@ void Map::createPaths(QString mapName)
         paths.emplace_back(new Path("UtopiaPath1"));
     }
 }
-
-QPointF Map::truncateToView(int x, int y) const
-{
-    int maxX = game->mainScene->defaultWidth;
-    int maxY = game->mainScene->defaultHeight;
-    int newX = x;
-    int newY = y;
-    newX = (newX < 0) ? 0 : newX;
-    newX = (newX > maxX) ? maxX : newX;
-    newY = (newY < 0) ? 0 : newY;
-    newY = (newY > maxY) ? maxY : newY;
-    return QPointF(newX,newY);
-}

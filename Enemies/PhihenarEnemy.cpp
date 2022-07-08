@@ -7,16 +7,12 @@ using namespace GameConstants::EnemyConstants;
 PhihenarEnemy::PhihenarEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void PhihenarEnemy::setAttributes()
 {
     Enemy::setAttributes(phihenarAttributes);
-    regen();
 }
 
 void PhihenarEnemy::setImage()
@@ -29,8 +25,8 @@ void PhihenarEnemy::setImage()
 void PhihenarEnemy::setProperties()
 {
     distancePerInterval = phihenarSpeed;
-    hp = pow(phihenarHp * level, hpScale);
+    hp = phihenarHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = phihenarArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

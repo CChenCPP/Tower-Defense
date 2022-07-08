@@ -4,7 +4,6 @@
 #include "Misc/Utility.h"
 #include <QVector>
 #include <QPointF>
-#include <iostream>
 
 using namespace GameConstants::TowerConstants;
 

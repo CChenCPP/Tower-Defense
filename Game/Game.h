@@ -47,7 +47,7 @@ public:
     void showGrid();
     bool slotOccupied(int x, int y);
     bool slotOccupied(QPointF pos);
-    void upgradeTower(int cost, Tower* tower);
+    void upgradeTower(int cost);
 
 private:
     CustomGraphicsView* mainView;
@@ -69,13 +69,12 @@ private:
     int money;
 
     bool atTowerLimit(TowerType type);
-    void defineLegalTiles();
+    void defineBuildableTiles();
     void disableSlot(int i, int j);
     void enableSlot(int i, int j);
     void loadBackground();
     void nextWave();
     void resetAll();
-    void scaleEnemies() const;
     void setupGrid();
     int towerLimit(TowerType type) const;
 

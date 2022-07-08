@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 CukzotzEnemy::CukzotzEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void CukzotzEnemy::setAttributes()
@@ -28,8 +25,8 @@ void CukzotzEnemy::setImage()
 void CukzotzEnemy::setProperties()
 {
     distancePerInterval = cukzotzSpeed;
-    hp = pow(cukzotzHp * level, hpScale);
+    hp = cukzotzHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = cukzotzArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

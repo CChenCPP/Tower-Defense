@@ -23,7 +23,6 @@ private:
     CustomGraphicsView* selectedTowerView;
     Tower* selectedTower;
     QGraphicsPixmapItem* selectedTowerImage;
-    int upgradeCost;
     QGraphicsEllipseItem* selectedTowerOutline;
     QTimer* selectedTowerStatsUpdater;
     QTimer* totalKillCountUpdater;

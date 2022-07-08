@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 DharuerEnemy::DharuerEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void DharuerEnemy::setAttributes()
@@ -28,8 +25,8 @@ void DharuerEnemy::setImage()
 void DharuerEnemy::setProperties()
 {
     distancePerInterval = dharuerSpeed;
-    hp = pow(dharuerHp * level, hpScale);
+    hp = dharuerHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = dharuerArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

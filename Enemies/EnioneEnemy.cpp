@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 EnioneEnemy::EnioneEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+        init();
 }
 
 void EnioneEnemy::setAttributes()
@@ -28,8 +25,8 @@ void EnioneEnemy::setImage()
 void EnioneEnemy::setProperties()
 {
     distancePerInterval = enioneSpeed;
-    hp = pow(enioneHp * level, hpScale);
+    hp = enioneHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = enioneArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

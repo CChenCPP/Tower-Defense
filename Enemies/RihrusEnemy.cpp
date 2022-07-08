@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 RihrusEnemy::RihrusEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void RihrusEnemy::setAttributes()
@@ -28,8 +25,8 @@ void RihrusEnemy::setImage()
 void RihrusEnemy::setProperties()
 {
     distancePerInterval = rihrusSpeed;
-    hp = pow(rihrusHp * level, hpScale);
+    hp = rihrusHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = rihrusArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

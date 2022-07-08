@@ -17,7 +17,7 @@ private:
     static constexpr int tetherChance = 80;
     static constexpr int tier1AttackRange = 150;
     static constexpr int tier1AttackInterval = 1750;
-    static constexpr int tier1Cost = 300;
+    static constexpr int tier1Cost = 225;
     static constexpr int tier2AttackRange = 200;
     static constexpr int tier2AttackInterval = 1500;
     static constexpr int tier2Cost = 1500;

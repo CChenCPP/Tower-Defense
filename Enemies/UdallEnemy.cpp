@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 UdallEnemy::UdallEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void UdallEnemy::setAttributes()
@@ -28,8 +25,8 @@ void UdallEnemy::setImage()
 void UdallEnemy::setProperties()
 {
     distancePerInterval = udallSpeed;
-    hp = pow(udallHp * level, hpScale);
+    hp = udallHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = udallArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }

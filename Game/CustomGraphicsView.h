@@ -23,6 +23,7 @@ private:
     bool isRightMousePress(QMouseEvent* event);
     void mouseMoveEvent(QMouseEvent* event);
     void mousePressEvent(QMouseEvent* event);
+    void selectTowerAt(QPointF pos);
 
 signals:
     void towerSelected(Tower* tower);

@@ -3,7 +3,6 @@
 #include "Game/GameConstants.h"
 #include "Projectiles/ArrowProjectile.h"
 #include "Misc/Utility.h"
-#include <iostream>
 
 using namespace GameConstants::TowerConstants;
 

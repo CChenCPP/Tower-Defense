@@ -6,7 +6,6 @@
 #include "Projectiles/NovaProjectile.h"
 #include "Projectiles/BlackHole.h"
 #include "Misc/Utility.h"
-#include <iostream>
 
 using namespace GameConstants::TowerConstants;
 

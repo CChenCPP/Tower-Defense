@@ -3,7 +3,6 @@
 #include "Game/GameConstants.h"
 #include "Projectiles/StoneFragment.h"
 #include "Misc/Utility.h"
-#include <iostream>
 
 using namespace GameConstants::TowerConstants;
 

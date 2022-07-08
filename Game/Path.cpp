@@ -1,6 +1,6 @@
 #include "Path.h"
 #include <QPen>
-#include <iostream>
+
 
 Path::Path(QGraphicsItem* parent) :
     QGraphicsPathItem(parent)

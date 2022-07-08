@@ -7,10 +7,7 @@ using namespace GameConstants::EnemyConstants;
 ZanbrisEnemy::ZanbrisEnemy(int level) :
     Enemy(level)
 {
-    setAttributes();
-    setImage();
-    setProperties();
-    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    init();
 }
 
 void ZanbrisEnemy::setAttributes()
@@ -28,8 +25,8 @@ void ZanbrisEnemy::setImage()
 void ZanbrisEnemy::setProperties()
 {
     distancePerInterval = zanbrisSpeed;
-    hp = pow(zanbrisHp * level, hpScale);
+    hp = zanbrisHp * level / 3.0 * pow(defaultHpScale, level);
     spawnHp = hp;
     armor = zanbrisArmor;
-    value = pow(hp, valueDecay);
+    value = pow(hp, defaultValueDecay);
 }
