@@ -10,7 +10,6 @@ public:
 
 private:
     static constexpr int defaultProjectileSize = 20;
-    int tier;
 
     void setAttributes();
     void setImage();

@@ -10,11 +10,11 @@ public:
 
 private:
     static constexpr int defaultProjectileSize = 12;
-    static constexpr int defaultDistPerInt = 5;
+    static constexpr int defaultDistPerInt = 10;
     static constexpr int defaultMaxDistance = 120;
 
-    static QPixmap getShardPixmap();
-    void setAttributes();
-    void setProperties();
+    void setAttributes(int tier = 1);
+    void setImage(int tier = 1);
+    void setProperties(int tier = 1);
 };
 

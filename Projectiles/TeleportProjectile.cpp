@@ -3,9 +3,9 @@
 
 TeleportProjectile::TeleportProjectile(Tower* source) :
     Projectile(),
-    tier(tier),
     teleports(0)
 {
+    this->tier = 1;
     this->source = source;
     setAttributes();
     setImage();
@@ -13,22 +13,7 @@ TeleportProjectile::TeleportProjectile(Tower* source) :
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
-void TeleportProjectile::animate()
-{
-    if (!spinInterval.isActive()) {
-        connect(&spinInterval,&QTimer::timeout,[&](){this->setRotation(RNG::randomNum(1,360));});
-        spinInterval.start(20);
-    };
-}
-
-void TeleportProjectile::destruct()
-{
-    if (!animDurationTimer.isActive()){
-        connect(&animDurationTimer,&QTimer::timeout,[&](){delete this;});
-        animDurationTimer.start(2000);
-    }
-}
-
+// public methods
 void TeleportProjectile::warpOne()
 {
     distancePerInterval = 0;
@@ -40,6 +25,23 @@ void TeleportProjectile::warpOne()
     };
 }
 
+// private methods
+void TeleportProjectile::animate()
+{
+    if (!spinInterval.isActive()) {
+        connect(&spinInterval,&QTimer::timeout,[&](){this->setRotation(RNG::randomNum(1,360));});
+        spinInterval.start(20);
+    };
+}
+
+void TeleportProjectile::destruct()
+{
+    if (!animDurationTimer.isActive()){
+        connect(&animDurationTimer,&QTimer::timeout,[&](){ delete this;});
+        animDurationTimer.start(2000);
+    }
+}
+
 void TeleportProjectile::setAttributes(int tier)
 {
     switch(tier){
@@ -49,7 +51,6 @@ void TeleportProjectile::setAttributes(int tier)
     }
 }
 
-// private methods
 void TeleportProjectile::setImage(int tier)
 {
     QString number = Parse::intToQString(RNG::randomNum(1, 8));
@@ -65,7 +66,7 @@ void TeleportProjectile::setProperties(int tier)
         case 1:
             damage = 0;
             distancePerInterval = 20;
-            maxDistance = std::numeric_limits<int>::max();
+            maxDistance = 1000;
             break;
     }
 }

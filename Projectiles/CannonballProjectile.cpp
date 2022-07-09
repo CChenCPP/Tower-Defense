@@ -5,9 +5,9 @@
 extern Game* game;
 
 CannonballProjectile::CannonballProjectile(int tier, Tower* source) :
-    Projectile(),
-    tier(tier)
+    Projectile()
 {
+    this->tier = tier;
     this->source = source;
     setAttributes();
     setImage();

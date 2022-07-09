@@ -28,7 +28,7 @@ namespace GameConstants{
     static constexpr qreal teleportTowerIconSizeMultiplier = 0.75;
     static constexpr qreal wizardTowerIconSizeMultiplier = 0.85;
     static constexpr int startingHealth = 100;
-    static constexpr int startingMoney = 1000;
+    static constexpr int startingMoney = 100000;
 
     namespace EnemyConstants{
         static constexpr int defaultMoveIntervalMs = 40;
@@ -104,7 +104,7 @@ namespace GameConstants{
 
     namespace TowerConstants{
         static constexpr int consecutiveAttackChance = 30;
-        static constexpr int minimumAttackInterval = 333;
+        static constexpr int minimumAttackInterval = 250;
         static constexpr qreal valueDecay = 0.90;
         static constexpr int defaultMaxTier = 3;
 

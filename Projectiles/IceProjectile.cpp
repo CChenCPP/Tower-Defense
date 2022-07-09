@@ -15,6 +15,7 @@ IceProjectile::IceProjectile(int tier, Tower* source) :
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
+// private methods
 void IceProjectile::setAttributes(int tier)
 {
     switch(tier){
@@ -28,11 +29,8 @@ void IceProjectile::setAttributes(int tier)
             Projectile::setAttributes(ProjAttr::Shattering);
             return;
     }
-    QPixmap scaled = Geometry::scaleToWidth(pixmap(), IceProjectile::defaultProjectileSize);
-    setPixmap(scaled);
 }
 
-// private methods
 void IceProjectile::setImage(int tier)
 {
     switch(tier)

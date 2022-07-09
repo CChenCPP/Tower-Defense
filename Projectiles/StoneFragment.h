@@ -10,8 +10,13 @@ public:
 
 private:
     static constexpr int defaultProjectileSize = 12;
-    static constexpr int defaultDistPerInt = 2;
+    static constexpr int defaultDistPerInt = 5;
     static constexpr int defaultMaxDistance = 75;
-    static QPixmap getFragmentPixmap();
+
+    Projectile* parent;
+
+    void setAttributes(int tier = 1);
+    void setImage(int tier = 1);
+    void setProperties(int tier = 1);
 };
 

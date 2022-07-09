@@ -12,6 +12,7 @@ private:
     static constexpr int defaultProjectileSize = 96;
     static constexpr int maxTargets = 10;
 
+    Projectile* parent;
     int targets;
     int gifFrameCount;
     int currentFrame;
@@ -21,6 +22,8 @@ private:
 
     void setAnimation();
     void explode();
-    static QPixmap getExplosionPixmap(int tier);
+    void setAttributes(int tier = 1);
+    void setImage(int tier = 1);
+    void setProperties(int tier = 1);
 };
 

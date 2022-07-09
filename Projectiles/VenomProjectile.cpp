@@ -12,6 +12,7 @@ VenomProjectile::VenomProjectile(int tier, Tower* source) :
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
+// private methods
 void VenomProjectile::setAttributes()
 {
     switch(tier){

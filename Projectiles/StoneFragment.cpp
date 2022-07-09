@@ -5,23 +5,23 @@
 extern Game* game;
 
 StoneFragment::StoneFragment(Projectile* parent) :
-    Projectile()
+    Projectile(),
+    parent(parent)
 {
-    distancePerInterval = RNG::randomNum(1,StoneFragment::defaultDistPerInt);
-    maxDistance = StoneFragment::defaultMaxDistance;
-
     source = parent->getSource();
-    damage = parent->getDamage() / (parent->getSource()->getTier() * 2);
 
-    setPixmap(StoneFragment::getFragmentPixmap());
-    setPos(parent->pos());
-    setRotation(parent->rotation() + RNG::randomNum(-90,90));
+    setAttributes();
+    setProperties();
+    setImage();
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    centerToPoint(parent->pos());
+    setRotation(parent->rotation() + RNG::randomNum(-80,80));
 
     connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
 
     game->mainScene->addItem(this);
-    updateInterval.start(10);
+    updateInterval.start(20);
 }
 
 StoneFragment::~StoneFragment()
@@ -29,10 +29,22 @@ StoneFragment::~StoneFragment()
 }
 
 // private methods
-QPixmap StoneFragment::getFragmentPixmap()
+void StoneFragment::setAttributes(int tier)
 {
+
+}
+
+void StoneFragment::setImage(int tier)
+{   
     QString number = Parse::intToQString(RNG::randomNum(1, 8));
-    QPixmap pixmap(":/Special/Images/StoneFragment" + number + ".png");
-    QPixmap scaled = Geometry::scaleToWidth(pixmap, StoneFragment::defaultProjectileSize);
-    return scaled;
+    setPixmap(QPixmap(":/Special/Images/StoneFragment" + number + ".png"));
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), StoneFragment::defaultProjectileSize);
+    setPixmap(scaled);
+}
+
+void StoneFragment::setProperties(int tier)
+{
+    distancePerInterval = RNG::randomNum(1,StoneFragment::defaultDistPerInt);
+    maxDistance = StoneFragment::defaultMaxDistance;
+    damage = parent->getDamage() / (parent->getSource()->getTier() * 2);
 }

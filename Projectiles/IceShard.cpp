@@ -8,25 +8,21 @@ extern Game* game;
 IceShard::IceShard(Projectile* parent) :
     Projectile()
 {
-    damage = 0;
-    distancePerInterval = RNG::randomNum(1,IceShard::defaultDistPerInt);
-    maxDistance = RNG::randomNum(0, IceShard::defaultMaxDistance);
-
     tier = parent->getTier();
     source = parent->getSource();
 
     setAttributes();
+    setImage();
     setProperties();
-
-    setPixmap(IceShard::getShardPixmap());
-    setPos(parent->pos());
+    setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
+    centerToPoint(parent->center());
     setRotation(parent->rotation() + RNG::randomNum(-130,130));
 
     connect(source,&Tower::destructing,this,&Projectile::onTowerDestructing);
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
 
     game->mainScene->addItem(this);
-    updateInterval.start(10);;
+    updateInterval.start(20);;
 }
 
 IceShard::~IceShard()
@@ -34,15 +30,7 @@ IceShard::~IceShard()
 }
 
 // private methods
-QPixmap IceShard::getShardPixmap()
-{
-    QString number = Parse::intToQString(RNG::randomNum(1, 8));
-    QPixmap pixmap(":/Special/Images/IceShard" + number + ".png");
-    QPixmap scaled = Geometry::scaleToWidth(pixmap, IceShard::defaultProjectileSize);
-    return scaled;
-}
-
-void IceShard::setAttributes()
+void IceShard::setAttributes(int tier)
 {
     switch(true)
     {
@@ -60,8 +48,20 @@ void IceShard::setAttributes()
     }
 }
 
-void IceShard::setProperties()
+void IceShard::setImage(int tier)
 {
+    QString number = Parse::intToQString(RNG::randomNum(1, 8));
+    setPixmap(QPixmap(":/Special/Images/IceShard" + number + ".png"));
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), IceShard::defaultProjectileSize);
+    setPixmap(scaled);
+}
+
+void IceShard::setProperties(int tier)
+{
+    damage = 0;
+    distancePerInterval = RNG::randomNum(1,IceShard::defaultDistPerInt);
+    maxDistance = RNG::randomNum(0, IceShard::defaultMaxDistance);
+
     switch (tier){
         case 1:
             hypothermiaChance = 25;

@@ -2,9 +2,9 @@
 #include "Misc/Utility.h"
 
 JavelinProjectile::JavelinProjectile(int tier, Tower* source) :
-    Projectile(),
-    tier(tier)
+    Projectile()
 {
+    this->tier = tier;
     this->source = source;
     setAttributes(tier);
     setImage(tier);

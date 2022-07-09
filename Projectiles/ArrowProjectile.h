@@ -9,7 +9,6 @@ public:
 private:
     static constexpr int defaultProjectileSize = 45;
 
-    int tier;
     int type;
 
     void setAttributes();

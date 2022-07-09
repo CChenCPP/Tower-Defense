@@ -8,6 +8,7 @@ extern Game* game;
 
 Explosion::Explosion(Projectile* parent) :
     Projectile(),
+    parent(parent),
     targets(0),
     gifFrameCount(0),
     currentFrame(0),
@@ -15,14 +16,9 @@ Explosion::Explosion(Projectile* parent) :
     movie(nullptr),
     proxy(nullptr)
 {
-    distancePerInterval = 0;
-    maxDistance = 0;
-
-    source = parent->getSource();
-    target = parent->getTarget();
-    damage = parent->getDamage();
-
-    setPixmap(Explosion::getExplosionPixmap(source->getTier()));
+    setAttributes();
+    setImage();
+    setProperties();
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
     setRotation(parent->rotation());
     centerToPoint(parent->center());
@@ -31,8 +27,6 @@ Explosion::Explosion(Projectile* parent) :
     connect(this,&Projectile::killedTarget,source,&Tower::onTargetKilled);
 
     setAnimation();
-    game->mainScene->addItem(this);
-    hide();
     explode();
 }
 
@@ -41,6 +35,20 @@ Explosion::~Explosion()
     game->mainScene->removeItem(proxy);
     delete proxy;
     delete movie;
+}
+
+// private methods
+void Explosion::explode()
+{
+    updateInterval.disconnect();
+    for (Enemy* enemy : game->getEnemyList()){
+        if (Geometry::distance2D(center(), enemy->center()) < radius() + enemy->radius()){
+            if (++targets > maxTargets) { return; };
+            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled, Qt::UniqueConnection);
+            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged, Qt::UniqueConnection);
+            enemy->damage(this);
+        }
+    }
 }
 
 void Explosion::setAnimation()
@@ -61,23 +69,24 @@ void Explosion::setAnimation()
     QTimer::singleShot(gifFrameCount * 30 / speed * 100, this, [this](){ delete this; });
 }
 
-void Explosion::explode()
+void Explosion::setAttributes(int tier)
 {
-    updateInterval.disconnect();
-    for (Enemy* enemy : game->getEnemyList()){
-        if (Geometry::distance2D(center(), enemy->center()) < radius() + enemy->radius()){
-            if (++targets > maxTargets) { return; };
-            connect(enemy,&Enemy::killedBy,this,&Projectile::onTargetKilled, Qt::UniqueConnection);
-            connect(enemy,&Enemy::damagedAmount,this,&Projectile::onEnemyDamaged, Qt::UniqueConnection);
-            enemy->damage(this);
-        }
-    }
+
 }
 
-// private methods
-QPixmap Explosion::getExplosionPixmap(int tier)
+void Explosion::setImage(int tier)
+{   
+    setPixmap(QPixmap(":/Special/Images/CannonballExplosion" + Parse::toQString(tier) + "a.png"));
+    QPixmap scaled = Geometry::scaleToWidth(pixmap(), Explosion::defaultProjectileSize);
+    setPixmap(scaled);
+}
+
+void Explosion::setProperties(int tier)
 {
-    QPixmap pixmap(":/Special/Images/CannonballExplosion" + Parse::toQString(tier) + "a.png");
-    QPixmap scaled = Geometry::scaleToWidth(pixmap, Explosion::defaultProjectileSize);
-    return scaled;
+    distancePerInterval = 0;
+    maxDistance = 0;
+    source = parent->getSource();
+    target = parent->getTarget();
+    damage = parent->getDamage();
+
 }

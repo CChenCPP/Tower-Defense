@@ -21,6 +21,7 @@ BlackHole::BlackHole(QPointF position) :
     game->mainScene->addItem(this);
 }
 
+// public methods
 void BlackHole::banish()
 {
     animate();
@@ -34,6 +35,8 @@ void BlackHole::banish()
     }
 }
 
+
+// private methods
 void BlackHole::animate()
 {
     if (!spinInterval.isActive()) {

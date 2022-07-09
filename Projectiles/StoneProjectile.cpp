@@ -12,6 +12,7 @@ StoneProjectile::StoneProjectile(int tier, Tower* source) :
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
+// private methods
 void StoneProjectile::setAttributes()
 {
     switch(tier){

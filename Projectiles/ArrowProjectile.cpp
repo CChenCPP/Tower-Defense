@@ -3,9 +3,9 @@
 
 ArrowProjectile::ArrowProjectile(int tier, int type, Tower* source) :
     Projectile(),
-    tier(tier),
     type(type)
 {
+    this->tier = tier;
     this->source = source;
     setAttributes();
     setImage();
@@ -13,6 +13,7 @@ ArrowProjectile::ArrowProjectile(int tier, int type, Tower* source) :
     setTransformOriginPoint(pixmap().width()/2,pixmap().height()/2);
 }
 
+// private methods
 void ArrowProjectile::setAttributes()
 {
     switch(tier){

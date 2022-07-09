@@ -6,12 +6,12 @@ extern Game* game;
 
 NovaProjectile::NovaProjectile(int tier, Tower* source) :
     Projectile(),
-    tier(tier),
     type(0),
     searchRadius(0),
     maxTargets(0),
     targetCount(0)
 {
+    this->tier = tier;
     this->source = source;
     setAttributes();
     setImage();
@@ -28,17 +28,10 @@ NovaProjectile::~NovaProjectile()
 // public methods
 void NovaProjectile::bounceNext()
 {
-//    targetHitAnim.setPixmap(QPixmap(":/Special/Images/Null2.png"));
-//    targetHitAnim.setTransformOriginPoint(targetHitAnim.pixmap().width()/2,targetHitAnim.pixmap().height()/2);
-//    targetHitAnim.setPos(pos());
-//    animRotationTimer.start(20);
-//    connect(&animRotationTimer,&QTimer::timeout,[&](){targetHitAnim.setRotation(RNG::randomNum(1,360));});
-
     target = nullptr;
     if (++targetCount >= maxTargets) { returnToSource(); return; };
     QVector<Enemy*> inRange = game->getEnemyListWithinRadius(center(), searchRadius);
     if (inRange.size() > 0) {
-//        target = *std::next(inRange.begin(), RNG::randomNum(0,inRange.size() - 1));
         target = inRange[RNG::randomNum(0, inRange.size() - 1)];
     }
     if (!target) { returnToSource(); return; };
