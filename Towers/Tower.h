@@ -23,7 +23,6 @@ enum class TowerType
     Wizard
 };
 
-
 enum class TargetPriority
 {
     Nearest,

@@ -76,7 +76,7 @@ void BlackHole::setProperties(int tier)
         case 1:
             damage = 0;
             distancePerInterval = 0;
-            maxDistance = std::numeric_limits<int>::max();
+            maxDistance = 1;
             break;
     }
 }
